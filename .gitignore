@@ -4,7 +4,7 @@
 
 # large public files
 /public/files/DefaultTheme.zip
-/public/img/art/
+#/public/img/art/
 
 # dependencies
 /node_modules
