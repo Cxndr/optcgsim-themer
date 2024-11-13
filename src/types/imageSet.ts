@@ -8,6 +8,8 @@ export type ThemeImage = {
   image: typeof Jimp | null;
 }
 
+export type LeaderColor = "Black" | "BlackYellow" | "Blue" | "BlueBlack" | "BluePurple" | "BlueYellow" | "Green" | "GreenBlack" | "GreenBlue" | "GreenPurple" | "GreenYellow" | "Purple" | "PurpleBlack" | "PurpleYellow" | "Red" | "RedBlack" | "RedBlue" | "RedGreen" | "RedPurple" | "RedYellow" | "Yellow" | null;
+
 export type ImageSet = {
   playmats: {
     overlay: OverlayStyle,
