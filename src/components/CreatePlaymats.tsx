@@ -6,7 +6,6 @@ import SelectEdgeStyle from "./SelectEdgeStyle";
 import SelectShadowStyle from "./SelectShadowStyle";
 import SearchBar from "./SearchBar";
 import Image from "next/image";
-import { useEffect, useState } from "react";
 
 import type { ImageOptions } from "@/app/create/page";
 
@@ -14,9 +13,9 @@ type createPlaymatsProps = {
   artImages: ImageOptions
 }
 
-
 export default function CreatePlaymats({artImages} : createPlaymatsProps) {
 
+  
   return (
     <div className="h-full flex flex-col text-xl text-zinc-50">
 
