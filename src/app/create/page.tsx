@@ -37,7 +37,7 @@ export default async function CreatePage() {
 
 
   const artImages = await getArtImages();
-  const imageSet = {} as ImageSet;
+  const imageSet = {} as ImageSet;  
   let previewImage = null;
 
 
@@ -59,7 +59,7 @@ export default async function CreatePage() {
         </div>
 
         <div className="w-1/2 h-full p-8 flex flex-col rounded-3xl bg-zinc-800 bg-opacity-70 shadow-2xl shadow-black">
-          <CreatePlaymats artImages={artImages}/>
+          <CreatePlaymats artImages={artImages} imageSet={imageSet}/>
         </div>
 
       </div>
