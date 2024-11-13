@@ -1,0 +1,7 @@
+*** How to Install ***
+
+1. Copy the contents to your install's StreamingAssets folder, overwriting all existing files. 
+2. Done!
+
+NOTE: StreamingAssets folder is located at:
+[YOUR OPTCGSIM INSTALL]/Builds[OS]/OPTCGSim_Data/StreamingAssets/
