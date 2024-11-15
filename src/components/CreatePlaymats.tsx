@@ -7,37 +7,32 @@ import SelectShadowStyle from "./SelectShadowStyle";
 import SearchBar from "./SearchBar";
 import Image from "next/image";
 
-import type { ImageOptions } from "@/app/create/page";
-import { LeaderColor, ImageSet } from "@/types/imageSet";
+import type { ImageOption } from "@/app/create/page";
+import { LeaderColor, ImageSet } from "@/utils/imageSet";
 import { useState } from "react";
 
 type createPlaymatsProps = {
-  artImages: ImageOptions
-  imageSet: ImageSet
+  artImages: ImageOption[],
+  imageSet: ImageSet,
+  updatePreview: (leaderColor: LeaderColor) => void,
 }
 
-export default function CreatePlaymats({artImages, imageSet} : createPlaymatsProps) {
+export default function CreatePlaymats({artImages, imageSet, updatePreview} : createPlaymatsProps) {
 
-  const [selectedLeaderColor, setSelectedLeaderColor] = useState(null as LeaderColor);
+  const [selectedLeaderColor, setSelectedLeaderColor] = useState("Black" as LeaderColor);
 
 
-  function handleImageClick(event: React.MouseEvent<HTMLAnchorElement>){
-    console.log("BEFORE IMAGESET: ", imageSet);
-    const image = event.target as HTMLImageElement;
-    if (selectedLeaderColor) {
-      if (!imageSet.playmats.images[selectedLeaderColor]) {
-        imageSet.playmats.images[selectedLeaderColor] = { selection: "", image: null };
-      }
-      imageSet.playmats.images[selectedLeaderColor].selection = image.src;
-    }
-    console.log("image src: ", image.src)
-    console.log(imageSet);
+  function handleImageClick(image:ImageOption){
+    const newSrc = image.url;
+    imageSet.playmats.images[selectedLeaderColor].src = newSrc;
+    updatePreview(selectedLeaderColor);
   }
 
-  function handleSetLeaderColor(value: LeaderColor) {
-    setSelectedLeaderColor(value);
+  function handleSetLeaderColor(value: string) {
+    const leaderColor = value.replaceAll(" ", "") as LeaderColor;
+    setSelectedLeaderColor(leaderColor);
+    updatePreview(leaderColor);
   }
-
   
 
   return (
@@ -58,10 +53,9 @@ export default function CreatePlaymats({artImages, imageSet} : createPlaymatsPro
         {
           artImages.map((image, index) => (
             <a 
-              onClick={(event) => handleImageClick(event)}
+              onClick={() => handleImageClick(image)}
               key={index}
             >
-              
               <Image 
               src={image.url}
               alt={image.name} // todo: DO BETTER!
