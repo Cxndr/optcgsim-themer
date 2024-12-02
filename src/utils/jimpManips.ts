@@ -1,4 +1,5 @@
 import {Jimp, rgbaToInt} from "jimp";
+import { ImageSet } from "./imageSet";
 
 export async function applyRoundedCorners(image: InstanceType<typeof Jimp>, radius: number){
   // Create a mask with the same size as the image
@@ -38,5 +39,32 @@ export async function applyRoundedCorners(image: InstanceType<typeof Jimp>, radi
 
   // Apply the mask to the image
   image.mask(mask);
+  return image;
+}
+
+
+export async function processSinglePlaymat(image: InstanceType<typeof Jimp>, settings: ImageSet["playmats"]){
+
+  if (settings.overlay === "area-markers") {
+    // todo: add
+  }
+  else if (settings.overlay === "area-markers-text") {
+    // todo: add
+  }
+
+  if (settings.edgeStyle === "rounded-small"){
+    applyRoundedCorners(image, 50);
+  }
+  else if (settings.edgeStyle === "rounded-med"){
+    applyRoundedCorners(image, 100);
+  }
+  else if (settings.edgeStyle === "rounded-large"){
+    applyRoundedCorners(image, 200);
+  }
+
+  if (settings.shadow === true) {
+    // todo: add
+  }
+  
   return image;
 }

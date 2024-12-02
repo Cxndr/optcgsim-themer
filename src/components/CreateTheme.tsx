@@ -7,6 +7,7 @@ import {Jimp} from "jimp"; // Correct import for Jimp
 import Image from "next/image";
 import { ImageOption } from "@/app/create/page";
 import { useState } from "react";
+import { applyRoundedCorners } from "@/utils/jimpManips";
 
 type CreateThemeProps = {
   artImages: ImageOption[];
@@ -19,9 +20,8 @@ export default function CreateTheme({ artImages }: CreateThemeProps) {
   async function updatePreview(leaderColor: LeaderColor) {
     try {
       const image = await Jimp.read(imageSet.playmats.images[leaderColor].src);
-      image.resize({w:707, h:500});
-      image.circle({ radius: 200, x: 100, y: 100 });
-      
+      // image.resize({w:707, h:500});
+      applyRoundedCorners(image, 200);
       const base64 = await image.getBase64("image/png");
       setPreviewImage(base64);
     }
