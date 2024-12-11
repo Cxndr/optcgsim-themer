@@ -1,11 +1,25 @@
 
+import { ImageSet } from "@/utils/imageSet"
 
-export default function SelectEdgeStyle() {
+
+type SelectEdgeStyleProps = {
+  settings: ImageSet["playmats"], // todo: make this modular to work with other than playmats.
+}
+
+export default function SelectEdgeStyle({settings}:SelectEdgeStyleProps) {
+
+  function returnSelection(e: React.ChangeEvent<HTMLSelectElement>) {
+    if (e.currentTarget.value === "rounded-large" || e.currentTarget.value === "rounded-med" || e.currentTarget.value === "rounded-small" || e.currentTarget.value === "square") {
+      settings.edgeStyle = e.currentTarget.value;
+    }
+  }
 
   return (
     <label className="label">
       <span className="label-text text-zinc-50 pr-2 text-xl">Edge Style: </span>
-      <select name="edge-style" className="select select-ghost">
+      <select name="edge-style" className="select select-ghost"
+        onChange={returnSelection}
+      >
         <option value="rounded-large">Rounded Large</option>
         <option value="rounded-med">Rounded Medium</option>
         <option value="rounded-small">Rounded Small</option>
