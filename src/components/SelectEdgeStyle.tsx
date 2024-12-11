@@ -1,16 +1,20 @@
 
-import { ImageSet } from "@/utils/imageSet"
-
+import { ImageSet } from "@/utils/imageSet";
 
 type SelectEdgeStyleProps = {
   settings: ImageSet["playmats"], // todo: make this modular to work with other than playmats.
+  updatePlaymatPreview: () => void;
 }
 
-export default function SelectEdgeStyle({settings}:SelectEdgeStyleProps) {
+export default function SelectEdgeStyle({settings, updatePlaymatPreview}:SelectEdgeStyleProps) {
 
   function returnSelection(e: React.ChangeEvent<HTMLSelectElement>) {
     if (e.currentTarget.value === "rounded-large" || e.currentTarget.value === "rounded-med" || e.currentTarget.value === "rounded-small" || e.currentTarget.value === "square") {
       settings.edgeStyle = e.currentTarget.value;
+      updatePlaymatPreview();
+    }
+    else {
+      console.error("Invalid edge style selected");
     }
   }
 

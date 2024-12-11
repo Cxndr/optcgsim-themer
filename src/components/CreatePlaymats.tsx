@@ -21,6 +21,10 @@ export default function CreatePlaymats({artImages, imageSet, updatePreview} : cr
 
   const [selectedLeaderColor, setSelectedLeaderColor] = useState("Black" as LeaderColor);
 
+  function updatePlaymatPreview() {
+    updatePreview(selectedLeaderColor);
+  }
+
 
   function handleImageClick(image:ImageOption){
     const newSrc = image.url;
@@ -40,7 +44,7 @@ export default function CreatePlaymats({artImages, imageSet, updatePreview} : cr
 
       <div className="flex gap-4 justify-center">
         <SelectOverlay />
-        <SelectEdgeStyle />
+        <SelectEdgeStyle settings={imageSet.playmats} updatePlaymatPreview={updatePlaymatPreview}/>
         <SelectShadowStyle />
       </div>
 
