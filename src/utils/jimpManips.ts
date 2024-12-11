@@ -52,6 +52,7 @@ export async function processSinglePlaymat(image: InstanceType<typeof Jimp>, set
     // todo: add
   }
 
+  console.log(settings.edgeStyle);
   if (settings.edgeStyle === "rounded-small"){
     applyRoundedCorners(image, 50);
   }
@@ -61,6 +62,7 @@ export async function processSinglePlaymat(image: InstanceType<typeof Jimp>, set
   else if (settings.edgeStyle === "rounded-large"){
     applyRoundedCorners(image, 200);
   }
+  else { console.error("no edge style found")}
 
   if (settings.shadow === true) {
     // todo: add
