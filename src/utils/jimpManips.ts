@@ -1,4 +1,4 @@
-import {Jimp, rgbaToInt} from "jimp";
+import {Jimp, JimpInstance, rgbaToInt} from "jimp";
 import { ImageSet } from "./imageSet";
 
 export async function applyRoundedCorners(image: InstanceType<typeof Jimp>, radius: number){
@@ -42,17 +42,95 @@ export async function applyRoundedCorners(image: InstanceType<typeof Jimp>, radi
   return image;
 }
 
+export async function applySizing(
+  image: InstanceType<typeof Jimp>, 
+  width: number, 
+  height: number
+){
+
+  try {
+    const imageHeight = image.bitmap.height;
+    const imageWidth = image.bitmap.width;
+    const imageAspectRatio = imageWidth / imageHeight;
+  
+    if (imageAspectRatio < 1) {
+      image.resize({w: width});
+    }
+    else {
+      image.resize({h: height});
+    }
+  
+    image.crop({x: 0, y: 0, w: width, h: height});
+    return image;
+  } catch(err) {
+    console.error("Error applying sizing: ", err);
+    throw err
+  }
+
+}
+
+export async function applyShadow(
+  image: InstanceType<typeof Jimp>, 
+  blur:number, 
+  opacity: number, 
+  edgeBuffer: number = blur * 4,
+  size:number = 1, 
+  x:number = 0, 
+  y:number = 0
+){
+
+  try {
+    const imageWidth = image.bitmap.width;
+    const imageHeight = image.bitmap.height;
+    const shadowWidth = Math.floor(imageWidth * size);
+    const shadowHeight = Math.floor(imageHeight * size);
+    const imageOffsetX = Math.floor(((shadowWidth - imageWidth)/2) + edgeBuffer/2);
+    const imageOffsetY = Math.floor(((shadowHeight - imageHeight)/2) + edgeBuffer/2);
+
+    const shadow = image.clone();
+    shadow.color([{apply: "darken", params: [100]}]);
+    shadow.opacity(opacity);
+    shadow.resize({
+      w: shadowWidth,
+      h: shadowHeight
+    });
+
+    const canvas = new Jimp({
+      width: shadowWidth + edgeBuffer,
+      height: shadowHeight + edgeBuffer,
+      color: rgbaToInt(0,0,0,0)
+    });
+
+    let result = canvas.composite(shadow, x + (edgeBuffer/2) , y + (edgeBuffer/2));
+    result.blur(blur);
+
+    result = result.composite(image, imageOffsetX, imageOffsetY);
+    result.resize({w: imageWidth, h: imageHeight});
+
+    return result as JimpInstance;
+  }
+  catch(err) {
+    console.error("Error applying shadow: ", err);
+    throw err
+  }
+
+}
+
 
 export async function processSinglePlaymat(image: InstanceType<typeof Jimp>, settings: ImageSet["playmats"]){
 
-  if (settings.overlay === "area-markers") {
-    // todo: add
-  }
-  else if (settings.overlay === "area-markers-text") {
-    // todo: add
-  }
+  image = await applySizing(image, 1414, 1000);
 
-  console.log(settings.edgeStyle);
+  try {
+    if (settings.overlay === "area-markers") {
+      image = image.composite(await Jimp.read("img/overlays/area-markers.png"), 0, 0)
+    }
+    else if (settings.overlay === "area-markers-text") {
+      image = image.composite(await Jimp.read("img/overlays/area-markers-text.png"), 0, 0)
+    }
+  } catch(err) { console.error("Error applying overlay: ", err); }
+
+
   if (settings.edgeStyle === "rounded-small"){
     applyRoundedCorners(image, 50);
   }
@@ -62,10 +140,9 @@ export async function processSinglePlaymat(image: InstanceType<typeof Jimp>, set
   else if (settings.edgeStyle === "rounded-large"){
     applyRoundedCorners(image, 200);
   }
-  else { console.error("no edge style found")}
 
   if (settings.shadow === true) {
-    // todo: add
+    image = await applyShadow(image, 5, 0.5)
   }
   
   return image;

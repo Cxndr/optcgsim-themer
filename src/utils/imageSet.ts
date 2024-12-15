@@ -4,7 +4,6 @@ export type EdgeStyle = "square" | "rounded-small" | "rounded-med" | "rounded-la
 export type PlaymatOverlayStyle = "none" | "area-markers" | "area-markers-text";
 export type CardOverlayStyle = "none" | "don" | "op-logo";
 
-
 export type ThemeImage = {
   src: string;
   image: typeof Jimp | null;

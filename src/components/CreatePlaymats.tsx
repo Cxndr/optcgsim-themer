@@ -43,9 +43,9 @@ export default function CreatePlaymats({artImages, imageSet, updatePreview} : cr
     <div className="h-full flex flex-col text-xl text-zinc-50">
 
       <div className="flex gap-4 justify-center">
-        <SelectOverlay />
+        <SelectOverlay settings={imageSet.playmats} updatePlaymatPreview={updatePlaymatPreview}/>
         <SelectEdgeStyle settings={imageSet.playmats} updatePlaymatPreview={updatePlaymatPreview}/>
-        <SelectShadowStyle />
+        <SelectShadowStyle settings={imageSet.playmats} updatePlaymatPreview={updatePlaymatPreview}/>
       </div>
 
       <div className="mt-4 flex justify-between items-center border-t-2 border-slate-50 border-opacity-50">
