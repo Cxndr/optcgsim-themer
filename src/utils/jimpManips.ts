@@ -49,18 +49,19 @@ export async function applySizing(
 ){
 
   try {
-    const imageHeight = image.bitmap.height;
-    const imageWidth = image.bitmap.width;
-    const imageAspectRatio = imageWidth / imageHeight;
+    // const imageHeight = image.bitmap.height;
+    // const imageWidth = image.bitmap.width;
+    // const imageAspectRatio = imageWidth / imageHeight;
   
-    if (imageAspectRatio < 1) {
-      image.resize({w: width});
-    }
-    else {
-      image.resize({h: height});
-    }
+    // if (imageAspectRatio < 1) {
+    //   image.resize({w: width});
+    // }
+    // else {
+    //   image.resize({h: height});
+    // }
   
-    image.crop({x: 0, y: 0, w: width, h: height});
+    // image.crop({x: 0, y: 0, w: width, h: height});
+    image.cover({w:width, h:height});
     return image;
   } catch(err) {
     console.error("Error applying sizing: ", err);

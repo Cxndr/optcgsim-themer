@@ -20,6 +20,7 @@ type createPlaymatsProps = {
 export default function CreatePlaymats({artImages, imageSet, updatePreview} : createPlaymatsProps) {
 
   const [selectedLeaderColor, setSelectedLeaderColor] = useState("Black" as LeaderColor);
+  const [selectedImage, setSelectedImage] = useState(artImages[0]);
 
   function updatePlaymatPreview() {
     updatePreview(selectedLeaderColor);
@@ -28,6 +29,7 @@ export default function CreatePlaymats({artImages, imageSet, updatePreview} : cr
 
   function handleImageClick(image:ImageOption){
     const newSrc = image.url;
+    setSelectedImage(image);
     imageSet.playmats.images[selectedLeaderColor].src = newSrc;
     updatePreview(selectedLeaderColor);
   }
@@ -53,24 +55,30 @@ export default function CreatePlaymats({artImages, imageSet, updatePreview} : cr
         <SearchBar />
       </div>
 
-      <div className="flex-grow grid grid-cols-4 gap-4 overflow-y-scroll">
-        {
-          artImages.map((image, index) => (
-            <a 
-              onClick={() => handleImageClick(image)}
-              key={index}
-            >
-              <Image 
-              src={image.url}
-              alt={image.name} // todo: DO BETTER!
-              className="h-30 aspect-video object-cover rounded-xl shadow-sm shadow-black"
-              width={200} height={200}
-              />
+      <div className="flex-grow overflow-auto">
+        <div className="grid grid-cols-3 gap-4">
+          {
+            artImages.map((image, index) => (
+              <a 
+                onClick={() => handleImageClick(image)}
+                key={index}
+                className="relative w-full overflow-hidden rounded-xl shadow-sm shadow-black"
+                style={{ aspectRatio: '1414 / 1000' }}
+              >
+                <Image 
+                src={image.url} 
+                alt={image.name} // todo: DO BETTER!
+                className="w-full h-full object-cover hover:scale-110 transform transition-transform ease-in-out duration-700"
+                width={200} height={200}
+                />
+                {image.url === selectedImage.url && <div className="absolute top-0 left-0 w-full h-full bg-zinc-300 bg-opacity-10 border-accent border-4 rounded-xl"></div>}
             </a>
 
-          ))
-        }
+            ))
+          }
+        </div>
       </div>
+      
 
     </div>
   )
