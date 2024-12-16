@@ -28,7 +28,6 @@ export default function CreateTheme({ artImages }: CreateThemeProps) {
     catch(err) {
       console.error(err);
     }
-
   }
 
   return (

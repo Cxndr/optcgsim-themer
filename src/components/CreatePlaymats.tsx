@@ -7,12 +7,11 @@ import SelectShadowStyle from "./SelectShadowStyle";
 import SearchBar from "./SearchBar";
 import Image from "next/image";
 
-import type { ImageOption } from "@/app/create/page";
-import { LeaderColor, ImageSet } from "@/utils/imageSet";
+import { LeaderColor, ImageSet, ThemeImage} from "@/utils/imageSet";
 import { useState } from "react";
 
 type createPlaymatsProps = {
-  artImages: ImageOption[],
+  artImages: ThemeImage[],
   imageSet: ImageSet,
   updatePreview: (leaderColor: LeaderColor) => void,
 }
@@ -20,15 +19,15 @@ type createPlaymatsProps = {
 export default function CreatePlaymats({artImages, imageSet, updatePreview} : createPlaymatsProps) {
 
   const [selectedLeaderColor, setSelectedLeaderColor] = useState("Black" as LeaderColor);
-  const [selectedImage, setSelectedImage] = useState(artImages[0]);
+  const [selectedImage, setSelectedImage] = useState<ThemeImage | null>(imageSet.playmats.images[selectedLeaderColor]);
 
   function updatePlaymatPreview() {
     updatePreview(selectedLeaderColor);
   }
 
 
-  function handleImageClick(image:ImageOption){
-    const newSrc = image.url;
+  function handleImageClick(image:ThemeImage){
+    const newSrc = image.src;
     setSelectedImage(image);
     imageSet.playmats.images[selectedLeaderColor].src = newSrc;
     updatePreview(selectedLeaderColor);
@@ -45,9 +44,9 @@ export default function CreatePlaymats({artImages, imageSet, updatePreview} : cr
     <div className="h-full flex flex-col text-xl text-zinc-50">
 
       <div className="flex gap-4 justify-center">
-        <SelectOverlay settings={imageSet.playmats} updatePlaymatPreview={updatePlaymatPreview}/>
-        <SelectEdgeStyle settings={imageSet} settingType="playmats" updatePlaymatPreview={updatePlaymatPreview}/>
-        <SelectShadowStyle settings={imageSet} settingType="playmats" updatePlaymatPreview={updatePlaymatPreview}/>
+        <SelectOverlay settings={imageSet.playmats} updatePreview={updatePlaymatPreview}/>
+        <SelectEdgeStyle settings={imageSet} settingType="playmats" updatePreview={updatePlaymatPreview}/>
+        <SelectShadowStyle settings={imageSet} settingType="playmats" updatePreview={updatePlaymatPreview}/>
       </div>
 
       <div className="mt-4 flex justify-between items-center border-t-2 border-slate-50 border-opacity-50">
@@ -66,12 +65,15 @@ export default function CreatePlaymats({artImages, imageSet, updatePreview} : cr
                 style={{ aspectRatio: '1414 / 1000' }}
               >
                 <Image 
-                src={image.url} 
-                alt={image.name} // todo: DO BETTER!
-                className="w-full h-full object-cover hover:scale-110 transform transition-transform ease-in-out duration-700"
-                width={200} height={200}
+                  src={image.src} 
+                  alt={image.name ? image.name : "no image set"} // todo: DO BETTER!
+                  className="w-full h-full object-cover hover:scale-110 transform transition-transform ease-in-out duration-700"
+                  width={200} height={200}
                 />
-                {image.url === selectedImage.url && <div className="absolute top-0 left-0 w-full h-full bg-zinc-300 bg-opacity-10 border-accent border-4 rounded-xl"></div>}
+                {
+                  selectedImage &&
+                  image.src === selectedImage.src && <div className="absolute top-0 left-0 w-full h-full bg-zinc-300 bg-opacity-10 border-accent border-4 rounded-xl"></div>
+                }
             </a>
 
             ))

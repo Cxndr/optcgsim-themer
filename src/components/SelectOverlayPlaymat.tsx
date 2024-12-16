@@ -1,19 +1,31 @@
 
 import { ImageSet, isPlaymatOverlayStyle } from "@/utils/imageSet"
+import { useState, useEffect } from "react";
+import { PlaymatOverlayStyleValues } from "@/utils/imageSet";
 
 type SelectOverlayPlaymatProps = {
   settings: ImageSet["playmats"],
-  updatePlaymatPreview: () => void;
+  updatePreview: () => void;
 }
 
-export default function SelectOverlay({settings, updatePlaymatPreview}:SelectOverlayPlaymatProps) {
+export default function SelectOverlay({settings, updatePreview}:SelectOverlayPlaymatProps) {
 
-  function returnSelection(e: React.ChangeEvent<HTMLSelectElement>) {
+  const [overlay, setOverlay] = useState(settings.overlay);
+
+  useEffect(() => {
+    setOverlay(settings.overlay);
+  }, [settings.overlay]);
+
+  function handleChange(e: React.ChangeEvent<HTMLSelectElement>) {
     try {
-      if (!isPlaymatOverlayStyle(e.currentTarget.value)) throw new Error("Invalid overlay style selected");
-      settings.overlay = e.currentTarget.value;
-      updatePlaymatPreview();
-    } catch(err) { console.error("Invalid overlay style selected: ", err); }
+      const selectedValue = e.currentTarget.value;
+      if (!isPlaymatOverlayStyle(selectedValue)) throw new Error("Invalid overlay style selected");
+      setOverlay(selectedValue);
+      settings.overlay = selectedValue;
+      updatePreview();
+    } catch (err) {
+      console.error("Invalid overlay style selected: ", err);
+    }
   }
 
   return (
@@ -24,11 +36,13 @@ export default function SelectOverlay({settings, updatePlaymatPreview}:SelectOve
       <select 
         name="overlay-style"
         className="select select-ghost"
-        onChange={returnSelection}
+        value={overlay}
+        onChange={handleChange}
       >
-        <option value="none">None</option>
-        <option value="area-markers">Area Markers</option>
-        <option value="area-markers-text">Area Markers + Text</option>
+        {PlaymatOverlayStyleValues.map((style, index) => (
+          <option key={index} value={style}>{style}
+          </option>
+        ))}
       </select>
 
     </label>

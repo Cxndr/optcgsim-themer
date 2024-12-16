@@ -17,9 +17,9 @@ export default function Header() {
   }
 
   return (
-    <header className="navbar py-4 px-6 h-32 bg-zinc-200 bg-opacity-70 text-2xl shadow-md shadow-black">
+    <header className="flex flex-row justify-between items-center py-4 px-6 h-28 bg-zinc-200 bg-opacity-70 text-2xl shadow-md shadow-black">
       
-      <div className="navbar-start w-1/3">
+      <div className="">
         <Image
           src={opLogo}
           alt="Logo - One Piece Trading Card Game"
@@ -29,11 +29,11 @@ export default function Header() {
         />
       </div>
       
-      <div className="navbar-center w-1/5">
+      <div className="">
         <h1><Link href="/" className="hover:text-primary">Sim Themer</Link></h1>
       </div>
       
-      <div className="navbar-end self-end">
+      <div className="self-end">
         <ul className="menu menu-horizontal flex items-center gap-8 mr-8 text-2xl font-medium">
 
           <li>
@@ -51,6 +51,10 @@ export default function Header() {
           
           <li>
             <Link href="/guide">Install Guide</Link>
+          </li>
+
+          <li>
+            <Link href="/faq">FAQ</Link>
           </li>
 
         </ul>

@@ -123,22 +123,22 @@ export async function processSinglePlaymat(image: InstanceType<typeof Jimp>, set
   image = await applySizing(image, 1414, 1000);
 
   try {
-    if (settings.overlay === "area-markers") {
+    if (settings.overlay === "Area Markers") {
       image = image.composite(await Jimp.read("img/overlays/area-markers.png"), 0, 0)
     }
-    else if (settings.overlay === "area-markers-text") {
+    else if (settings.overlay === "Area Markers w/ Text") {
       image = image.composite(await Jimp.read("img/overlays/area-markers-text.png"), 0, 0)
     }
   } catch(err) { console.error("Error applying overlay: ", err); }
 
 
-  if (settings.edgeStyle === "rounded-small"){
+  if (settings.edgeStyle === "Rounded Small"){
     applyRoundedCorners(image, 50);
   }
-  else if (settings.edgeStyle === "rounded-med"){
+  else if (settings.edgeStyle === "Rounded Medium"){
     applyRoundedCorners(image, 100);
   }
-  else if (settings.edgeStyle === "rounded-large"){
+  else if (settings.edgeStyle === "Rounded Large"){
     applyRoundedCorners(image, 200);
   }
 
