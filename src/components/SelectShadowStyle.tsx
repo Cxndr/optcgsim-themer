@@ -1,23 +1,26 @@
 
-import { ImageSet } from "@/utils/imageSet"
+import { ImageSet } from "@/utils/imageSet";
+import { useState, useEffect } from "react";
 
 type SelectShadowStyleProps = {
   settings: ImageSet,
   settingType: "playmats" | "cardBacks" | "donCards" | "cards",
-  updatePlaymatPreview: () => void;
+  updatePreview: () => void;
 }
 
-export default function SelectShadowStyle({settings, settingType, updatePlaymatPreview}:SelectShadowStyleProps) {
+export default function SelectShadowStyle({settings, settingType, updatePreview}:SelectShadowStyleProps) {
 
-  function returnSelection(e: React.ChangeEvent<HTMLInputElement>) {
-    if (e.currentTarget.checked) {
-      settings[settingType].shadow = true;
-      updatePlaymatPreview();
-    }
-    else {
-      settings[settingType].shadow = false;
-      updatePlaymatPreview();
-    }
+  const [shadow, setShadow] = useState(settings[settingType].shadow);
+
+  useEffect(() => {
+    setShadow(settings[settingType].shadow);
+  }, [settingType, settings]);
+
+  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const selectedValue = e.currentTarget.checked;
+    setShadow(selectedValue);
+    settings[settingType].shadow = selectedValue;
+    updatePreview();
   }
 
   return (
@@ -27,7 +30,8 @@ export default function SelectShadowStyle({settings, settingType, updatePlaymatP
         type="checkbox" 
         name="shadow-style" 
         className="toggle toggle-accent toggle-lg"
-        onChange={returnSelection}
+        checked={shadow}
+        onChange={handleChange}
       />
     </label>
   )

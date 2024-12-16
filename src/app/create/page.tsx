@@ -1,17 +1,18 @@
 import path from "path";
 import fs from "fs";
 import CreateTheme from "@/components/CreateTheme";
+import { ThemeImage } from "@/utils/imageSet";
 
-export type ImageOption = {
-  name: string,
-  url: string,
-};
+// export type ImageOption = {
+//   name: string,
+//   url: string,
+// };
 
 export default async function CreatePage() {
 
   async function getArtImages() {
     "use server";
-    const images: ImageOption[] = [];
+    const images: ThemeImage[] = [];
     const imgRelPath = "/img/art";
     const imgFolder = path.resolve(process.cwd(), "public", "img", "art"); // Absolute path to img/art inside public
     const folders = fs.readdirSync(imgFolder);
@@ -23,12 +24,13 @@ export default async function CreatePage() {
         files.forEach((file, index) => {
           images.push({
             name: `subFolderPath-${index}`, //file.split(".")[0],
-            url: `${imgRelPath}/${folder}/${file}`,
+            src: `${imgRelPath}/${folder}/${file}`,
+            image: null,
           });
         });
       }
     }
-    return images as ImageOption[];
+    return images as ThemeImage[];
   }
 
   const artImages = await getArtImages();

@@ -1,22 +1,39 @@
 import { Jimp } from "jimp";
 
-export type EdgeStyle = "square" | "rounded-small" | "rounded-med" | "rounded-large";
+export type EdgeStyle = "Square" | "Rounded Small" | "Rounded Medium" | "Rounded Large";
 export function isEdgeStyle(value: string | null): value is EdgeStyle {
-  return value === "square" || value === "rounded-small" || value === "rounded-med" || value === "rounded-large";
+  return value === "Square" || value === "Rounded Small" || value === "Rounded Medium" || value === "Rounded Large";
 }
+export const EdgeStyleValues: EdgeStyle[] = [
+  "Square",
+  "Rounded Small",
+  "Rounded Medium",
+  "Rounded Large",
+];
 
-export type PlaymatOverlayStyle = "none" | "area-markers" | "area-markers-text";
+export type PlaymatOverlayStyle = "None" | "Area Markers" | "Area Markers w/ Text";
 export function isPlaymatOverlayStyle(value: string | null): value is PlaymatOverlayStyle {
-  return value === "none" || value === "area-markers" || value === "area-markers-text";
+  return value === "None" || value === "Area Markers" || value === "Area Markers w/ Text";
 }
+export const PlaymatOverlayStyleValues: PlaymatOverlayStyle[] = [
+  "None",
+  "Area Markers",
+  "Area Markers w/ Text",
+];
 
-export type CardOverlayStyle = "none" | "don" | "op-logo";
+export type CardOverlayStyle = "None" | "Don Symbol" | "OP Logo";
 export function isCardOverlayStyle(value: string | null): value is CardOverlayStyle {
-  return value === "none" || value === "don" || value === "op-logo";
+  return value === "None" || value === "Don Symbol" || value === "OP Logo";
 }
+export const CardOverlayStyleValues: CardOverlayStyle[] = [
+  "None",
+  "Don Symbol",
+  "OP Logo",
+];
 
 export type ThemeImage = {
   src: string;
+  name: string | null;
   image: typeof Jimp | null;
 }
 
@@ -92,58 +109,58 @@ export type ImageSet = {
 
 export const imageSet: ImageSet = {
   playmats : {
-    overlay: "area-markers-text",
-    edgeStyle: "rounded-med",
+    overlay: "Area Markers w/ Text",
+    edgeStyle: "Rounded Medium",
     shadow: true,
     images: {
-      Black: { src: "", image: null },
-      BlackYellow: { src: "", image: null },
-      Blue: { src: "", image: null },
-      BlueBlack: { src: "", image: null },
-      BluePurple: { src: "", image: null },
-      BlueYellow: { src: "", image: null },
-      Green: { src: "", image: null },
-      GreenBlack: { src: "", image: null },
-      GreenBlue: { src: "", image: null },
-      GreenPurple: { src: "", image: null },
-      GreenYellow: { src: "", image: null },
-      Purple: { src: "", image: null },
-      PurpleBlack: { src: "", image: null },
-      PurpleYellow: { src: "", image: null },
-      Red: { src: "", image: null },
-      RedBlack: { src: "", image: null },
-      RedBlue: { src: "", image: null },
-      RedGreen: { src: "", image: null },
-      RedPurple: { src: "", image: null },
-      RedYellow: { src: "", image: null },
-      Yellow: { src: "", image: null },
+      Black: { src: "", image: null, name: null },
+      BlackYellow: { src: "", image: null, name: null },
+      Blue: { src: "", image: null, name: null },
+      BlueBlack: { src: "", image: null, name: null },
+      BluePurple: { src: "", image: null, name: null },
+      BlueYellow: { src: "", image: null, name: null },
+      Green: { src: "", image: null, name: null },
+      GreenBlack: { src: "", image: null, name: null },
+      GreenBlue: { src: "", image: null, name: null },
+      GreenPurple: { src: "", image: null, name: null },
+      GreenYellow: { src: "", image: null, name: null },
+      Purple: { src: "", image: null, name: null },
+      PurpleBlack: { src: "", image: null, name: null },
+      PurpleYellow: { src: "", image: null, name: null },
+      Red: { src: "", image: null, name: null },
+      RedBlack: { src: "", image: null, name: null },
+      RedBlue: { src: "", image: null, name: null },
+      RedGreen: { src: "", image: null, name: null },
+      RedPurple: { src: "", image: null, name: null },
+      RedYellow: { src: "", image: null, name: null },
+      Yellow: { src: "", image: null, name: null },
     }
   },
   menus: {
     bgImages: {
-      background: { src: "", image: null },
-      deckeditbackground: { src: "", image: null },
+      background: { src: "", image: null, name: null },
+      deckeditbackground: { src: "", image: null, name: null },
     }
   },
   cardBacks: {
-    overlay: "none",
-    edgeStyle: "rounded-med",
+    overlay: "None",
+    edgeStyle: "Rounded Medium",
     shadow: true,
     images: {
-      CardBackRegular: { src: "", image: null },
-      CardBackDon: { src: "", image: null },
+      CardBackRegular: { src: "", image: null, name: null },
+      CardBackDon: { src: "", image: null, name: null },
     }
   },
   donCards: {
-    overlay: "don",
-    edgeStyle: "rounded-med",
+    overlay: "Don Symbol",
+    edgeStyle: "Rounded Medium",
     shadow: true,
     images: {
-      DonCard: { src: "", image: null },
+      DonCard: { src: "", image: null, name: null },
     }
   },
   cards: {
-    edgeStyle: "rounded-med",
+    edgeStyle: "Rounded Medium",
     shadow: true,
     images: {
     }
