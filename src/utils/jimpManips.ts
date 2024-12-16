@@ -142,7 +142,7 @@ export async function processSinglePlaymat(image: InstanceType<typeof Jimp>, set
   }
 
   if (settings.shadow === true) {
-    image = await applyShadow(image, 5, 0.5)
+    image = await applyShadow(image, 6, 0.7)
   }
   
   return image;

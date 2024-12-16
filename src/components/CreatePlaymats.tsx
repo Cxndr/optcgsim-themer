@@ -1,7 +1,7 @@
 "use client"
 
 import SelectLeaderColor from "./SelectLeaderColor";
-import SelectOverlay from "./SelectOverlay";
+import SelectOverlay from "./SelectOverlayPlaymat";
 import SelectEdgeStyle from "./SelectEdgeStyle";
 import SelectShadowStyle from "./SelectShadowStyle";
 import SearchBar from "./SearchBar";
@@ -44,8 +44,8 @@ export default function CreatePlaymats({artImages, imageSet, updatePreview} : cr
 
       <div className="flex gap-4 justify-center">
         <SelectOverlay settings={imageSet.playmats} updatePlaymatPreview={updatePlaymatPreview}/>
-        <SelectEdgeStyle settings={imageSet.playmats} updatePlaymatPreview={updatePlaymatPreview}/>
-        <SelectShadowStyle settings={imageSet.playmats} updatePlaymatPreview={updatePlaymatPreview}/>
+        <SelectEdgeStyle settings={imageSet} settingType="playmats" updatePlaymatPreview={updatePlaymatPreview}/>
+        <SelectShadowStyle settings={imageSet} settingType="playmats" updatePlaymatPreview={updatePlaymatPreview}/>
       </div>
 
       <div className="mt-4 flex justify-between items-center border-t-2 border-slate-50 border-opacity-50">
