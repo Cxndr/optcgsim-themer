@@ -1,21 +1,19 @@
 
-import { ImageSet } from "@/utils/imageSet"
+import { ImageSet, isPlaymatOverlayStyle } from "@/utils/imageSet"
 
-type SelectOverlayProps = {
-  settings: ImageSet["playmats"], // todo: make this modular to work with other than playmats.
+type SelectOverlayPlaymatProps = {
+  settings: ImageSet["playmats"],
   updatePlaymatPreview: () => void;
 }
 
-export default function SelectOverlay({settings, updatePlaymatPreview}:SelectOverlayProps) {
+export default function SelectOverlay({settings, updatePlaymatPreview}:SelectOverlayPlaymatProps) {
 
   function returnSelection(e: React.ChangeEvent<HTMLSelectElement>) {
-    if (e.currentTarget.value === "none" || e.currentTarget.value === "area-markers" || e.currentTarget.value === "area-markers-text") {
+    try {
+      if (!isPlaymatOverlayStyle(e.currentTarget.value)) throw new Error("Invalid overlay style selected");
       settings.overlay = e.currentTarget.value;
       updatePlaymatPreview();
-    }
-    else {
-      console.error("Invalid overlay style selected");
-    }
+    } catch(err) { console.error("Invalid overlay style selected: ", err); }
   }
 
   return (

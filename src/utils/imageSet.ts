@@ -1,8 +1,19 @@
 import { Jimp } from "jimp";
 
 export type EdgeStyle = "square" | "rounded-small" | "rounded-med" | "rounded-large";
+export function isEdgeStyle(value: string | null): value is EdgeStyle {
+  return value === "square" || value === "rounded-small" || value === "rounded-med" || value === "rounded-large";
+}
+
 export type PlaymatOverlayStyle = "none" | "area-markers" | "area-markers-text";
+export function isPlaymatOverlayStyle(value: string | null): value is PlaymatOverlayStyle {
+  return value === "none" || value === "area-markers" || value === "area-markers-text";
+}
+
 export type CardOverlayStyle = "none" | "don" | "op-logo";
+export function isCardOverlayStyle(value: string | null): value is CardOverlayStyle {
+  return value === "none" || value === "don" || value === "op-logo";
+}
 
 export type ThemeImage = {
   src: string;
@@ -10,6 +21,32 @@ export type ThemeImage = {
 }
 
 export type LeaderColor = "Black" | "BlackYellow" | "Blue" | "BlueBlack" | "BluePurple" | "BlueYellow" | "Green" | "GreenBlack" | "GreenBlue" | "GreenPurple" | "GreenYellow" | "Purple" | "PurpleBlack" | "PurpleYellow" | "Red" | "RedBlack" | "RedBlue" | "RedGreen" | "RedPurple" | "RedYellow" | "Yellow";
+export function isLeaderColor(value: string | null): value is LeaderColor {
+  return value === "Black" || value === "BlackYellow" || value === "Blue" || value === "BlueBlack" || value === "BluePurple" || value === "BlueYellow" || value === "Green" || value === "GreenBlack" || value === "GreenBlue" || value === "GreenPurple" || value === "GreenYellow" || value === "Purple" || value === "PurpleBlack" || value === "PurpleYellow" || value === "Red" || value === "RedBlack" || value === "RedBlue" || value === "RedGreen" || value === "RedPurple" || value === "RedYellow" || value === "Yellow";
+}
+export const LeaderColorValues: LeaderColor[] = [
+  "Black",
+  "BlackYellow",
+  "Blue",
+  "BlueBlack",
+  "BluePurple",
+  "BlueYellow",
+  "Green",
+  "GreenBlack",
+  "GreenBlue",
+  "GreenPurple",
+  "GreenYellow",
+  "Purple",
+  "PurpleBlack",
+  "PurpleYellow",
+  "Red",
+  "RedBlack",
+  "RedBlue",
+  "RedGreen",
+  "RedPurple",
+  "RedYellow",
+  "Yellow",
+];
 
 export type ImageSet = {
   playmats: {

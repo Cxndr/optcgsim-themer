@@ -2,19 +2,20 @@
 import { ImageSet } from "@/utils/imageSet"
 
 type SelectShadowStyleProps = {
-  settings: ImageSet["playmats"], // todo: make this modular to work with other than playmats.
+  settings: ImageSet,
+  settingType: "playmats" | "cardBacks" | "donCards" | "cards",
   updatePlaymatPreview: () => void;
 }
 
-export default function SelectShadowStyle({settings, updatePlaymatPreview}:SelectShadowStyleProps) {
+export default function SelectShadowStyle({settings, settingType, updatePlaymatPreview}:SelectShadowStyleProps) {
 
   function returnSelection(e: React.ChangeEvent<HTMLInputElement>) {
     if (e.currentTarget.checked) {
-      settings.shadow = true;
+      settings[settingType].shadow = true;
       updatePlaymatPreview();
     }
     else {
-      settings.shadow = false;
+      settings[settingType].shadow = false;
       updatePlaymatPreview();
     }
   }
