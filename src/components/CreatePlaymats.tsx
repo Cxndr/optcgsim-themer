@@ -30,6 +30,7 @@ export default function CreatePlaymats({artImages, imageSet, updatePreview} : cr
     const newSrc = image.src;
     setSelectedImage(image);
     imageSet.playmats.images[selectedLeaderColor].src = newSrc;
+    console.log(imageSet);
     updatePreview(selectedLeaderColor);
   }
 

@@ -1,7 +1,13 @@
 
+type CreateThemeStepsProps = {
+  downloadSet: () => void,
+}
 
-export default function CreateThemeSteps() {
+export default function CreateThemeSteps({downloadSet}: CreateThemeStepsProps) {
 
+  function handleClick() {
+    downloadSet();
+  }
 
   return (
     <>
@@ -12,7 +18,12 @@ export default function CreateThemeSteps() {
         <li className="step my-auto">Don Cards</li>
         <li className="step my-auto">Cards</li>
       </ul>
-      <button className="btn btn-success my-auto text-xl shadow-sm shadow-black">Download Set</button>
+      <button 
+        className="btn btn-success my-auto text-xl shadow-sm shadow-black"
+        onClick={handleClick}
+      >
+          Download Set
+        </button>
     </>
   )
 }

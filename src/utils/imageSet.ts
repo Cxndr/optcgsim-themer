@@ -176,18 +176,16 @@ export async function makeImageSetZip(imageSet: ImageSet) {
   const zipFiles: Zippable = {};
 
   for (const color of LeaderColorValues) {
-    if (imageSet.playmats.images[color].src === null) {
+    if (imageSet.playmats.images[color].src === "") {
       continue;
     }
     let image = await Jimp.read(imageSet.playmats.images[color].src);
     image = await processSinglePlaymat(image, imageSet.playmats);
-    const buffer = await image.getBufferAsync(Jimp.MIME_PNG);
-    zipFiles[`${color}.png`] = new Uint8Array(buffer);
+    const buffer = await image.getBuffer('image/png',{});
+    zipFiles[`Playmats/${color}.png`] = new Uint8Array(buffer);
   }
 
-  const zipData = zipSync(zipFiles, { level: 9 }); 
+  const zipData = zipSync(zipFiles, { level: 9 });
   return zipData;
-
-
 
 }
