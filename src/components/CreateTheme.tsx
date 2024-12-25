@@ -2,7 +2,7 @@
 
 import CreateThemeSteps from "./CreateThemeSteps";
 import CreatePlaymats from "./CreatePlaymats";
-import { imageSet, LeaderColor } from "@/utils/imageSet";
+import { imageSet, LeaderColor, makeImageSetZip } from "@/utils/imageSet";
 import {Jimp} from "jimp"; // Correct import for Jimp
 
 import Image from "next/image";
@@ -30,10 +30,23 @@ export default function CreateTheme({ artImages }: CreateThemeProps) {
     }
   }
 
+  async function downloadSet() {
+    const zipFile = await makeImageSetZip(imageSet);
+    const blob = new Blob([zipFile], { type: "application/zip" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "imageSet.zip";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
   return (
     <>
       <div className="w-full py-4 flex justify-around pr-12 items-center rounded-3xl text-zinc-100 bg-zinc-800 bg-opacity-70 shadow-2xl shadow-black">
-        <CreateThemeSteps />
+        <CreateThemeSteps downloadSet={downloadSet}/>
       </div>
 
       <div className="w-full h-0 flex-grow gap-8 flex justify-center items-center">
