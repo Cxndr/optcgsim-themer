@@ -1,4 +1,6 @@
 import { Jimp } from "jimp";
+import { zipSync, strToU8, Zippable } from "fflate";
+import { processSinglePlaymat } from "./jimpManips";
 
 export type EdgeStyle = "Square" | "Rounded Small" | "Rounded Medium" | "Rounded Large";
 export function isEdgeStyle(value: string | null): value is EdgeStyle {
@@ -168,3 +170,24 @@ export const imageSet: ImageSet = {
 }
 
 export const defaultImageSet = imageSet;
+
+export async function makeImageSetZip(imageSet: ImageSet) {
+
+  const zipFiles: Zippable = {};
+
+  for (const color of LeaderColorValues) {
+    if (imageSet.playmats.images[color].src === null) {
+      continue;
+    }
+    let image = await Jimp.read(imageSet.playmats.images[color].src);
+    image = await processSinglePlaymat(image, imageSet.playmats);
+    const buffer = await image.getBufferAsync(Jimp.MIME_PNG);
+    zipFiles[`${color}.png`] = new Uint8Array(buffer);
+  }
+
+  const zipData = zipSync(zipFiles, { level: 9 }); 
+  return zipData;
+
+
+
+}
