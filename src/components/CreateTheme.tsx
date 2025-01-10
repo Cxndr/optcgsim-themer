@@ -20,6 +20,10 @@ export default function CreateTheme({ artImages }: CreateThemeProps) {
 
   async function updatePreview(leaderColor: LeaderColor) {
     try {
+      if (imageSet.playmats.images[leaderColor].src === "" || imageSet.playmats.images[leaderColor].src === null) {
+        setPreviewImage("");
+        return;
+      }
       let image = await Jimp.read(imageSet.playmats.images[leaderColor].src);
       image = await processSinglePlaymat(image, imageSet.playmats);
       const base64 = await image.getBase64("image/png");
