@@ -1,5 +1,5 @@
 import { Jimp } from "jimp";
-import { zipSync, strToU8, Zippable } from "fflate";
+import { zipSync, Zippable } from "fflate";
 import { processSinglePlaymat } from "./jimpManips";
 
 export type EdgeStyle = "Square" | "Rounded Small" | "Rounded Medium" | "Rounded Large";
@@ -34,15 +34,16 @@ export const CardOverlayStyleValues: CardOverlayStyle[] = [
 ];
 
 export type ThemeImage = {
-  src: string;
+  src: string | null;
   name: string | null;
   image: typeof Jimp | null;
-}
+};
 
 export type LeaderColor = "Black" | "BlackYellow" | "Blue" | "BlueBlack" | "BluePurple" | "BlueYellow" | "Green" | "GreenBlack" | "GreenBlue" | "GreenPurple" | "GreenYellow" | "Purple" | "PurpleBlack" | "PurpleYellow" | "Red" | "RedBlack" | "RedBlue" | "RedGreen" | "RedPurple" | "RedYellow" | "Yellow";
 export function isLeaderColor(value: string | null): value is LeaderColor {
   return value === "Black" || value === "BlackYellow" || value === "Blue" || value === "BlueBlack" || value === "BluePurple" || value === "BlueYellow" || value === "Green" || value === "GreenBlack" || value === "GreenBlue" || value === "GreenPurple" || value === "GreenYellow" || value === "Purple" || value === "PurpleBlack" || value === "PurpleYellow" || value === "Red" || value === "RedBlack" || value === "RedBlue" || value === "RedGreen" || value === "RedPurple" || value === "RedYellow" || value === "Yellow";
 }
+
 export const LeaderColorValues: LeaderColor[] = [
   "Black",
   "BlackYellow",
@@ -176,7 +177,7 @@ export async function makeImageSetZip(imageSet: ImageSet) {
   const zipFiles: Zippable = {};
 
   for (const color of LeaderColorValues) {
-    if (imageSet.playmats.images[color].src === "") {
+    if (imageSet.playmats.images[color].src === "" || imageSet.playmats.images[color].src === null) {
       continue;
     }
     let image = await Jimp.read(imageSet.playmats.images[color].src);

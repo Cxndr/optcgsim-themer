@@ -16,18 +16,26 @@ type createPlaymatsProps = {
   updatePreview: (leaderColor: LeaderColor) => void,
 }
 
+const emptyImage: ThemeImage = { 
+  src: "",
+  name: null, 
+  image: null 
+};
+
 export default function CreatePlaymats({artImages, imageSet, updatePreview} : createPlaymatsProps) {
 
   const [selectedLeaderColor, setSelectedLeaderColor] = useState("Black" as LeaderColor);
   const [selectedImage, setSelectedImage] = useState<ThemeImage | null>(imageSet.playmats.images[selectedLeaderColor]);
 
+  artImages.push(emptyImage);
+
   function updatePlaymatPreview() {
     updatePreview(selectedLeaderColor);
   }
 
-
-  function handleImageClick(image:ThemeImage){
-    const newSrc = image.src;
+  function handleImageClick(image: ThemeImage | null) {
+    console.log(image);
+    const newSrc = image ? image.src : "";
     setSelectedImage(image);
     imageSet.playmats.images[selectedLeaderColor].src = newSrc;
     console.log(imageSet);
@@ -57,6 +65,15 @@ export default function CreatePlaymats({artImages, imageSet, updatePreview} : cr
 
       <div className="flex-grow overflow-auto">
         <div className="grid grid-cols-3 gap-4">
+          <a
+            onClick={() => handleImageClick(null)}
+            className="relative w-full overflow-hidden rounded-xl shadow-sm shadow-black"
+            style={{ aspectRatio: '1414 / 1000' }}
+          >
+            <div className="w-full h-full flex items-center justify-center text-zinc-50">
+              None
+            </div>
+          </a>
           {
             artImages.map((image, index) => (
               <a 
@@ -66,8 +83,8 @@ export default function CreatePlaymats({artImages, imageSet, updatePreview} : cr
                 style={{ aspectRatio: '1414 / 1000' }}
               >
                 <Image 
-                  src={image.src} 
-                  alt={image.name ? image.name : "no image set"} // todo: DO BETTER!
+                  src={image.src || ''}
+                  alt={image.name || "no image set"}
                   className="w-full h-full object-cover hover:scale-110 transform transition-transform ease-in-out duration-700"
                   width={200} height={200}
                 />
