@@ -7,7 +7,7 @@ import {Jimp} from "jimp"; // Correct import for Jimp
 
 import Image from "next/image";
 import { ImageOption } from "@/app/create/page";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { processSinglePlaymat } from "@/utils/jimpManips";
 
 type CreateThemeProps = {
@@ -16,6 +16,7 @@ type CreateThemeProps = {
 
 export default function CreateTheme({ artImages }: CreateThemeProps) {
 
+  const [currentStep, setCurrentStep] = useState(0);
   const [previewImage, setPreviewImage] = useState("");
 
   async function updatePreview(leaderColor: LeaderColor) {
@@ -50,7 +51,7 @@ export default function CreateTheme({ artImages }: CreateThemeProps) {
   return (
     <>
       <div className="w-full py-4 flex justify-around pr-12 items-center rounded-3xl text-zinc-100 bg-zinc-800 bg-opacity-70 shadow-2xl shadow-black">
-        <CreateThemeSteps downloadSet={downloadSet}/>
+        <CreateThemeSteps downloadSet={downloadSet} setCurrentStep={setCurrentStep}/>
       </div>
 
       <div className="w-full h-0 flex-grow gap-8 flex justify-center items-center">
@@ -69,7 +70,25 @@ export default function CreateTheme({ artImages }: CreateThemeProps) {
         </div>
 
         <div className="w-1/2 h-full p-8 flex flex-col rounded-3xl bg-zinc-800 bg-opacity-70 shadow-2xl shadow-black">
-          <CreatePlaymats artImages={artImages} imageSet={imageSet} updatePreview={updatePreview} />
+          { currentStep === 5 
+            ?
+            <CreatePlaymats artImages={artImages} imageSet={imageSet} updatePreview={updatePreview} />
+            :
+            currentStep === 4
+            ?
+            <CreatePlaymats artImages={artImages} imageSet={imageSet} updatePreview={updatePreview} />
+            :
+            currentStep === 3 
+            ?
+            <CreatePlaymats artImages={artImages} imageSet={imageSet} updatePreview={updatePreview} />
+            :
+            currentStep === 2 
+            ?
+            <CreatePlaymats artImages={artImages} imageSet={imageSet} updatePreview={updatePreview} />
+            :
+            <CreatePlaymats artImages={artImages} imageSet={imageSet} updatePreview={updatePreview} />
+          }
+          
         </div>
       </div>
     </>
