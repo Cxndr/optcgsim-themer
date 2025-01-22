@@ -16,31 +16,31 @@ export default function CreateThemeSteps({downloadSet, setCurrentStep}: CreateTh
       <ul className="steps w-full">
         <li 
           className="step step-accent my-auto"
-          onClick={() => setCurrentStep(0)}
+          onClick={() => setCurrentStep(1)}
         >
             Playmats
         </li>
         <li  
           className="step my-auto"
-          onClick={() => setCurrentStep(1)}
+          onClick={() => setCurrentStep(2)}
         >
           Menus
         </li>
         <li 
           className="step my-auto" 
-          onClick={() => setCurrentStep(1)}
+          onClick={() => setCurrentStep(3)}
         >
           Card Backs
         </li>
         <li 
           className="step my-auto"
-          onClick={() => setCurrentStep(1)}
+          onClick={() => setCurrentStep(4)}
         >
           Don Cards
         </li>
         <li 
           className="step my-auto" 
-          onClick={() => setCurrentStep(1)}
+          onClick={() => setCurrentStep(5)}
         >
           Cards
         </li>

@@ -1,14 +1,14 @@
 
-import { ImageSet, isPlaymatOverlayStyle } from "@/utils/imageSet"
+import { ImageSet, isDonOverlayStyle } from "@/utils/imageSet"
 import { useState, useEffect } from "react";
-import { PlaymatOverlayStyleValues } from "@/utils/imageSet";
+import { DonOverlayStyleValues } from "@/utils/imageSet";
 
-type SelectOverlayPlaymatProps = {
-  settings: ImageSet["playmats"],
+type SelectOverlayDonProps = {
+  settings: ImageSet["donCards"],
   updatePreview: () => void;
 }
 
-export default function SelectOverlayPlaymat({settings, updatePreview}:SelectOverlayPlaymatProps) {
+export default function SelectOverlayDon({settings, updatePreview}:SelectOverlayDonProps) {
 
   const [overlay, setOverlay] = useState(settings.overlay);
 
@@ -19,7 +19,7 @@ export default function SelectOverlayPlaymat({settings, updatePreview}:SelectOve
   function handleChange(e: React.ChangeEvent<HTMLSelectElement>) {
     try {
       const selectedValue = e.currentTarget.value;
-      if (!isPlaymatOverlayStyle(selectedValue)) throw new Error("Invalid overlay style selected");
+      if (!isDonOverlayStyle(selectedValue)) throw new Error("Invalid overlay style selected");
       setOverlay(selectedValue);
       settings.overlay = selectedValue;
       updatePreview();
@@ -39,7 +39,7 @@ export default function SelectOverlayPlaymat({settings, updatePreview}:SelectOve
         value={overlay}
         onChange={handleChange}
       >
-        {PlaymatOverlayStyleValues.map((style, index) => (
+        {DonOverlayStyleValues.map((style, index) => (
           <option key={index} value={style}>{style}
           </option>
         ))}
