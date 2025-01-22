@@ -272,7 +272,6 @@ export async function processCardBacks(cardBackType: CardBackType, image: Instan
 
 export async function processDonCards(image: InstanceType<typeof Jimp>, settings: ImageSet["donCards"]){
 
-
   image = await applySizing(image, 869, 1214);
 
   try {
@@ -311,6 +310,15 @@ export async function processDonCards(image: InstanceType<typeof Jimp>, settings
   }
 
   image = await applySizing(image, 180, 252);
+
+  return image;
+}
+
+
+
+export async function processCards(image: InstanceType<typeof Jimp>, settings: ImageSet["cards"]){
+
+  image = await applySizing(image, 480, 671);
 
   return image;
 }

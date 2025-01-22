@@ -2,44 +2,48 @@ import Link from "next/link";
 
 type CreateThemeStepsProps = {
   downloadSet: () => void,
+  currentStep: number,
   setCurrentStep: (value:number) => void,
 }
 
-export default function CreateThemeSteps({downloadSet, setCurrentStep}: CreateThemeStepsProps) {
+export default function CreateThemeSteps({downloadSet, currentStep, setCurrentStep}: CreateThemeStepsProps) {
 
   function handleClick() {
     downloadSet();
   }
 
+  const classNameOn = "step step-accent my-auto cursor-pointer";
+  const classNameOff = "step my-auto cursor-pointer";
+
   return (
     <>
       <ul className="steps w-full">
         <li 
-          className="step step-accent my-auto"
+          className={currentStep >= 1 ? classNameOn : classNameOff}
           onClick={() => setCurrentStep(1)}
         >
-            Playmats
+          Playmats
         </li>
         <li  
-          className="step my-auto"
+          className={currentStep >= 2 ? classNameOn : classNameOff}
           onClick={() => setCurrentStep(2)}
         >
           Menus
         </li>
         <li 
-          className="step my-auto" 
+          className={currentStep >= 3 ? classNameOn : classNameOff}
           onClick={() => setCurrentStep(3)}
         >
           Card Backs
         </li>
         <li 
-          className="step my-auto"
+          className={currentStep >= 4 ? classNameOn : classNameOff}
           onClick={() => setCurrentStep(4)}
         >
           Don Cards
         </li>
         <li 
-          className="step my-auto" 
+          className={currentStep >= 5 ? classNameOn : classNameOff}
           onClick={() => setCurrentStep(5)}
         >
           Cards
