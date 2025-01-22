@@ -7,11 +7,13 @@ import SelectShadowStyle from "./SelectShadowStyle";
 import SearchBar from "./SearchBar";
 import Image from "next/image";
 import SelectImage from "./SelectImage";
-
-import { LeaderColor, ImageSet, ThemeImage} from "@/utils/imageSet";
+import SelectOverlayCards from "./SelectOverlayCards";
+import SelectCardBackType from "./SelectCardBackType";
+import { CardBackType, ImageSet, ThemeImage} from "@/utils/imageSet";
 import { useState } from "react";
 import { Jimp, JimpInstance } from "jimp";
-import { processSinglePlaymat } from "@/utils/jimpManips";
+import { processCardBacks } from "@/utils/jimpManips";
+
 
 type createPlaymatsProps = {
   artImages: ThemeImage[],
@@ -27,19 +29,19 @@ const emptyImage: ThemeImage = {
 
 export default function CreatePlaymats({artImages, imageSet, setPreviewImage} : createPlaymatsProps) {
 
-  const [selectedLeaderColor, setSelectedLeaderColor] = useState("Black" as LeaderColor);
-  const [selectedImage, setSelectedImage] = useState<ThemeImage | null>(imageSet.playmats.images[selectedLeaderColor]);
+  const [selectedCardBackType, setSelectedCardBackType] = useState("DeckCards" as CardBackType);
+  const [selectedImage, setSelectedImage] = useState<ThemeImage | null>(imageSet.cardBacks.images[selectedCardBackType]);
 
   artImages.push(emptyImage);
 
-  async function updatePlaymatPreview() {
+  async function updateCardBackPreview() {
     try {
-      if (imageSet.playmats.images[selectedLeaderColor].src === "" || imageSet.playmats.images[selectedLeaderColor].src === null) {
+      if (imageSet.cardBacks.images[selectedCardBackType].src === "" || imageSet.cardBacks.images[selectedCardBackType].src === null) {
         setPreviewImage("");
         return;
       }
-      let image = await Jimp.read(imageSet.playmats.images[selectedLeaderColor].src);
-      image = await processSinglePlaymat(image, imageSet.playmats);
+      let image = await Jimp.read(imageSet.cardBacks.images[selectedCardBackType].src);
+      image = await processCardBacks(selectedCardBackType, image, imageSet.cardBacks);
       const base64 = await image.getBase64("image/png");
       setPreviewImage(base64);
     }
@@ -52,15 +54,15 @@ export default function CreatePlaymats({artImages, imageSet, setPreviewImage} : 
     console.log(image);
     const newSrc = image ? image.src : "";
     setSelectedImage(image);
-    imageSet.playmats.images[selectedLeaderColor].src = newSrc;
+    imageSet.cardBacks.images[selectedCardBackType].src = newSrc;
     console.log(imageSet);
-    updatePlaymatPreview();
+    updateCardBackPreview();
   }
 
-  function handleSetLeaderColor(value: string) {
-    const leaderColor = value.replaceAll(" ", "") as LeaderColor;
-    setSelectedLeaderColor(leaderColor);
-    updatePlaymatPreview();
+  function handleSetCardBackType(value: string) {
+    const cardBackType = value.replaceAll(" ", "") as CardBackType;
+    setSelectedCardBackType(cardBackType);
+    updateCardBackPreview();
   }
   
 
@@ -68,13 +70,13 @@ export default function CreatePlaymats({artImages, imageSet, setPreviewImage} : 
     <div className="h-full flex flex-col text-xl text-zinc-50">
 
       <div className="flex gap-4 justify-center border-b-2 border-slate-50 border-opacity-50 pb-4">
-        <SelectOverlayPlaymat settings={imageSet.playmats} updatePreview={updatePlaymatPreview}/>
-        <SelectEdgeStyle settings={imageSet} settingType="playmats" updatePreview={updatePlaymatPreview}/>
-        <SelectShadowStyle settings={imageSet} settingType="playmats" updatePreview={updatePlaymatPreview}/>
+        <SelectOverlayCards settings={imageSet.cardBacks} updatePreview={updateCardBackPreview}/>
+        <SelectEdgeStyle settings={imageSet} settingType="cardBacks" updatePreview={updateCardBackPreview}/>
+        <SelectShadowStyle settings={imageSet} settingType="cardBacks" updatePreview={updateCardBackPreview}/>
       </div>
 
       <div className="flex justify-between items-center">
-        <SelectLeaderColor setLeaderColor={handleSetLeaderColor}/>
+        <SelectCardBackType setCardBackType={handleSetCardBackType}/>
         <SearchBar />
       </div>
 

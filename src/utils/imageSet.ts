@@ -23,14 +23,30 @@ export const PlaymatOverlayStyleValues: PlaymatOverlayStyle[] = [
   "Area Markers w/ Text",
 ];
 
-export type CardOverlayStyle = "None" | "Don Symbol" | "OP Logo";
+export type CardOverlayStyle = "None" | "OP Logo" | "OP Text" | "Don Symbol" | "Border Only";
 export function isCardOverlayStyle(value: string | null): value is CardOverlayStyle {
-  return value === "None" || value === "Don Symbol" || value === "OP Logo";
+  return value === "None" || value === "OP Logo" || value === "OP Text" || value === "Don Symbol" || value === "Border Only";
 }
 export const CardOverlayStyleValues: CardOverlayStyle[] = [
   "None",
-  "Don Symbol",
   "OP Logo",
+  "OP Text",
+  "Don Symbol",
+  "Border Only",
+];
+
+export type DonOverlayStyle = "None" | "Don Symbol" | "Border Only" | "Don Symbol w/ White" | "Border Only w/ White" | "Focus Lines" | "Focus Lines w/ White";
+export function isDonOverlayStyle(value: string | null): value is DonOverlayStyle {
+  return value === "None" || value === "Don Symbol" || value === "Border Only" || value === "Don Symbol w/ White" || value === "Border Only w/ White" || value === "Focus Lines" || value === "Focus Lines w/ White";
+}
+export const DonOverlayStyleValues: DonOverlayStyle[] = [
+  "None",
+  "Don Symbol",
+  "Don Symbol w/ White",
+  "Focus Lines",
+  "Focus Lines w/ White",
+  "Border Only",
+  "Border Only w/ White",
 ];
 
 export type ThemeImage = {
@@ -40,6 +56,7 @@ export type ThemeImage = {
 };
 
 export type LeaderColor = "Black" | "BlackYellow" | "Blue" | "BlueBlack" | "BluePurple" | "BlueYellow" | "Green" | "GreenBlack" | "GreenBlue" | "GreenPurple" | "GreenYellow" | "Purple" | "PurpleBlack" | "PurpleYellow" | "Red" | "RedBlack" | "RedBlue" | "RedGreen" | "RedPurple" | "RedYellow" | "Yellow";
+
 export function isLeaderColor(value: string | null): value is LeaderColor {
   return value === "Black" || value === "BlackYellow" || value === "Blue" || value === "BlueBlack" || value === "BluePurple" || value === "BlueYellow" || value === "Green" || value === "GreenBlack" || value === "GreenBlue" || value === "GreenPurple" || value === "GreenYellow" || value === "Purple" || value === "PurpleBlack" || value === "PurpleYellow" || value === "Red" || value === "RedBlack" || value === "RedBlue" || value === "RedGreen" || value === "RedPurple" || value === "RedYellow" || value === "Yellow";
 }
@@ -68,6 +85,29 @@ export const LeaderColorValues: LeaderColor[] = [
   "Yellow",
 ];
 
+export type MenuType = "Home" | "DeckEditor";
+
+export function isMenuType(value: string | null): value is MenuType {
+  return value === "Home" || value === "DeckEditor";
+}
+
+export const MenuTypeValues: MenuType[] = [
+  "Home",
+  "DeckEditor",
+];
+
+export type CardBackType = "DeckCards" | "DonCards";
+
+export function isCardBackType(value: string | null): value is CardBackType {
+  return value === "DeckCards" || value === "DonCards";
+}
+
+export const CardBackTypeValues: CardBackType[] = [
+  "DeckCards",
+  "DonCards",
+];
+
+
 export type ImageSet = {
   playmats: {
     overlay: PlaymatOverlayStyle,
@@ -79,8 +119,8 @@ export type ImageSet = {
   };
   menus: {
     bgImages: {
-      background: ThemeImage,
-      deckeditbackground: ThemeImage,
+      Home: ThemeImage,
+      DeckEditor: ThemeImage,
     };
   };
   cardBacks: {
@@ -88,12 +128,12 @@ export type ImageSet = {
     edgeStyle: EdgeStyle,
     shadow: boolean,
     images: {
-      CardBackRegular: ThemeImage,
-      CardBackDon: ThemeImage,
+      DeckCards: ThemeImage,
+      DonCards: ThemeImage,
     };
   };
   donCards: {
-    overlay: CardOverlayStyle,
+    overlay: DonOverlayStyle,
     edgeStyle: EdgeStyle,
     shadow: boolean,
     images: {
@@ -141,8 +181,8 @@ export const imageSet: ImageSet = {
   },
   menus: {
     bgImages: {
-      background: { src: "", image: null, name: null },
-      deckeditbackground: { src: "", image: null, name: null },
+      Home: { src: "", image: null, name: null },
+      DeckEditor: { src: "", image: null, name: null },
     }
   },
   cardBacks: {
@@ -150,8 +190,8 @@ export const imageSet: ImageSet = {
     edgeStyle: "Rounded Medium",
     shadow: true,
     images: {
-      CardBackRegular: { src: "", image: null, name: null },
-      CardBackDon: { src: "", image: null, name: null },
+      DeckCards: { src: "", image: null, name: null },
+      DonCards: { src: "", image: null, name: null },
     }
   },
   donCards: {

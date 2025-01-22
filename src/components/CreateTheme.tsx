@@ -2,6 +2,10 @@
 
 import CreateThemeSteps from "./CreateThemeSteps";
 import CreatePlaymats from "./CreatePlaymats";
+import CreateMenus from "./CreateMenus";
+import CreateCardBacks from "./CreateCardBacks";
+import CreateDonCards from "./CreateDonCards";
+
 import { imageSet, LeaderColor, makeImageSetZip } from "@/utils/imageSet";
 import {Jimp} from "jimp"; // Correct import for Jimp
 
@@ -72,21 +76,21 @@ export default function CreateTheme({ artImages }: CreateThemeProps) {
         <div className="w-1/2 h-full p-8 flex flex-col rounded-3xl bg-zinc-800 bg-opacity-70 shadow-2xl shadow-black">
           { currentStep === 5 
             ?
-            <CreatePlaymats artImages={artImages} imageSet={imageSet} updatePreview={updatePreview} />
+            <CreatePlaymats artImages={artImages} imageSet={imageSet} setPreviewImage={setPreviewImage} />
             :
             currentStep === 4
             ?
-            <CreatePlaymats artImages={artImages} imageSet={imageSet} updatePreview={updatePreview} />
+            <CreateDonCards artImages={artImages} imageSet={imageSet} setPreviewImage={setPreviewImage} />
             :
             currentStep === 3 
             ?
-            <CreatePlaymats artImages={artImages} imageSet={imageSet} updatePreview={updatePreview} />
+            <CreateCardBacks artImages={artImages} imageSet={imageSet} setPreviewImage={setPreviewImage} />
             :
             currentStep === 2 
             ?
-            <CreatePlaymats artImages={artImages} imageSet={imageSet} updatePreview={updatePreview} />
+            <CreateMenus artImages={artImages} imageSet={imageSet} setPreviewImage={setPreviewImage} />
             :
-            <CreatePlaymats artImages={artImages} imageSet={imageSet} updatePreview={updatePreview} />
+            <CreatePlaymats artImages={artImages} imageSet={imageSet} setPreviewImage={setPreviewImage} />
           }
           
         </div>

@@ -1,6 +1,8 @@
 import {Jimp, JimpInstance, rgbaToInt} from "jimp";
 import { ImageSet } from "./imageSet";
-
+import { MenuType } from "./imageSet";
+import { CardBackType } from "./imageSet";
+import { BlendMode } from "@jimp/core";
 export async function applyRoundedCorners(image: InstanceType<typeof Jimp>, radius: number){
   // Create a mask with the same size as the image
   const mask = new Jimp({
@@ -117,6 +119,57 @@ export async function applyShadow(
 
 }
 
+async function applySoftLightBlend(
+  baseImage: InstanceType<typeof Jimp>, 
+  overlayImage: InstanceType<typeof Jimp>,
+  blendStrength: number = 0.5
+) {
+
+  const baseWidth = baseImage.bitmap.width;
+  const baseHeight = baseImage.bitmap.height;
+
+  overlayImage.resize({w: baseWidth, h: baseHeight});
+
+  blendStrength = Math.min(1, Math.max(0, blendStrength));
+
+  baseImage.scan(0, 0, baseWidth, baseHeight, (x, y, idx) => {
+    const baseR = baseImage.bitmap.data[idx];
+    const baseG = baseImage.bitmap.data[idx + 1];
+    const baseB = baseImage.bitmap.data[idx + 2];
+
+    const overlayR = overlayImage.bitmap.data[idx];
+    const overlayG = overlayImage.bitmap.data[idx + 1];
+    const overlayB = overlayImage.bitmap.data[idx + 2];
+
+    // Apply Soft Light formula to each channel
+    const softLightR =
+      overlayR <= 128
+        ? (baseR * overlayR) / 128
+        : 255 - ((255 - baseR) * (255 - overlayR)) / 128;
+    const softLightG =
+      overlayG <= 128
+        ? (baseG * overlayG) / 128
+        : 255 - ((255 - baseG) * (255 - overlayG)) / 128;
+    const softLightB =
+      overlayB <= 128
+        ? (baseB * overlayB) / 128
+        : 255 - ((255 - baseB) * (255 - overlayB)) / 128;
+
+    // Soften the effect using blendStrength (linear interpolation)
+    const resultR = baseR + blendStrength * (softLightR - baseR);
+    const resultG = baseG + blendStrength * (softLightG - baseG);
+    const resultB = baseB + blendStrength * (softLightB - baseB);
+
+    // Write the softened result back to the base image
+    baseImage.bitmap.data[idx] = Math.min(255, Math.max(0, resultR));
+    baseImage.bitmap.data[idx + 1] = Math.min(255, Math.max(0, resultG));
+    baseImage.bitmap.data[idx + 2] = Math.min(255, Math.max(0, resultB));
+  });
+
+  return baseImage as JimpInstance;
+}
+
+
 
 export async function processSinglePlaymat(image: InstanceType<typeof Jimp>, settings: ImageSet["playmats"]){
 
@@ -146,5 +199,118 @@ export async function processSinglePlaymat(image: InstanceType<typeof Jimp>, set
     image = await applyShadow(image, 6, 0.7)
   }
   
+  return image;
+}
+
+
+export async function processMenus(menuType: MenuType, image: InstanceType<typeof Jimp>, settings: ImageSet["menus"]){
+
+  image = await applySizing(image, 1920, 1080);
+
+  if (menuType === "DeckEditor") {
+    image = image.composite(await Jimp.read("img/overlays/menu-deckedit-template.png"), 0, 0)
+  }
+  else {
+    image = image.composite(await Jimp.read("img/overlays/menu-home-template.png"), 0, 0)
+  }
+  
+  return image;
+}
+
+
+export async function processCardBacks(cardBackType: CardBackType, image: InstanceType<typeof Jimp>, settings: ImageSet["cardBacks"]){
+
+  const blackBack = new Jimp({
+    width: image.width, 
+    height: image.height, 
+    color: rgbaToInt(0,0,0,0)
+  });
+
+  image = blackBack.composite(image, 0, 0);
+
+  image = await applySizing(image, 869, 1214);
+
+  try {
+    if (settings.overlay === "OP Text") {
+      image = image.composite(await Jimp.read("img/overlays/card-back-textlogo-white.png"), 0, 0)
+      image = image.composite(await Jimp.read("img/overlays/card-oplogo-bordersoft.png"), 0, 0)
+    }
+    else if (settings.overlay === "OP Logo") {
+      const overlay = await Jimp.read("img/overlays/card-back-oplogo.png") as InstanceType<typeof Jimp>;
+      image = (await applySoftLightBlend(image, overlay,0.35));
+      image = image.composite(await Jimp.read("img/overlays/card-oplogo-border.png"), 0, 0)
+      image.contrast(0.075);
+    }
+    else if (settings.overlay === "Don Symbol") {
+      image = image.composite(await Jimp.read("img/overlays/card-back-don-faded.png"), 0, 0)
+    }
+    else if (settings.overlay === "Border Only") {
+      image = image.composite(await Jimp.read("img/overlays/card-borderonly.png"), 0, 0)
+    }
+  } catch(err) { console.error("Error applying overlay: ", err); }
+
+  if (settings.edgeStyle === "Rounded Small"){
+    applyRoundedCorners(image, 25);
+  }
+  else if (settings.edgeStyle === "Rounded Medium"){
+    applyRoundedCorners(image, 50);
+  }
+  else if (settings.edgeStyle === "Rounded Large"){
+    applyRoundedCorners(image, 100);
+  }
+
+  if (settings.shadow === true) {
+    image = await applyShadow(image, 6, 0.7)
+  }
+
+  if (cardBackType === "DonCards") {
+    image = await applySizing(image, 180, 252);
+  }
+
+  return image;
+}
+
+export async function processDonCards(image: InstanceType<typeof Jimp>, settings: ImageSet["donCards"]){
+
+
+  image = await applySizing(image, 869, 1214);
+
+  try {
+    if (settings.overlay === "Don Symbol") {
+      image = image.composite(await Jimp.read("img/overlays/card-don-full.png"), 0, 0)
+    }
+    else if (settings.overlay === "Don Symbol w/ White") {
+      image = image.composite(await Jimp.read("img/overlays/card-don-full-text.png"), 0, 0)
+    }
+    else if (settings.overlay === "Focus Lines") {
+      image = image.composite(await Jimp.read("img/overlays/card-don-half.png"), 0, 0)
+    }
+    else if (settings.overlay === "Focus Lines w/ White") {
+      image = image.composite(await Jimp.read("img/overlays/card-don-half-text.png"), 0, 0)
+    }
+    else if (settings.overlay === "Border Only") {
+      image = image.composite(await Jimp.read("img/overlays/card-don-borderonly.png"), 0, 0)
+    }
+    else if (settings.overlay === "Border Only w/ White") {
+      image = image.composite(await Jimp.read("img/overlays/card-don-borderonly-text.png"), 0, 0)
+    }
+  } catch(err) { console.error("Error applying overlay: ", err); }
+
+  if (settings.edgeStyle === "Rounded Small"){
+    applyRoundedCorners(image, 25);
+  }
+  else if (settings.edgeStyle === "Rounded Medium"){
+    applyRoundedCorners(image, 50);
+  }
+  else if (settings.edgeStyle === "Rounded Large"){
+    applyRoundedCorners(image, 100);
+  }
+
+  if (settings.shadow === true) {
+    image = await applyShadow(image, 6, 0.7)
+  }
+
+  image = await applySizing(image, 180, 252);
+
   return image;
 }
