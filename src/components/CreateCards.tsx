@@ -12,7 +12,7 @@ import SelectCardBackType from "./SelectCardBackType";
 import { CardBackType, ImageSet, ThemeImage} from "@/utils/imageSet";
 import { useState } from "react";
 import { Jimp, JimpInstance } from "jimp";
-import { processCards } from "@/utils/jimpManips";
+import { processCard } from "@/utils/jimpManips";
 
 
 type createCardsProps = {
@@ -33,29 +33,50 @@ export default function CreateCards({imageSet, setPreviewImage} : createCardsPro
   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
 
   async function updateCardPreview() {
-    try {
-      if (imageSet.cardBacks.images[selectedCardBackType].src === "" || imageSet.cardBacks.images[selectedCardBackType].src === null) {
-        setPreviewImage("");
-        return;
+
+    console.log(imageSet.cards);
+    if (selectedFiles) {
+      try {
+        if (selectedFiles[0] === null || selectedFiles[0] === undefined) {
+          setPreviewImage("");
+          console.log("NO IMAGE");
+          return;
+        }
+        console.log("OPIQWUJEOIQWU");
+        if (!selectedFiles) {
+          console.log("NO SEL FILES");
+          return;
+        }
+        console.log(selectedFiles);
+        const arrayBuffer = await selectedFiles[0].arrayBuffer();
+        console.log("ARRAY BUFFER");
+        console.log(arrayBuffer);
+        let image = await Jimp.read(arrayBuffer);
+        image = await processCard(image, imageSet.cards);
+        const base64 = await image.getBase64("image/png");
+        setPreviewImage(base64);
       }
-      let image = await Jimp.read(imageSet.cards.images[1].src);
-      image = await processCards(image, imageSet.cards);
-      const base64 = await image.getBase64("image/png");
-      setPreviewImage(base64);
+      catch(err) {
+        console.error(err);
+      }
     }
-    catch(err) {
-      console.error(err);
-    }
+  }
+
+  function clearCardImages() {
+    setSelectedFiles(null);
+    imageSet.cards.images = {};
   }
 
   function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
     const files = event.target.files;
     if (files) { 
+      clearCardImages();
       setSelectedFiles(files);
-
       for (const file of Array.from(files)) {
+        if (file.name.includes("Don")) continue; // Don cards are handled seperately
         const newSrc = URL.createObjectURL(file);
-        imageSet.cards.images[file.name] = { src: newSrc, name: file.name, image: null };
+        const fileName = file.name.split(".png")[0]
+        imageSet.cards.images[fileName] = { src: newSrc, name: fileName, image: null };
       }
     }
 
@@ -82,7 +103,7 @@ export default function CreateCards({imageSet, setPreviewImage} : createCardsPro
             <p className="text-center w-auto text-sm text-zinc-700 bg-zinc-200 bg-opacity-70 rounded-2xl py-2 px-4 shadow-sm shadow-black w-full">
               <span className="text-error">[YOUR OPTCGSIM INSTALL]</span>/Builds<span className="text-error">[OS]</span>/OPTCGSim_Data/StreamingAssets/Cards/
             </p>
-            <p className="label-text text-lg text-zinc-200 text-center w-full">Choose files below, navigate to this folder, and then click Upload.</p>
+            <p className="label-text text-lg text-zinc-200 text-center w-full"><b>Choose Files</b> below, navigate to this folder, and then click Upload.</p>
           </div>
 
           <input 
@@ -93,7 +114,7 @@ export default function CreateCards({imageSet, setPreviewImage} : createCardsPro
             directory
             multiple 
             onChange={handleFileChange}
-            className="file-input file-input-bordered file-input-secondary w-full max-w-xs text-zinc-400"
+            className="file-input file-input-bordered file-input-secondary w-full max-w-xs text-zinc-400 shadow-sm shadow-zinc-900"
           />
 
         </label>

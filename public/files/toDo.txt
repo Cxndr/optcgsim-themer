@@ -1,0 +1,17 @@
+
+*** TODO ***
+ - Clean up console errors.
+ - Make preview window fit image.
+ - Add "preview" text to preview window.
+ - Make images selection thumbails use correct proportions for use case.
+ - Homepage has lost the carousel? Currently just one image that cant be scrolled.
+    - look at old commits if lost.
+ - Add more options for editing:
+    - text color for don cards.
+    - overlay opacity.
+    - range for border radius???
+  - Make jimp manipulations use web workers to speed up app.
+
+
+*** STRETCH ***
+  - Should steps be individual? and indicate which ones have been added to (based on imageSet)?

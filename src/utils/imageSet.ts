@@ -1,6 +1,6 @@
 import { Jimp } from "jimp";
 import { zipSync, Zippable } from "fflate";
-import { processSinglePlaymat } from "./jimpManips";
+import { processPlaymat, processMenu, processCardBack, processDonCard, processCard } from "./jimpManips";
 
 export type EdgeStyle = "Square" | "Rounded Small" | "Rounded Medium" | "Rounded Large";
 export function isEdgeStyle(value: string | null): value is EdgeStyle {
@@ -216,14 +216,95 @@ export async function makeImageSetZip(imageSet: ImageSet) {
 
   const zipFiles: Zippable = {};
 
-  for (const color of LeaderColorValues) {
-    if (imageSet.playmats.images[color].src === "" || imageSet.playmats.images[color].src === null) {
+  // Playmats
+  try {
+    for (const color of LeaderColorValues) {
+      if (imageSet.playmats.images[color].src === "" || imageSet.playmats.images[color].src === null) {
+        continue;
+      }
+      let image = await Jimp.read(imageSet.playmats.images[color].src);
+      image = await processPlaymat(image, imageSet.playmats);
+      const buffer = await image.getBuffer('image/png',{});
+      zipFiles[`Playmats/${color}.png`] = new Uint8Array(buffer);
+    }
+  }
+  catch(err) {
+    console.error("Error processing playmats: ", err);
+  }
+
+
+  // Menus
+  try {
+    for (const menu of MenuTypeValues) {
+      if (imageSet.menus.bgImages[menu].src === "" || imageSet.menus.bgImages[menu].src === null) {
+        continue;
+      }
+      let fileName = "";
+      if (menu === "Home") {
+        fileName = "background";
+      }
+      else if (menu === "DeckEditor") {
+        fileName = "deckeditbackground";
+      }
+      let image = await Jimp.read(imageSet.menus.bgImages[menu].src);
+      image = await processMenu(menu, image, imageSet.menus);
+      const buffer = await image.getBuffer('image/jpeg',{});
+      zipFiles[`${fileName}.jpg`] = new Uint8Array(buffer);
+    }
+  }
+  catch(err) {
+    console.error("Error processing menus: ", err);
+  }
+
+
+  // Card backs
+  try {
+    for (const cardBack of CardBackTypeValues) {
+      if (imageSet.cardBacks.images[cardBack].src === "" || imageSet.cardBacks.images[cardBack].src === null) {
+        continue;
+      }
+      let fileName = "";
+      if (cardBack === "DeckCards") {
+        fileName = "CardBackRegular";
+      }
+      else if (cardBack === "DonCards") {
+        fileName = "CardBackDon";
+      }
+      let image = await Jimp.read(imageSet.cardBacks.images[cardBack].src);
+      image = await processCardBack(cardBack, image, imageSet.cardBacks);
+      const buffer = await image.getBuffer('image/png',{});
+      zipFiles[`CardBacks/${fileName}.png`] = new Uint8Array(buffer);
+    }
+  }
+  catch(err) {
+    console.error("Error processing card backs: ", err);
+  }
+
+
+  // Don Cards
+  try {
+    if (imageSet.donCards.images.DonCard.src != "" && imageSet.donCards.images.DonCard.src != null) {
+      let image = await Jimp.read(imageSet.donCards.images.DonCard.src);
+      image = await processDonCard(image, imageSet.donCards);
+      const buffer = await image.getBuffer('image/png',{});
+      zipFiles[`Cards/Don/Don.png`] = new Uint8Array(buffer);
+    }
+  }
+  catch(err) {
+    console.error("Error processing don cards: ", err);
+  }
+
+
+  // Cards
+  for (const [cardName, card] of Object.entries(imageSet.cards.images)) {
+    if (card.src === "" || card.src === null) {
       continue;
     }
-    let image = await Jimp.read(imageSet.playmats.images[color].src);
-    image = await processSinglePlaymat(image, imageSet.playmats);
+    const folderName = cardName.split("-")[0];
+    let image = await Jimp.read(card.src);
+    image = await processCard(image, imageSet.cards);
     const buffer = await image.getBuffer('image/png',{});
-    zipFiles[`Playmats/${color}.png`] = new Uint8Array(buffer);
+    zipFiles[`Cards/${folderName}/${cardName}.png`] = new Uint8Array(buffer);
   }
 
   const zipData = zipSync(zipFiles, { level: 9 });

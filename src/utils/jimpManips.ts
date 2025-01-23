@@ -76,10 +76,10 @@ export async function applyShadow(
   image: InstanceType<typeof Jimp>, 
   blur:number, 
   opacity: number, 
-  edgeBuffer: number = blur * 4,
   size:number = 1, 
   x:number = 0, 
-  y:number = 0
+  y:number = 0,
+  edgeBuffer: number = blur * 4
 ){
 
   try {
@@ -171,7 +171,7 @@ async function applySoftLightBlend(
 
 
 
-export async function processSinglePlaymat(image: InstanceType<typeof Jimp>, settings: ImageSet["playmats"]){
+export async function processPlaymat(image: InstanceType<typeof Jimp>, settings: ImageSet["playmats"]){
 
   image = await applySizing(image, 1414, 1000);
 
@@ -203,7 +203,7 @@ export async function processSinglePlaymat(image: InstanceType<typeof Jimp>, set
 }
 
 
-export async function processMenus(menuType: MenuType, image: InstanceType<typeof Jimp>, settings: ImageSet["menus"]){
+export async function processMenuOverlay(menuType: MenuType, image: InstanceType<typeof Jimp>, settings: ImageSet["menus"]){
 
   image = await applySizing(image, 1920, 1080);
 
@@ -217,8 +217,15 @@ export async function processMenus(menuType: MenuType, image: InstanceType<typeo
   return image;
 }
 
+export async function processMenu(menuType: MenuType, image: InstanceType<typeof Jimp>, settings: ImageSet["menus"]){
 
-export async function processCardBacks(cardBackType: CardBackType, image: InstanceType<typeof Jimp>, settings: ImageSet["cardBacks"]){
+  image = await applySizing(image, 1920, 1080);
+  
+  return image;
+}
+
+
+export async function processCardBack(cardBackType: CardBackType, image: InstanceType<typeof Jimp>, settings: ImageSet["cardBacks"]){
 
   const blackBack = new Jimp({
     width: image.width, 
@@ -264,13 +271,13 @@ export async function processCardBacks(cardBackType: CardBackType, image: Instan
   }
 
   if (cardBackType === "DonCards") {
-    image = await applySizing(image, 180, 252);
+    // image = await applySizing(image, 180, 252);
   }
 
   return image;
 }
 
-export async function processDonCards(image: InstanceType<typeof Jimp>, settings: ImageSet["donCards"]){
+export async function processDonCard(image: InstanceType<typeof Jimp>, settings: ImageSet["donCards"]){
 
   image = await applySizing(image, 869, 1214);
 
@@ -309,16 +316,31 @@ export async function processDonCards(image: InstanceType<typeof Jimp>, settings
     image = await applyShadow(image, 6, 0.7)
   }
 
-  image = await applySizing(image, 180, 252);
+  // image = await applySizing(image, 180, 252);
 
   return image;
 }
 
 
 
-export async function processCards(image: InstanceType<typeof Jimp>, settings: ImageSet["cards"]){
+export async function processCard(image: InstanceType<typeof Jimp>, settings: ImageSet["cards"]){
 
-  image = await applySizing(image, 480, 671);
+  // image = await applySizing(image, 480, 671);
+  image = await applySizing(image, 869, 1214);
+
+  if (settings.edgeStyle === "Rounded Small"){
+    applyRoundedCorners(image, 12);
+  }
+  else if (settings.edgeStyle === "Rounded Medium"){
+    applyRoundedCorners(image, 26);
+  }
+  else if (settings.edgeStyle === "Rounded Large"){
+    applyRoundedCorners(image, 50);
+  }
+
+  if (settings.shadow === true) {
+    image = await applyShadow(image, 5, 1, 1)
+  }
 
   return image;
 }

@@ -11,7 +11,7 @@ import SelectImage from "./SelectImage";
 import { LeaderColor, ImageSet, ThemeImage} from "@/utils/imageSet";
 import { useState } from "react";
 import { Jimp, JimpInstance } from "jimp";
-import { processSinglePlaymat } from "@/utils/jimpManips";
+import { processPlaymat } from "@/utils/jimpManips";
 
 type createPlaymatsProps = {
   artImages: ThemeImage[],
@@ -39,7 +39,7 @@ export default function CreatePlaymats({artImages, imageSet, setPreviewImage} : 
         return;
       }
       let image = await Jimp.read(imageSet.playmats.images[selectedLeaderColor].src);
-      image = await processSinglePlaymat(image, imageSet.playmats);
+      image = await processPlaymat(image, imageSet.playmats);
       const base64 = await image.getBase64("image/png");
       setPreviewImage(base64);
     }
