@@ -29,7 +29,7 @@ export default function CreateThemeSteps({downloadSet, currentStep, setCurrentSt
           onClick={() => setCurrentStep(2)}
         >
           Menus
-        </li>
+        </li> 
         <li 
           className={currentStep >= 3 ? classNameOn : classNameOff}
           onClick={() => setCurrentStep(3)}

@@ -30,7 +30,7 @@ export default function RootLayout({
         
         <Header />
         
-        <main className="h-full">{children}</main>
+        <main className="flex-grow overflow-hidden">{children}</main>
         
         {/* <Footer /> */}
 

@@ -58,17 +58,17 @@ export default function CreateDonCards({artImages, imageSet, setPreviewImage} : 
   return (
     <div className="h-full flex flex-col text-xl text-zinc-50">
 
-      <div className="flex gap-4 justify-center border-b-2 border-slate-50 border-opacity-50 pb-4">
+      <div className="w-full flex flex-row flex-wrap gap-4 justify-center border-b-2 border-slate-50 border-opacity-50 pb-4">
         <SelectOverlayDon settings={imageSet.donCards} updatePreview={updateCardBackPreview}/>
         <SelectEdgeStyle settings={imageSet} settingType="cardBacks" updatePreview={updateCardBackPreview}/>
         <SelectShadowStyle settings={imageSet} settingType="cardBacks" updatePreview={updateCardBackPreview}/>
       </div>
 
-      <div className="flex justify-between items-center">
+      <div className="w-full flex flex-col 2xl:flex-row flex-wrap justify-center 2xl:justify-end items-center my-6 gap-4">
         <SearchBar />
       </div>
 
-      <SelectImage artImages={artImages} handleImageClick={handleImageClick} selectedImage={selectedImage}/>
+      <SelectImage aspectRatio="869 / 1214" artImages={artImages} handleImageClick={handleImageClick} selectedImage={selectedImage}/>
       
     </div>
   )

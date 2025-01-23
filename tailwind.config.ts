@@ -8,6 +8,9 @@ const config: Config = {
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
+    screens: {
+      '2xl': '1600px',
+    },
     extend: {
       backgroundImage: {
         'sea-main': "url('/img/bg-03.webp')",

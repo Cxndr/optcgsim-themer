@@ -61,12 +61,12 @@ export default function CreateMenus({artImages, imageSet, setPreviewImage} : cre
   return (
     <div className="h-full flex flex-col text-xl text-zinc-50">
 
-      <div className="flex justify-between items-center">
+      <div className="w-full flex flex-col 2xl:flex-row flex-wrap justify-center 2xl:justify-between items-center gap-4 mb-6">  
         <SelectMenuType setMenuType={handleSetMenuType}/>
         <SearchBar />
       </div>
 
-      <SelectImage artImages={artImages} handleImageClick={handleImageClick} selectedImage={selectedImage}/>
+      <SelectImage aspectRatio="1920 / 1080" artImages={artImages} handleImageClick={handleImageClick} selectedImage={selectedImage}/>
       
     </div>
   )

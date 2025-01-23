@@ -5,7 +5,7 @@ export default function GuidePage() {
 
 
   return (
-    <div className="w-full flex justify-center items-center">
+    <div className="w-full h-full flex justify-center items-center">
       <div className="w-2/3 flex flex-col justify-center items-center gap-12 m-8 rounded-3xl bg-zinc-800 bg-opacity-70 pt-12 pb-14 px-10 text-zinc-50 text-2xl shadow-2xl shadow-black">
         <h2 className="text-4xl font-bold">Installation Guide</h2>
         <ol className="pl-12 flex flex-col gap-8 list-decimal">

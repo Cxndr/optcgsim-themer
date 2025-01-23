@@ -14,7 +14,7 @@ export default function SelectLeaderColor({setLeaderColor}:selectLeaderColorProp
   }
 
   return (
-    <label className="label bg-zinc-50 bg-opacity-70 px-4 py-3 my-6 rounded-full text-zinc-900 shadow-sm   shadow-black">
+    <label className="label bg-zinc-50 bg-opacity-70 px-4 py-3 rounded-full text-zinc-900 shadow-sm   shadow-black">
           <span className="pr-2">Select Leader Color: </span>
           <select 
             name="leader-select" 

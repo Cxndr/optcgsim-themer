@@ -18,7 +18,7 @@ export default function Header() {
 
   return (
 
-    <header className="flex flex-row justify-between items-center min-h-24 py-4 px-2 bg-zinc-200 bg-opacity-70 text-2xl shadow-md shadow-black">
+    <header className="flex flex-row justify-between items-center min-h-24 py-3 px-2 bg-zinc-200 bg-opacity-70 text-2xl shadow-md shadow-black">
       
         <Image
           src={opLogo}
@@ -28,12 +28,12 @@ export default function Header() {
           className="h-16 w-auto px-3"
         />
       
-      <div className="flex flex-col justify-center w-xl">
-        <h1><Link href="/" className="hover:text-primary">Sim Themer</Link></h1>
+      <div className="flex flex-col justify-center">
+        <h1 className="text-center leading-[3rem]"><Link href="/" className="hover:text-primary">Sim Themer</Link></h1>
       </div>
       
-      <div className="self-end">
-        <ul className="menu menu-horizontal flex items-center gap-8 mr-8 text-2xl font-medium">
+      <div className="justify-self-end mt-4 mb-1">
+        <ul className="menu menu-horizontal flex items-center gap-x-8 gap-y-2 mr-8 text-2xl font-medium flex flex-row justify-end">
 
           <li>
             <button 

@@ -1,11 +1,13 @@
 
 *** TODO ***
- - Clean up console errors.
- - Make preview window fit image.
- - Add "preview" text to preview window.
+ * Clean up console errors.
+ * Make preview window fit image.
+ * Add "preview" text to preview window.
+ * Cleanup visual layout - overflowing contents at different resolutions.
  - Make images selection thumbails use correct proportions for use case.
  - Homepage has lost the carousel? Currently just one image that cant be scrolled.
     - look at old commits if lost.
+ - Add custom scrollbar.
  - Add more options for editing:
     - text color for don cards.
     - overlay opacity.
