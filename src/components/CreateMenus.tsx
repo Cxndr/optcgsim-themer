@@ -45,11 +45,9 @@ export default function CreateMenus({artImages, imageSet, setPreviewImage} : cre
   }
 
   function handleImageClick(image: ThemeImage | null) {
-    console.log(image);
     const newSrc = image ? image.src : "";
     setSelectedImage(image);
     imageSet.menus.bgImages[selectedMenuType].src = newSrc;
-    console.log(imageSet);
     updateMenuPreview();
   }
 

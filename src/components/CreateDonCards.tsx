@@ -48,11 +48,9 @@ export default function CreateDonCards({artImages, imageSet, setPreviewImage} : 
   }
 
   function handleImageClick(image: ThemeImage | null) {
-    console.log(image);
     const newSrc = image ? image.src : "";
     setSelectedImage(image);
     imageSet.donCards.images.DonCard.src = newSrc;
-    console.log(imageSet);
     updateCardBackPreview();
   }
   
