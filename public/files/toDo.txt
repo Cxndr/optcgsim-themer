@@ -15,3 +15,4 @@
 
 *** STRETCH ***
   - Should steps be individual? and indicate which ones have been added to (based on imageSet)?
+  - Clean up Jimp type errors on "image" (they are false flags).
