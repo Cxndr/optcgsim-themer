@@ -10,7 +10,7 @@ import SelectImage from "./SelectImage";
 import { ImageSet, ThemeImage} from "@/utils/imageSet";
 import { useState } from "react";
 import { Jimp, JimpInstance } from "jimp";
-import { processDonCards } from "@/utils/jimpManips";
+import { processDonCard } from "@/utils/jimpManips";
 
 
 type createDonCardsProps = {
@@ -38,7 +38,7 @@ export default function CreateDonCards({artImages, imageSet, setPreviewImage} : 
         return;
       }
       let image = await Jimp.read(imageSet.donCards.images.DonCard.src);
-      image = await processDonCards(image, imageSet.donCards);
+      image = await processDonCard(image, imageSet.donCards);
       const base64 = await image.getBase64("image/png");
       setPreviewImage(base64);
     }

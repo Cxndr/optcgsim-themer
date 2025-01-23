@@ -8,7 +8,7 @@ import SelectImage from "./SelectImage";
 
 import { MenuType, ImageSet, ThemeImage} from "@/utils/imageSet";
 import { useState } from "react";
-import { processMenus } from "@/utils/jimpManips";
+import { processMenuOverlay } from "@/utils/jimpManips";
 type createMenusProps = {
   artImages: ThemeImage[],
   imageSet: ImageSet,
@@ -35,7 +35,7 @@ export default function CreateMenus({artImages, imageSet, setPreviewImage} : cre
         return;
       }
       let image = await Jimp.read(imageSet.menus.bgImages[selectedMenuType].src);
-      image = await processMenus(selectedMenuType, image, imageSet.menus);
+      image = await processMenuOverlay(selectedMenuType, image, imageSet.menus);
       const base64 = await image.getBase64("image/png");
       setPreviewImage(base64);
     }

@@ -12,7 +12,7 @@ import SelectCardBackType from "./SelectCardBackType";
 import { CardBackType, ImageSet, ThemeImage} from "@/utils/imageSet";
 import { useState } from "react";
 import { Jimp, JimpInstance } from "jimp";
-import { processCardBacks } from "@/utils/jimpManips";
+import { processCardBack } from "@/utils/jimpManips";
 
 
 type createPlaymatsProps = {
@@ -41,7 +41,7 @@ export default function CreatePlaymats({artImages, imageSet, setPreviewImage} : 
         return;
       }
       let image = await Jimp.read(imageSet.cardBacks.images[selectedCardBackType].src);
-      image = await processCardBacks(selectedCardBackType, image, imageSet.cardBacks);
+      image = await processCardBack(selectedCardBackType, image, imageSet.cardBacks);
       const base64 = await image.getBase64("image/png");
       setPreviewImage(base64);
     }

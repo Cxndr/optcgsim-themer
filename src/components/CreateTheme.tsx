@@ -13,7 +13,6 @@ import {Jimp} from "jimp"; // Correct import for Jimp
 import Image from "next/image";
 import { ImageOption } from "@/app/create/page";
 import { useEffect, useState } from "react";
-import { processSinglePlaymat } from "@/utils/jimpManips";
 
 type CreateThemeProps = {
   artImages: ImageOption[];
@@ -23,22 +22,6 @@ export default function CreateTheme({ artImages }: CreateThemeProps) {
 
   const [currentStep, setCurrentStep] = useState(0);
   const [previewImage, setPreviewImage] = useState("");
-
-  async function updatePreview(leaderColor: LeaderColor) {
-    try {
-      if (imageSet.playmats.images[leaderColor].src === "" || imageSet.playmats.images[leaderColor].src === null) {
-        setPreviewImage("");
-        return;
-      }
-      let image = await Jimp.read(imageSet.playmats.images[leaderColor].src);
-      image = await processSinglePlaymat(image, imageSet.playmats);
-      const base64 = await image.getBase64("image/png");
-      setPreviewImage(base64);
-    }
-    catch(err) {
-      console.error(err);
-    }
-  }
 
   async function downloadSet() {
     const zipFile = await makeImageSetZip(imageSet);
