@@ -60,23 +60,22 @@ export default function CreatePlaymats({artImages, imageSet, setPreviewImage} : 
     setSelectedLeaderColor(leaderColor);
     updatePlaymatPreview();
   }
-  
 
   return (
     <div className="h-full flex flex-col text-xl text-zinc-50">
 
-      <div className="flex gap-4 justify-center border-b-2 border-slate-50 border-opacity-50 pb-4">
+      <div className="w-full flex flex-row flex-wrap gap-4 justify-center border-b-2 border-slate-50 border-opacity-50 pb-4">
         <SelectOverlayPlaymat settings={imageSet.playmats} updatePreview={updatePlaymatPreview}/>
         <SelectEdgeStyle settings={imageSet} settingType="playmats" updatePreview={updatePlaymatPreview}/>
         <SelectShadowStyle settings={imageSet} settingType="playmats" updatePreview={updatePlaymatPreview}/>
       </div>
 
-      <div className="flex justify-between items-center">
+      <div className="w-full flex flex-col 2xl:flex-row flex-wrap justify-center 2xl:justify-between items-center my-6 gap-4">
         <SelectLeaderColor setLeaderColor={handleSetLeaderColor}/>
         <SearchBar />
       </div>
 
-      <SelectImage artImages={artImages} handleImageClick={handleImageClick} selectedImage={selectedImage}/>
+      <SelectImage aspectRatio="1414 / 1000" artImages={artImages} handleImageClick={handleImageClick} selectedImage={selectedImage}/>
       
     </div>
   )

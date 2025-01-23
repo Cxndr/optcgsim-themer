@@ -4,21 +4,29 @@ import { ThemeImage } from "@/utils/imageSet";
 import Image from "next/image";
 
 type SelectImageProps = {
+  aspectRatio: string;
   artImages: ThemeImage[];
   handleImageClick: (image: ThemeImage | null) => void;
   selectedImage: ThemeImage | null;
 }
 
-export default function SelectImage({artImages, handleImageClick, selectedImage}:SelectImageProps) {
+export default function SelectImage({aspectRatio, artImages, handleImageClick, selectedImage}:SelectImageProps) {
+
+  const [imageWidth, imageHeight] = aspectRatio.split(" / ").map(Number);
+  const imageRatio = imageWidth / imageHeight;
+  let gridCols = 3;
+  if (imageRatio < 1) {
+    gridCols = 4;
+  }
 
 
   return (
     <div className="flex-grow overflow-auto">
-        <div className="grid grid-cols-3 gap-4">
+        <div className={`grid grid-cols-${gridCols} gap-4`}>
           <a
             onClick={() => handleImageClick(null)}
             className="relative w-full overflow-hidden rounded-xl shadow-sm shadow-black"
-            style={{ aspectRatio: '1414 / 1000' }}
+            style={{ aspectRatio: aspectRatio }}
           >
             <div className="w-full h-full flex items-center justify-center text-zinc-50">
               None
@@ -30,7 +38,7 @@ export default function SelectImage({artImages, handleImageClick, selectedImage}
                 onClick={() => handleImageClick(image)}
                 key={index}
                 className="relative w-full overflow-hidden rounded-xl shadow-sm shadow-black"
-                style={{ aspectRatio: '1414 / 1000' }}
+                style={{ aspectRatio: aspectRatio }}
               >
                 {image.src &&
                   <Image 
