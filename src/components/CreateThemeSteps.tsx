@@ -19,7 +19,7 @@ export default function CreateThemeSteps({downloadSet, currentStep, setCurrentSt
     <>
       <ul className="steps w-full">
         <li 
-          className={currentStep >= 1 ? classNameOn : classNameOff}
+          className={currentStep >= 0 ? classNameOn : classNameOff}
           onClick={() => setCurrentStep(1)}
         >
           Playmats

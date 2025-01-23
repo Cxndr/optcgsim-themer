@@ -17,19 +17,18 @@ export default function Header() {
   }
 
   return (
-    <header className="flex flex-row justify-between items-center py-4 px-6 h-28 bg-zinc-200 bg-opacity-70 text-2xl shadow-md shadow-black">
+
+    <header className="flex flex-row justify-between items-center min-h-24 py-4 px-2 bg-zinc-200 bg-opacity-70 text-2xl shadow-md shadow-black">
       
-      <div className="">
         <Image
           src={opLogo}
           alt="Logo - One Piece Trading Card Game"
           height={144}
           width={560}
-          className="h-16 w-auto"
+          className="h-16 w-auto px-3"
         />
-      </div>
       
-      <div className="">
+      <div className="flex flex-col justify-center w-xl">
         <h1><Link href="/" className="hover:text-primary">Sim Themer</Link></h1>
       </div>
       

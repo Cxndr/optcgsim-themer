@@ -34,23 +34,16 @@ export default function CreateCards({imageSet, setPreviewImage} : createCardsPro
 
   async function updateCardPreview() {
 
-    console.log(imageSet.cards);
     if (selectedFiles) {
       try {
         if (selectedFiles[0] === null || selectedFiles[0] === undefined) {
           setPreviewImage("");
-          console.log("NO IMAGE");
           return;
         }
-        console.log("OPIQWUJEOIQWU");
         if (!selectedFiles) {
-          console.log("NO SEL FILES");
           return;
         }
-        console.log(selectedFiles);
         const arrayBuffer = await selectedFiles[0].arrayBuffer();
-        console.log("ARRAY BUFFER");
-        console.log(arrayBuffer);
         let image = await Jimp.read(arrayBuffer);
         image = await processCard(image, imageSet.cards);
         const base64 = await image.getBase64("image/png");
@@ -100,7 +93,7 @@ export default function CreateCards({imageSet, setPreviewImage} : createCardsPro
             <h4 className="label-text text-2xl font-bold text-zinc-100 text-center w-full">Upload Card Images</h4>
             <p className="label-text text-lg text-zinc-200 text-center w-full">We cannot host One Piece card images, please upload your own to customize.</p>
             <p className="label-text text-lg text-zinc-200 text-center w-full">These can usually be found in: </p>
-            <p className="text-center w-auto text-sm text-zinc-700 bg-zinc-200 bg-opacity-70 rounded-2xl py-2 px-4 shadow-sm shadow-black w-full">
+            <p className="text-center w-auto text-sm text-zinc-700 bg-zinc-200 bg-opacity-70 rounded-2xl py-2 px-4 shadow-sm shadow-black w-full font-bold">
               <span className="text-error">[YOUR OPTCGSIM INSTALL]</span>/Builds<span className="text-error">[OS]</span>/OPTCGSim_Data/StreamingAssets/Cards/
             </p>
             <p className="label-text text-lg text-zinc-200 text-center w-full"><b>Choose Files</b> below, navigate to this folder, and then click Upload.</p>
@@ -110,8 +103,8 @@ export default function CreateCards({imageSet, setPreviewImage} : createCardsPro
             type="file" 
             /* @ts-expect-error */
             webkitdirectory="" 
-            mozdirectory
-            directory
+            mozdirectory=""
+            directory=""
             multiple 
             onChange={handleFileChange}
             className="file-input file-input-bordered file-input-secondary w-full max-w-xs text-zinc-400 shadow-sm shadow-zinc-900"

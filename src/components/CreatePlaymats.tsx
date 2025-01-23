@@ -49,11 +49,9 @@ export default function CreatePlaymats({artImages, imageSet, setPreviewImage} : 
   }
 
   function handleImageClick(image: ThemeImage | null) {
-    console.log(image);
     const newSrc = image ? image.src : "";
     setSelectedImage(image);
     imageSet.playmats.images[selectedLeaderColor].src = newSrc;
-    console.log(imageSet);
     updatePlaymatPreview();
   }
 

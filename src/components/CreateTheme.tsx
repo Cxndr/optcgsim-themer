@@ -6,7 +6,7 @@ import CreateMenus from "./CreateMenus";
 import CreateCardBacks from "./CreateCardBacks";
 import CreateDonCards from "./CreateDonCards";
 import CreateCards from "./CreateCards";
-
+import PreviewPane from "./PreviewImage";
 import { imageSet, LeaderColor, makeImageSetZip } from "@/utils/imageSet";
 import {Jimp} from "jimp"; // Correct import for Jimp
 
@@ -43,18 +43,9 @@ export default function CreateTheme({ artImages }: CreateThemeProps) {
       </div>
 
       <div className="w-full h-0 flex-grow gap-8 flex justify-center items-center">
-        <div className="w-1/2 h-full p-6 flex justify-center items-center rounded-3xl bg-zinc-800 bg-opacity-70 shadow-2xl shadow-black text-zinc-100 text-3xl">
-          {previewImage ? (
-            <Image
-              src={previewImage}
-              alt="preview"
-              width={707}
-              height={500}
-              className="w-auto"
-            />
-          ) : (
-            "No Image Selected"
-          )}
+
+        <div className="w-1/2 h-full p-6 flex-col justify-center items-center rounded-3xl bg-zinc-800 bg-opacity-70 shadow-2xl shadow-black text-zinc-100 text-3xl">
+          <PreviewPane previewImage={previewImage} />
         </div>
 
         <div className="w-1/2 h-full p-8 flex flex-col rounded-3xl bg-zinc-800 bg-opacity-70 shadow-2xl shadow-black">

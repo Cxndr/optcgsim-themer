@@ -32,17 +32,20 @@ export default function SelectImage({artImages, handleImageClick, selectedImage}
                 className="relative w-full overflow-hidden rounded-xl shadow-sm shadow-black"
                 style={{ aspectRatio: '1414 / 1000' }}
               >
-                <Image 
-                  src={image.src || ''}
-                  alt={image.name || "no image set"}
-                  className="w-full h-full object-cover hover:scale-110 transform transition-transform ease-in-out duration-700"
-                  width={200} height={200}
-                />
+                {image.src &&
+                  <Image 
+                    src={image.src || ''}
+                    alt={image.name || "no image set"}
+                    className="w-full h-full object-cover hover:scale-110 transform transition-transform ease-in-out duration-700"
+                    width={200} height={200}
+                  />
+                }
                 {
                   selectedImage &&
                   image.src === selectedImage.src && <div className="absolute top-0 left-0 w-full h-full bg-zinc-300 bg-opacity-10 border-accent border-4 rounded-xl"></div>
                 }
-            </a>
+                
+              </a>
 
             ))
           }
