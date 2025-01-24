@@ -3,7 +3,7 @@
 import SelectEdgeStyle from "./SelectEdgeStyle";
 import SelectShadowStyle from "./SelectShadowStyle";
 import { ImageSet, ThemeImage} from "@/utils/imageSet";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Jimp} from "jimp";
 import { processCard } from "@/utils/jimpManips";
 
@@ -19,7 +19,7 @@ export default function CreateCards({imageSet, setPreviewImage, setPreviewLoadin
 
   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
 
-  async function updateCardPreview() {
+  const updateCardPreview = useCallback(async () => {
 
     if (selectedFiles) {
       if (selectedFiles[0] === null || selectedFiles[0] === undefined) {
@@ -42,11 +42,11 @@ export default function CreateCards({imageSet, setPreviewImage, setPreviewLoadin
     else {
       setPreviewImage("");
     }
-  }
+  }, [selectedFiles, setPreviewImage, setPreviewLoading]);
 
   useEffect(() => {
     updateCardPreview();
-  }, [selectedFiles, updateCardPreview]);
+  }, [updateCardPreview]);
 
   function clearCardImages() {
     setSelectedFiles(null);

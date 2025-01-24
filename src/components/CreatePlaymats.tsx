@@ -8,7 +8,7 @@ import SearchBar from "./SearchBar";
 import SelectImage from "./SelectImage";
 
 import { LeaderColor, ImageSet, ThemeImage} from "@/utils/imageSet";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Jimp } from "jimp";
 import { processPlaymat } from "@/utils/jimpManips";
 
@@ -33,7 +33,7 @@ export default function CreatePlaymats({artImages, imageSet, setPreviewImage, se
 
   artImages.push(emptyImage);
 
-  async function updatePlaymatPreview() {
+  const updatePlaymatPreview = useCallback(async () => {
     if (imageSet.playmats.images[selectedLeaderColor].src === "" || imageSet.playmats.images[selectedLeaderColor].src === null) {
       setPreviewImage("");
       return;
@@ -49,11 +49,11 @@ export default function CreatePlaymats({artImages, imageSet, setPreviewImage, se
       console.error(err);
     }
     setPreviewLoading(false);
-  }
+  }, [imageSet.playmats, selectedLeaderColor, setPreviewImage, setPreviewLoading]);
   
   useEffect(() => {
     updatePlaymatPreview();
-  }, [selectedLeaderColor, updatePlaymatPreview]);
+  }, [updatePlaymatPreview]);
 
   function handleImageClick(image: ThemeImage | null) {
     const newSrc = image ? image.src : "";

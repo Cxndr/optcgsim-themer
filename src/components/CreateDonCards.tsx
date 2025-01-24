@@ -6,7 +6,7 @@ import SelectShadowStyle from "./SelectShadowStyle";
 import SearchBar from "./SearchBar";
 import SelectImage from "./SelectImage";
 import { ImageSet, ThemeImage} from "@/utils/imageSet";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Jimp } from "jimp";
 import { processDonCard } from "@/utils/jimpManips";
 
@@ -31,7 +31,7 @@ export default function CreateDonCards({artImages, imageSet, setPreviewImage, se
 
   artImages.push(emptyImage);
 
-  async function updateDonCardPreview() {
+  const updateDonCardPreview = useCallback(async () => {
     if (imageSet.donCards.images.DonCard.src === "" || imageSet.donCards.images.DonCard.src === null) {
       setPreviewImage("");
       return;
@@ -47,11 +47,11 @@ export default function CreateDonCards({artImages, imageSet, setPreviewImage, se
       console.error(err);
     }
     setPreviewLoading(false);
-  }
+  }, [imageSet.donCards, setPreviewImage, setPreviewLoading]);
 
   useEffect(() => {
     updateDonCardPreview();
-  });
+  }, [updateDonCardPreview]);
 
   function handleImageClick(image: ThemeImage | null) {
     const newSrc = image ? image.src : "";

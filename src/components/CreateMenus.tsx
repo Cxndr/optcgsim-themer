@@ -6,7 +6,7 @@ import {Jimp} from "jimp";
 import SelectImage from "./SelectImage";
 
 import { MenuType, ImageSet, ThemeImage} from "@/utils/imageSet";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { processMenuOverlay } from "@/utils/jimpManips";
 type createMenusProps = {
   artImages: ThemeImage[],
@@ -29,7 +29,7 @@ export default function CreateMenus({artImages, imageSet, setPreviewImage, setPr
 
   artImages.push(emptyImage);
 
-  async function updateMenuPreview() {
+  const updateMenuPreview = useCallback(async () => {
     if (imageSet.menus.bgImages[selectedMenuType].src === "" || imageSet.menus.bgImages[selectedMenuType].src === null) {
       setPreviewImage("");
       return;
@@ -45,11 +45,11 @@ export default function CreateMenus({artImages, imageSet, setPreviewImage, setPr
       console.error(err);
     }
     setPreviewLoading(false);
-  }
+  }, [imageSet.menus, selectedMenuType, setPreviewImage, setPreviewLoading]);
 
   useEffect(() => {
     updateMenuPreview();
-  }, [selectedMenuType, updateMenuPreview]);
+  }, [updateMenuPreview]);
 
   function handleImageClick(image: ThemeImage | null) {
     const newSrc = image ? image.src : "";
