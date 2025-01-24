@@ -8,7 +8,7 @@ import SelectImage from "./SelectImage";
 import SelectOverlayCards from "./SelectOverlayCards";
 import SelectCardBackType from "./SelectCardBackType";
 import { CardBackType, ImageSet, ThemeImage} from "@/utils/imageSet";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Jimp } from "jimp";
 import { processCardBack } from "@/utils/jimpManips";
 
@@ -34,7 +34,7 @@ export default function CreatePlaymats({artImages, imageSet, setPreviewImage, se
 
   artImages.push(emptyImage);
 
-  async function updateCardBackPreview() {
+  const updateCardBackPreview = useCallback(async () => {
     if (imageSet.cardBacks.images[selectedCardBackType].src === "" || imageSet.cardBacks.images[selectedCardBackType].src === null) {
       setPreviewImage("");
       return;
@@ -50,11 +50,11 @@ export default function CreatePlaymats({artImages, imageSet, setPreviewImage, se
       console.error(err);
     }
     setPreviewLoading(false);
-  }
+  }, [imageSet.cardBacks, selectedCardBackType, setPreviewImage, setPreviewLoading]);
 
   useEffect(() => {
     updateCardBackPreview();
-  }, [selectedCardBackType, updateCardBackPreview]);
+  }, [updateCardBackPreview]);
 
   function handleImageClick(image: ThemeImage | null) {
     const newSrc = image ? image.src : "";
