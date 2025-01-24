@@ -9,7 +9,7 @@ import SelectOverlayCards from "./SelectOverlayCards";
 import SelectCardBackType from "./SelectCardBackType";
 import { CardBackType, ImageSet, ThemeImage} from "@/utils/imageSet";
 import { useCallback, useEffect, useState } from "react";
-import { Jimp } from "jimp";
+import { Jimp, JimpInstance } from "jimp";
 import { processCardBack } from "@/utils/jimpManips";
 
 
@@ -41,7 +41,7 @@ export default function CreatePlaymats({artImages, imageSet, setPreviewImage, se
     }
     setPreviewLoading(true);
     try {
-      let image = await Jimp.read(imageSet.cardBacks.images[selectedCardBackType].src);
+      let image = await Jimp.read(imageSet.cardBacks.images[selectedCardBackType].src) as JimpInstance;
       image = await processCardBack(selectedCardBackType, image, imageSet.cardBacks);
       const base64 = await image.getBase64("image/png");
       setPreviewImage(base64);

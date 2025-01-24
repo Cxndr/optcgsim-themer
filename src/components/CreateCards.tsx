@@ -4,7 +4,7 @@ import SelectEdgeStyle from "./SelectEdgeStyle";
 import SelectShadowStyle from "./SelectShadowStyle";
 import { ImageSet} from "@/utils/imageSet";
 import { useCallback, useEffect, useState } from "react";
-import { Jimp} from "jimp";
+import { Jimp, JimpInstance} from "jimp";
 import { processCard } from "@/utils/jimpManips";
 
 
@@ -28,7 +28,7 @@ export default function CreateCards({imageSet, setPreviewImage, setPreviewLoadin
       setPreviewLoading(true);
       try {
         const arrayBuffer = await selectedFiles[0].arrayBuffer();
-        let image = await Jimp.read(arrayBuffer);
+        let image = await Jimp.read(arrayBuffer) as JimpInstance;
         image = await processCard(image, imageSet.cards);
         const base64 = await image.getBase64("image/png");
         setPreviewImage(base64);

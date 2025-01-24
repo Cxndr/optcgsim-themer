@@ -217,7 +217,7 @@ export async function processMenuOverlay(menuType: MenuType, image: InstanceType
   return image;
 }
 
-export async function processMenu(menuType: MenuType, image: InstanceType<typeof Jimp>){
+export async function processMenu(image: InstanceType<typeof Jimp>){
 
   image = await applySizing(image, 1920, 1080);
   

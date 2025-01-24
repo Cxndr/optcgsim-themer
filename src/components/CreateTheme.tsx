@@ -8,12 +8,11 @@ import CreateDonCards from "./CreateDonCards";
 import CreateCards from "./CreateCards";
 import PreviewPane from "./PreviewPane";
 import { imageSet, makeImageSetZip } from "@/utils/imageSet";
-
-import { ImageOption } from "@/app/create/page";
+import { ThemeImage } from "@/utils/imageSet";
 import { useState } from "react";
 
 type CreateThemeProps = {
-  artImages: ImageOption[];
+  artImages: ThemeImage[];
 };
 
 export default function CreateTheme({ artImages }: CreateThemeProps) {

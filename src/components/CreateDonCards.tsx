@@ -7,7 +7,7 @@ import SearchBar from "./SearchBar";
 import SelectImage from "./SelectImage";
 import { ImageSet, ThemeImage} from "@/utils/imageSet";
 import { useCallback, useEffect, useState } from "react";
-import { Jimp } from "jimp";
+import { Jimp, JimpInstance } from "jimp";
 import { processDonCard } from "@/utils/jimpManips";
 
 
@@ -38,7 +38,7 @@ export default function CreateDonCards({artImages, imageSet, setPreviewImage, se
     }
     setPreviewLoading(true)
     try {
-      let image = await Jimp.read(imageSet.donCards.images.DonCard.src);
+      let image = await Jimp.read(imageSet.donCards.images.DonCard.src) as JimpInstance;
       image = await processDonCard(image, imageSet.donCards);
       const base64 = await image.getBase64("image/png");
       setPreviewImage(base64);
