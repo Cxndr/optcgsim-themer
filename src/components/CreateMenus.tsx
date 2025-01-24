@@ -2,7 +2,7 @@
 
 import SelectMenuType from "./SelectMenuType";
 import SearchBar from "./SearchBar";
-import {Jimp} from "jimp";
+import {Jimp, JimpInstance} from "jimp";
 import SelectImage from "./SelectImage";
 
 import { MenuType, ImageSet, ThemeImage} from "@/utils/imageSet";
@@ -36,8 +36,8 @@ export default function CreateMenus({artImages, imageSet, setPreviewImage, setPr
     }
     setPreviewLoading(true);
     try {
-      let image = await Jimp.read(imageSet.menus.bgImages[selectedMenuType].src);
-      image = await processMenuOverlay(selectedMenuType, image, imageSet.menus);
+      let image = await Jimp.read(imageSet.menus.bgImages[selectedMenuType].src) as JimpInstance;
+      image = await processMenuOverlay(selectedMenuType, image);
       const base64 = await image.getBase64("image/png");
       setPreviewImage(base64);
     }
