@@ -29,6 +29,7 @@ export default async function CreatePage() {
   }
 
   const artImages = await getArtImages();
+  console.log(artImages);
 
   return (
     <div className="w-full h-full p-10 gap-8 flex flex-col justify-center items-center">
