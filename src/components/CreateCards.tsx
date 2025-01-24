@@ -10,7 +10,7 @@ import SelectImage from "./SelectImage";
 import SelectOverlayCards from "./SelectOverlayCards";
 import SelectCardBackType from "./SelectCardBackType";
 import { CardBackType, ImageSet, ThemeImage} from "@/utils/imageSet";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Jimp, JimpInstance } from "jimp";
 import { processCard } from "@/utils/jimpManips";
 
@@ -18,6 +18,7 @@ import { processCard } from "@/utils/jimpManips";
 type createCardsProps = {
   imageSet: ImageSet,
   setPreviewImage: (image: string) => void,
+  setPreviewLoading: (loading: boolean) => void
 }
 
 const emptyImage: ThemeImage = { 
@@ -28,21 +29,19 @@ const emptyImage: ThemeImage = {
 
 
 
-export default function CreateCards({imageSet, setPreviewImage} : createCardsProps) {
+export default function CreateCards({imageSet, setPreviewImage, setPreviewLoading} : createCardsProps) {
 
   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
 
   async function updateCardPreview() {
 
     if (selectedFiles) {
+      if (selectedFiles[0] === null || selectedFiles[0] === undefined) {
+        setPreviewImage("");
+        return;
+      }
+      setPreviewLoading(true);
       try {
-        if (selectedFiles[0] === null || selectedFiles[0] === undefined) {
-          setPreviewImage("");
-          return;
-        }
-        if (!selectedFiles) {
-          return;
-        }
         const arrayBuffer = await selectedFiles[0].arrayBuffer();
         let image = await Jimp.read(arrayBuffer);
         image = await processCard(image, imageSet.cards);
@@ -52,8 +51,16 @@ export default function CreateCards({imageSet, setPreviewImage} : createCardsPro
       catch(err) {
         console.error(err);
       }
+      setPreviewLoading(false);
+    }
+    else {
+      setPreviewImage("");
     }
   }
+
+  useEffect(() => {
+    updateCardPreview();
+  }, [selectedFiles]);
 
   function clearCardImages() {
     setSelectedFiles(null);
@@ -72,8 +79,6 @@ export default function CreateCards({imageSet, setPreviewImage} : createCardsPro
         imageSet.cards.images[fileName] = { src: newSrc, name: fileName, image: null };
       }
     }
-
-    updateCardPreview();
   }
   
 

@@ -4,10 +4,14 @@
  * Make preview window fit image.
  * Add "preview" text to preview window.
  * Cleanup visual layout - overflowing contents at different resolutions.
- - Make images selection thumbails use correct proportions for use case.
+ * Make images selection thumbails use correct proportions for use case.
  - Homepage has lost the carousel? Currently just one image that cant be scrolled.
     - look at old commits if lost.
- - Add custom scrollbar.
+ * Add custom scrollbar.
+ * Add search functionality for image selection.
+ * Cleanup preview reloading.
+    * On cards step its 1 selection behind.
+ * Add spinners for preview loading.
  - Add more options for editing:
     - text color for don cards.
     - overlay opacity.
@@ -16,5 +20,6 @@
 
 
 *** STRETCH ***
+  - Make steps animate color.
   - Should steps be individual? and indicate which ones have been added to (based on imageSet)?
   - Clean up Jimp type errors on "image" (they are false flags).
