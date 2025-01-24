@@ -3,10 +3,6 @@ import fs from "fs";
 import CreateTheme from "@/components/CreateTheme";
 import { ThemeImage } from "@/utils/imageSet";
 
-// export type ImageOption = {
-//   name: string,
-//   url: string,
-// };
 
 export default async function CreatePage() {
 
@@ -37,7 +33,7 @@ export default async function CreatePage() {
   return (
     <div className="w-full h-full p-10 gap-8 flex flex-col justify-center items-center">
 
-      <CreateTheme artImages={artImages}/>
+      {/* <CreateTheme artImages={artImages}/> */}
 
     </div>
   )
