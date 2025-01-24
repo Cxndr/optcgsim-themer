@@ -18,7 +18,6 @@ type createMenusProps = {
 const emptyImage: ThemeImage = { 
   src: "", 
   name: null, 
-  image: null 
 };
 
 export default function CreateMenus({artImages, imageSet, setPreviewImage, setPreviewLoading} : createMenusProps) {

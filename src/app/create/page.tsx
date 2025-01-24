@@ -25,7 +25,6 @@ export default async function CreatePage() {
           images.push({
             name: `${folder}-${index}`, //file.split(".")[0],
             src: `${imgRelPath}/${folder}/${file}`,
-            image: null,
           });
         });
       }
