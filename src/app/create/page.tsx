@@ -1,6 +1,6 @@
 import path from "path";
 import fs from "fs";
-import CreateTheme from "@/components/CreateTheme";
+// import CreateTheme from "@/components/CreateTheme";
 import { ThemeImage } from "@/utils/imageSet";
 
 
