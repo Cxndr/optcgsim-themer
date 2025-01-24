@@ -2,7 +2,7 @@ import {Jimp, JimpInstance, rgbaToInt} from "jimp";
 import { ImageSet } from "./imageSet";
 import { MenuType } from "./imageSet";
 import { CardBackType } from "./imageSet";
-import { BlendMode } from "@jimp/core";
+
 export async function applyRoundedCorners(image: InstanceType<typeof Jimp>, radius: number){
   // Create a mask with the same size as the image
   const mask = new Jimp({
@@ -203,7 +203,7 @@ export async function processPlaymat(image: InstanceType<typeof Jimp>, settings:
 }
 
 
-export async function processMenuOverlay(menuType: MenuType, image: InstanceType<typeof Jimp>, settings: ImageSet["menus"]){
+export async function processMenuOverlay(menuType: MenuType, image: InstanceType<typeof Jimp>){
 
   image = await applySizing(image, 1920, 1080);
 
@@ -217,7 +217,7 @@ export async function processMenuOverlay(menuType: MenuType, image: InstanceType
   return image;
 }
 
-export async function processMenu(menuType: MenuType, image: InstanceType<typeof Jimp>, settings: ImageSet["menus"]){
+export async function processMenu(menuType: MenuType, image: InstanceType<typeof Jimp>){
 
   image = await applySizing(image, 1920, 1080);
   

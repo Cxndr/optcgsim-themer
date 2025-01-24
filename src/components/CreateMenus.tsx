@@ -2,7 +2,6 @@
 
 import SelectMenuType from "./SelectMenuType";
 import SearchBar from "./SearchBar";
-import Image from "next/image";
 import {Jimp} from "jimp";
 import SelectImage from "./SelectImage";
 
@@ -50,7 +49,7 @@ export default function CreateMenus({artImages, imageSet, setPreviewImage, setPr
 
   useEffect(() => {
     updateMenuPreview();
-  }, [selectedMenuType]);
+  }, [selectedMenuType, updateMenuPreview]);
 
   function handleImageClick(image: ThemeImage | null) {
     const newSrc = image ? image.src : "";

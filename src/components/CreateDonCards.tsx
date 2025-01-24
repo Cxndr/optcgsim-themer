@@ -1,15 +1,13 @@
 "use client"
 
-import SelectLeaderColor from "./SelectLeaderColor";
 import SelectOverlayDon from "./SelectOverlayDon";
 import SelectEdgeStyle from "./SelectEdgeStyle";
 import SelectShadowStyle from "./SelectShadowStyle";
 import SearchBar from "./SearchBar";
-import Image from "next/image";
 import SelectImage from "./SelectImage";
 import { ImageSet, ThemeImage} from "@/utils/imageSet";
 import { useEffect, useState } from "react";
-import { Jimp, JimpInstance } from "jimp";
+import { Jimp } from "jimp";
 import { processDonCard } from "@/utils/jimpManips";
 
 
@@ -53,7 +51,7 @@ export default function CreateDonCards({artImages, imageSet, setPreviewImage, se
 
   useEffect(() => {
     updateDonCardPreview();
-  }, []);
+  });
 
   function handleImageClick(image: ThemeImage | null) {
     const newSrc = image ? image.src : "";
