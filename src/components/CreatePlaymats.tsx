@@ -9,7 +9,7 @@ import Image from "next/image";
 import SelectImage from "./SelectImage";
 
 import { LeaderColor, ImageSet, ThemeImage} from "@/utils/imageSet";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Jimp, JimpInstance } from "jimp";
 import { processPlaymat } from "@/utils/jimpManips";
 
@@ -17,6 +17,7 @@ type createPlaymatsProps = {
   artImages: ThemeImage[],
   imageSet: ImageSet,
   setPreviewImage: (image: string) => void,
+  setPreviewLoading: (loading: boolean) => void
 }
 
 const emptyImage: ThemeImage = { 
@@ -25,19 +26,21 @@ const emptyImage: ThemeImage = {
   image: null 
 };
 
-export default function CreatePlaymats({artImages, imageSet, setPreviewImage} : createPlaymatsProps) {
+export default function CreatePlaymats({artImages, imageSet, setPreviewImage, setPreviewLoading} : createPlaymatsProps) {
 
   const [selectedLeaderColor, setSelectedLeaderColor] = useState("Black" as LeaderColor);
   const [selectedImage, setSelectedImage] = useState<ThemeImage | null>(imageSet.playmats.images[selectedLeaderColor]);
+  const [searchTerm, setSearchTerm] = useState("");
 
   artImages.push(emptyImage);
 
   async function updatePlaymatPreview() {
+    if (imageSet.playmats.images[selectedLeaderColor].src === "" || imageSet.playmats.images[selectedLeaderColor].src === null) {
+      setPreviewImage("");
+      return;
+    }
+    setPreviewLoading(true);
     try {
-      if (imageSet.playmats.images[selectedLeaderColor].src === "" || imageSet.playmats.images[selectedLeaderColor].src === null) {
-        setPreviewImage("");
-        return;
-      }
       let image = await Jimp.read(imageSet.playmats.images[selectedLeaderColor].src);
       image = await processPlaymat(image, imageSet.playmats);
       const base64 = await image.getBase64("image/png");
@@ -46,7 +49,12 @@ export default function CreatePlaymats({artImages, imageSet, setPreviewImage} : 
     catch(err) {
       console.error(err);
     }
+    setPreviewLoading(false);
   }
+  
+  useEffect(() => {
+    updatePlaymatPreview();
+  }, [selectedLeaderColor]);
 
   function handleImageClick(image: ThemeImage | null) {
     const newSrc = image ? image.src : "";
@@ -72,10 +80,10 @@ export default function CreatePlaymats({artImages, imageSet, setPreviewImage} : 
 
       <div className="w-full flex flex-col 2xl:flex-row flex-wrap justify-center 2xl:justify-between items-center my-6 gap-4">
         <SelectLeaderColor setLeaderColor={handleSetLeaderColor}/>
-        <SearchBar />
+        <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm}/>
       </div>
 
-      <SelectImage aspectRatio="1414 / 1000" artImages={artImages} handleImageClick={handleImageClick} selectedImage={selectedImage}/>
+      <SelectImage aspectRatio="1414 / 1000" gridCols={3} artImages={artImages} handleImageClick={handleImageClick} selectedImage={selectedImage} searchTerm={searchTerm}/>
       
     </div>
   )

@@ -23,7 +23,7 @@ export default async function CreatePage() {
         const files = fs.readdirSync(subFolderPath);
         files.forEach((file, index) => {
           images.push({
-            name: `subFolderPath-${index}`, //file.split(".")[0],
+            name: `${folder}-${index}`, //file.split(".")[0],
             src: `${imgRelPath}/${folder}/${file}`,
             image: null,
           });
@@ -34,6 +34,7 @@ export default async function CreatePage() {
   }
 
   const artImages = await getArtImages();
+  console.log("artImages", artImages);
 
   return (
     <div className="w-full h-full p-10 gap-8 flex flex-col justify-center items-center">

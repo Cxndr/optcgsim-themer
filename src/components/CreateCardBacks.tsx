@@ -10,7 +10,7 @@ import SelectImage from "./SelectImage";
 import SelectOverlayCards from "./SelectOverlayCards";
 import SelectCardBackType from "./SelectCardBackType";
 import { CardBackType, ImageSet, ThemeImage} from "@/utils/imageSet";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Jimp, JimpInstance } from "jimp";
 import { processCardBack } from "@/utils/jimpManips";
 
@@ -19,6 +19,7 @@ type createPlaymatsProps = {
   artImages: ThemeImage[],
   imageSet: ImageSet,
   setPreviewImage: (image: string) => void,
+  setPreviewLoading: (loading: boolean) => void
 }
 
 const emptyImage: ThemeImage = { 
@@ -27,19 +28,21 @@ const emptyImage: ThemeImage = {
   image: null 
 };
 
-export default function CreatePlaymats({artImages, imageSet, setPreviewImage} : createPlaymatsProps) {
+export default function CreatePlaymats({artImages, imageSet, setPreviewImage, setPreviewLoading} : createPlaymatsProps) {
 
   const [selectedCardBackType, setSelectedCardBackType] = useState("DeckCards" as CardBackType);
   const [selectedImage, setSelectedImage] = useState<ThemeImage | null>(imageSet.cardBacks.images[selectedCardBackType]);
+  const [searchTerm, setSearchTerm] = useState("");
 
   artImages.push(emptyImage);
 
   async function updateCardBackPreview() {
+    if (imageSet.cardBacks.images[selectedCardBackType].src === "" || imageSet.cardBacks.images[selectedCardBackType].src === null) {
+      setPreviewImage("");
+      return;
+    }
+    setPreviewLoading(true);
     try {
-      if (imageSet.cardBacks.images[selectedCardBackType].src === "" || imageSet.cardBacks.images[selectedCardBackType].src === null) {
-        setPreviewImage("");
-        return;
-      }
       let image = await Jimp.read(imageSet.cardBacks.images[selectedCardBackType].src);
       image = await processCardBack(selectedCardBackType, image, imageSet.cardBacks);
       const base64 = await image.getBase64("image/png");
@@ -48,7 +51,12 @@ export default function CreatePlaymats({artImages, imageSet, setPreviewImage} : 
     catch(err) {
       console.error(err);
     }
+    setPreviewLoading(false);
   }
+
+  useEffect(() => {
+    updateCardBackPreview();
+  }, [selectedCardBackType]);
 
   function handleImageClick(image: ThemeImage | null) {
     const newSrc = image ? image.src : "";
@@ -75,10 +83,10 @@ export default function CreatePlaymats({artImages, imageSet, setPreviewImage} : 
 
       <div className="w-full flex flex-col 2xl:flex-row flex-wrap justify-center 2xl:justify-between items-center my-6 gap-4">
         <SelectCardBackType setCardBackType={handleSetCardBackType}/>
-        <SearchBar />
+        <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm}/>
       </div>
 
-      <SelectImage aspectRatio="869 / 1214" artImages={artImages} handleImageClick={handleImageClick} selectedImage={selectedImage}/>
+      <SelectImage aspectRatio="869 / 1214" gridCols={4} artImages={artImages} handleImageClick={handleImageClick} selectedImage={selectedImage} searchTerm={searchTerm}/>
       
     </div>
   )

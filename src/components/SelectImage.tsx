@@ -2,27 +2,37 @@
 
 import { ThemeImage } from "@/utils/imageSet";
 import Image from "next/image";
+import { Scrollbars } from 'react-custom-scrollbars-2';
 
 type SelectImageProps = {
   aspectRatio: string;
+  gridCols: number;
   artImages: ThemeImage[];
   handleImageClick: (image: ThemeImage | null) => void;
   selectedImage: ThemeImage | null;
+  searchTerm: string;
 }
 
-export default function SelectImage({aspectRatio, artImages, handleImageClick, selectedImage}:SelectImageProps) {
+export default function SelectImage({aspectRatio, gridCols, artImages, handleImageClick, selectedImage, searchTerm}:SelectImageProps) {
 
-  const [imageWidth, imageHeight] = aspectRatio.split(" / ").map(Number);
-  const imageRatio = imageWidth / imageHeight;
-  let gridCols = 3;
-  if (imageRatio < 1) {
-    gridCols = 4;
+  let filteredImages = artImages;
+  if (searchTerm) {
+    const searchTerms = searchTerm.toLowerCase().split(' ').filter(term => term.length > 0);
+    filteredImages = artImages.filter(image => 
+      searchTerms.every(term => 
+        image.name?.toLowerCase().includes(term)
+      )
+    );
   }
-
 
   return (
     <div className="flex-grow overflow-auto">
-        <div className={`grid grid-cols-${gridCols} gap-4`}>
+      <Scrollbars
+        // hideTracksWhenNotNeeded
+        thumbMinSize={40}
+        renderThumbVertical={props => <div {...props} className="thumb-vertical bg-zinc-100/50 rounded-full"/>}
+      >
+        <div className={`grid grid-cols-${gridCols} gap-4 mr-4`}> {/* dynamic grid cols works because whitelist in tailwind.config.ts */}
           <a
             onClick={() => handleImageClick(null)}
             className="relative w-full overflow-hidden rounded-xl shadow-sm shadow-black"
@@ -33,19 +43,21 @@ export default function SelectImage({aspectRatio, artImages, handleImageClick, s
             </div>
           </a>
           {
-            artImages.map((image, index) => (
+            filteredImages.map((image, index) => (
+
               <a 
                 onClick={() => handleImageClick(image)}
                 key={index}
                 className="relative w-full overflow-hidden rounded-xl shadow-sm shadow-black"
                 style={{ aspectRatio: aspectRatio }}
               >
+
                 {image.src &&
                   <Image 
                     src={image.src || ''}
                     alt={image.name || "no image set"}
                     className="w-full h-full object-cover hover:scale-110 transform transition-transform ease-in-out duration-700"
-                    width={200} height={200}
+                    width={400} height={400}
                   />
                 }
                 {
@@ -58,6 +70,7 @@ export default function SelectImage({aspectRatio, artImages, handleImageClick, s
             ))
           }
         </div>
-      </div>
+      </Scrollbars>
+    </div>
   )
 }
