@@ -11,7 +11,7 @@ import { ThemeImage } from "@/utils/imageSet";
 export default async function CreatePage() {
 
   async function getArtImages() {
-    "use server";
+    "use client";
     const images: ThemeImage[] = [];
     const imgRelPath = "/img/art";
     const imgFolder = path.resolve(process.cwd(), "public", "img", "art"); // Absolute path to img/art inside public
