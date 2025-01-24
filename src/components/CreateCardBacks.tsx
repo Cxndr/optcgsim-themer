@@ -1,17 +1,15 @@
 "use client"
 
-import SelectLeaderColor from "./SelectLeaderColor";
-import SelectOverlayPlaymat from "./SelectOverlayPlaymat";
+
 import SelectEdgeStyle from "./SelectEdgeStyle";
 import SelectShadowStyle from "./SelectShadowStyle";
 import SearchBar from "./SearchBar";
-import Image from "next/image";
 import SelectImage from "./SelectImage";
 import SelectOverlayCards from "./SelectOverlayCards";
 import SelectCardBackType from "./SelectCardBackType";
 import { CardBackType, ImageSet, ThemeImage} from "@/utils/imageSet";
 import { useEffect, useState } from "react";
-import { Jimp, JimpInstance } from "jimp";
+import { Jimp } from "jimp";
 import { processCardBack } from "@/utils/jimpManips";
 
 
@@ -56,7 +54,7 @@ export default function CreatePlaymats({artImages, imageSet, setPreviewImage, se
 
   useEffect(() => {
     updateCardBackPreview();
-  }, [selectedCardBackType]);
+  }, [selectedCardBackType, updateCardBackPreview]);
 
   function handleImageClick(image: ThemeImage | null) {
     const newSrc = image ? image.src : "";

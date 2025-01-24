@@ -1,17 +1,10 @@
 "use client"
 
-import SelectLeaderColor from "./SelectLeaderColor";
-import SelectOverlayPlaymat from "./SelectOverlayPlaymat";
 import SelectEdgeStyle from "./SelectEdgeStyle";
 import SelectShadowStyle from "./SelectShadowStyle";
-import SearchBar from "./SearchBar";
-import Image from "next/image";
-import SelectImage from "./SelectImage";
-import SelectOverlayCards from "./SelectOverlayCards";
-import SelectCardBackType from "./SelectCardBackType";
-import { CardBackType, ImageSet, ThemeImage} from "@/utils/imageSet";
+import { ImageSet, ThemeImage} from "@/utils/imageSet";
 import { useEffect, useState } from "react";
-import { Jimp, JimpInstance } from "jimp";
+import { Jimp} from "jimp";
 import { processCard } from "@/utils/jimpManips";
 
 
@@ -20,13 +13,6 @@ type createCardsProps = {
   setPreviewImage: (image: string) => void,
   setPreviewLoading: (loading: boolean) => void
 }
-
-const emptyImage: ThemeImage = { 
-  src: "", 
-  name: null, 
-  image: null 
-};
-
 
 
 export default function CreateCards({imageSet, setPreviewImage, setPreviewLoading} : createCardsProps) {
@@ -60,7 +46,7 @@ export default function CreateCards({imageSet, setPreviewImage, setPreviewLoadin
 
   useEffect(() => {
     updateCardPreview();
-  }, [selectedFiles]);
+  }, [selectedFiles, updateCardPreview]);
 
   function clearCardImages() {
     setSelectedFiles(null);
@@ -106,7 +92,7 @@ export default function CreateCards({imageSet, setPreviewImage, setPreviewLoadin
 
           <input 
             type="file" 
-            /* @ts-expect-error */
+            /* @ts-expect-error - workaround for webkitdirectory support bug in react */
             webkitdirectory="" 
             mozdirectory=""
             directory=""

@@ -1,5 +1,4 @@
 import { FaMagnifyingGlass } from "react-icons/fa6"
-import { useState } from "react";
 
 type SearchBarProps = {
   searchTerm: string;
@@ -13,7 +12,7 @@ export default function SearchBar({searchTerm, setSearchTerm}:SearchBarProps) {
   }
 
   return (
-    <label className="input flex-grow 2xl:flex-grow-0 flex items-center gap-2 text-zinc-900 shadow-sm shadow-black">
+  <label className="input flex-grow 2xl:flex-grow-0 flex items-center gap-2 text-zinc-900 shadow-sm shadow-black">
       <input 
         type="text"
         value={searchTerm}

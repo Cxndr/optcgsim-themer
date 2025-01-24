@@ -7,12 +7,10 @@ import CreateCardBacks from "./CreateCardBacks";
 import CreateDonCards from "./CreateDonCards";
 import CreateCards from "./CreateCards";
 import PreviewPane from "./PreviewPane";
-import { imageSet, LeaderColor, makeImageSetZip } from "@/utils/imageSet";
-import {Jimp} from "jimp"; // Correct import for Jimp
+import { imageSet, makeImageSetZip } from "@/utils/imageSet";
 
-import Image from "next/image";
 import { ImageOption } from "@/app/create/page";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 type CreateThemeProps = {
   artImages: ImageOption[];
