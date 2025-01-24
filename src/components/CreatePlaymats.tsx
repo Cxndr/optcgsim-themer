@@ -22,7 +22,6 @@ type createPlaymatsProps = {
 const emptyImage: ThemeImage = { 
   src: "",
   name: null, 
-  image: null 
 };
 
 export default function CreatePlaymats({artImages, imageSet, setPreviewImage, setPreviewLoading} : createPlaymatsProps) {

@@ -52,7 +52,7 @@ export const DonOverlayStyleValues: DonOverlayStyle[] = [
 export type ThemeImage = {
   src: string | null;
   name: string | null;
-  image: typeof Jimp | null;
+  // image: typeof Jimp | null;
 };
 
 export type LeaderColor = "Black" | "BlackYellow" | "Blue" | "BlueBlack" | "BluePurple" | "BlueYellow" | "Green" | "GreenBlack" | "GreenBlue" | "GreenPurple" | "GreenYellow" | "Purple" | "PurpleBlack" | "PurpleYellow" | "Red" | "RedBlack" | "RedBlue" | "RedGreen" | "RedPurple" | "RedYellow" | "Yellow";
@@ -156,33 +156,33 @@ export const imageSet: ImageSet = {
     edgeStyle: "Rounded Medium",
     shadow: true,
     images: {
-      Black: { src: "", image: null, name: null },
-      BlackYellow: { src: "", image: null, name: null },
-      Blue: { src: "", image: null, name: null },
-      BlueBlack: { src: "", image: null, name: null },
-      BluePurple: { src: "", image: null, name: null },
-      BlueYellow: { src: "", image: null, name: null },
-      Green: { src: "", image: null, name: null },
-      GreenBlack: { src: "", image: null, name: null },
-      GreenBlue: { src: "", image: null, name: null },
-      GreenPurple: { src: "", image: null, name: null },
-      GreenYellow: { src: "", image: null, name: null },
-      Purple: { src: "", image: null, name: null },
-      PurpleBlack: { src: "", image: null, name: null },
-      PurpleYellow: { src: "", image: null, name: null },
-      Red: { src: "", image: null, name: null },
-      RedBlack: { src: "", image: null, name: null },
-      RedBlue: { src: "", image: null, name: null },
-      RedGreen: { src: "", image: null, name: null },
-      RedPurple: { src: "", image: null, name: null },
-      RedYellow: { src: "", image: null, name: null },
-      Yellow: { src: "", image: null, name: null },
+      Black: { src: "", name: null },
+      BlackYellow: { src: "", name: null },
+      Blue: { src: "", name: null },
+      BlueBlack: { src: "", name: null },
+      BluePurple: { src: "", name: null },
+      BlueYellow: { src: "", name: null },
+      Green: { src: "", name: null },
+      GreenBlack: { src: "", name: null },
+      GreenBlue: { src: "", name: null },
+      GreenPurple: { src: "", name: null },
+      GreenYellow: { src: "", name: null },
+      Purple: { src: "", name: null },
+      PurpleBlack: { src: "", name: null },
+      PurpleYellow: { src: "", name: null },
+      Red: { src: "", name: null },
+      RedBlack: { src: "", name: null },
+      RedBlue: { src: "", name: null },
+      RedGreen: { src: "", name: null },
+      RedPurple: { src: "", name: null },
+      RedYellow: { src: "", name: null },
+      Yellow: { src: "", name: null },
     }
   },
   menus: {
     bgImages: {
-      Home: { src: "", image: null, name: null },
-      DeckEditor: { src: "", image: null, name: null },
+      Home: { src: "", name: null },
+      DeckEditor: { src: "", name: null },
     }
   },
   cardBacks: {
@@ -190,8 +190,8 @@ export const imageSet: ImageSet = {
     edgeStyle: "Rounded Medium",
     shadow: true,
     images: {
-      DeckCards: { src: "", image: null, name: null },
-      DonCards: { src: "", image: null, name: null },
+      DeckCards: { src: "", name: null },
+      DonCards: { src: "", name: null },
     }
   },
   donCards: {
@@ -199,7 +199,7 @@ export const imageSet: ImageSet = {
     edgeStyle: "Rounded Medium",
     shadow: true,
     images: {
-      DonCard: { src: "", image: null, name: null },
+      DonCard: { src: "", name: null },
     }
   },
   cards: {

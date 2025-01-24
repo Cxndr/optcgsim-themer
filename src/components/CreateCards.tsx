@@ -61,7 +61,7 @@ export default function CreateCards({imageSet, setPreviewImage, setPreviewLoadin
         if (file.name.includes("Don")) continue; // Don cards are handled seperately
         const newSrc = URL.createObjectURL(file);
         const fileName = file.name.split(".png")[0]
-        imageSet.cards.images[fileName] = { src: newSrc, name: fileName, image: null };
+        imageSet.cards.images[fileName] = { src: newSrc, name: fileName};
       }
     }
   }
@@ -83,7 +83,7 @@ export default function CreateCards({imageSet, setPreviewImage, setPreviewLoadin
             <h4 className="label-text text-2xl font-bold text-zinc-100 text-center w-full">Upload Card Images</h4>
             <p className="label-text text-lg text-zinc-200 text-center w-full">We cannot host One Piece card images, please upload your own to customize.</p>
             <p className="label-text text-lg text-zinc-200 text-center w-full">These can usually be found in: </p>
-            <p className="text-center w-auto text-sm text-zinc-700 bg-zinc-200 bg-opacity-70 rounded-2xl py-2 px-4 shadow-sm shadow-black w-full font-bold">
+            <p className="text-center text-sm text-zinc-700 bg-zinc-200 bg-opacity-70 rounded-2xl py-2 px-4 shadow-sm shadow-black w-full font-bold">
               <span className="text-error">[YOUR OPTCGSIM INSTALL]</span>/Builds<span className="text-error">[OS]</span>/OPTCGSim_Data/StreamingAssets/Cards/
             </p>
             <p className="label-text text-lg text-zinc-200 text-center w-full"><b>Choose Files</b> below, navigate to this folder, and then click Upload.</p>

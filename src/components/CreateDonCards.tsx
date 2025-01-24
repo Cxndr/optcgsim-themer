@@ -21,7 +21,6 @@ type createDonCardsProps = {
 const emptyImage: ThemeImage = { 
   src: "",
   name: null, 
-  image: null 
 };
 
 export default function CreateDonCards({artImages, imageSet, setPreviewImage, setPreviewLoading} : createDonCardsProps) {
