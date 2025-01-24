@@ -10,12 +10,8 @@ export const metadata: Metadata = {
   description: "Generate custom themes for OPTCG Sim.",
 };
 
-export const inter = Inter({
+const inter = Inter({
   subsets: ["latin"],
-})
-export const roboto = Roboto({
-  subsets: ["latin"],
-  weight: ['100', '300', '400', '500', '700', '900',]
 })
 
 
