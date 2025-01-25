@@ -8,9 +8,8 @@ import SelectImage from "./SelectImage";
 import SelectOverlayCards from "./SelectOverlayCards";
 import SelectCardBackType from "./SelectCardBackType";
 import { CardBackType, ImageSet, ThemeImage} from "@/utils/imageSet";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Jimp, JimpInstance } from "jimp";
-import { processCardBack } from "@/utils/jimpManips";
 
 
 type createPlaymatsProps = {
@@ -30,25 +29,26 @@ export default function CreatePlaymats({artImages, imageSet, setPreviewImage, se
   const [selectedCardBackType, setSelectedCardBackType] = useState("DeckCards" as CardBackType);
   const [selectedImage, setSelectedImage] = useState<ThemeImage | null>(imageSet.cardBacks.images[selectedCardBackType]);
   const [searchTerm, setSearchTerm] = useState("");
+  const workerRef = useRef<Worker | null>(null);
 
   artImages.push(emptyImage);
 
   async function updateCardBackPreview() {
+    if (!workerRef.current) return;
     if (imageSet.cardBacks.images[selectedCardBackType].src === "" || imageSet.cardBacks.images[selectedCardBackType].src === null) {
       setPreviewImage("");
       return;
     }
     setPreviewLoading(true);
     try {
-      let image = await Jimp.read(imageSet.cardBacks.images[selectedCardBackType].src) as JimpInstance;
-      image = await processCardBack(selectedCardBackType, image, imageSet.cardBacks);
-      const base64 = await image.getBase64("image/png");
-      setPreviewImage(base64);
+      const image = await Jimp.read(imageSet.cardBacks.images[selectedCardBackType].src) as JimpInstance;
+      const buffer = await image.getBuffer("image/png");
+      const arrayBuffer = buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength);
+      workerRef.current.postMessage({ image: arrayBuffer, manip: "processCardBack", type: selectedCardBackType, imageSet });
     }
     catch(err) {
       console.error(err);
     }
-    setPreviewLoading(false);
   }
 
   useEffect(() => {
@@ -58,6 +58,17 @@ export default function CreatePlaymats({artImages, imageSet, setPreviewImage, se
   useEffect(() => {
     setSelectedImage(imageSet.cardBacks.images[selectedCardBackType]);
   }, [selectedCardBackType, imageSet.cardBacks.images])
+
+  useEffect(() => {
+    workerRef.current = new Worker(new URL("../workers/worker.js", import.meta.url), { type: "module" });
+    workerRef.current.onmessage = (e) => {
+      setPreviewImage(e.data.base64);
+      setPreviewLoading(false);
+    }
+    return () => {
+      workerRef.current?.terminate();
+    };
+  }, []);
 
   function handleImageClick(image: ThemeImage | null) {
     const newSrc = image ? image.src : "";

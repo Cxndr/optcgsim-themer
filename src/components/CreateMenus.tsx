@@ -6,8 +6,7 @@ import {Jimp, JimpInstance} from "jimp";
 import SelectImage from "./SelectImage";
 
 import { MenuType, ImageSet, ThemeImage} from "@/utils/imageSet";
-import { useEffect, useState } from "react";
-import { processMenuOverlay } from "@/utils/jimpManips";
+import { useEffect, useRef, useState } from "react";
 type createMenusProps = {
   artImages: ThemeImage[],
   imageSet: ImageSet,
@@ -25,25 +24,26 @@ export default function CreateMenus({artImages, imageSet, setPreviewImage, setPr
   const [selectedMenuType, setSelectedMenuType] = useState("Home" as MenuType);
   const [selectedImage, setSelectedImage] = useState<ThemeImage | null>(imageSet.menus.bgImages[selectedMenuType]);
   const [searchTerm, setSearchTerm] = useState("");
+  const workerRef = useRef<Worker | null>(null);
 
   artImages.push(emptyImage);
 
   async function updateMenuPreview() {
+    if (!workerRef.current) return;
     if (imageSet.menus.bgImages[selectedMenuType].src === "" || imageSet.menus.bgImages[selectedMenuType].src === null) {
       setPreviewImage("");
       return;
     }
     setPreviewLoading(true);
     try {
-      let image = await Jimp.read(imageSet.menus.bgImages[selectedMenuType].src) as JimpInstance;
-      image = await processMenuOverlay(selectedMenuType, image);
-      const base64 = await image.getBase64("image/png");
-      setPreviewImage(base64);
+      const image = await Jimp.read(imageSet.menus.bgImages[selectedMenuType].src) as JimpInstance;
+      const buffer = await image.getBuffer("image/png");
+      const arrayBuffer = buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength);
+      workerRef.current.postMessage({ image: arrayBuffer, manip: "processMenuOverlay", type:selectedMenuType, imageSet });
     }
     catch(err) {
       console.error(err);
     }
-    setPreviewLoading(false);
   }
 
   useEffect(() => {
@@ -53,6 +53,17 @@ export default function CreateMenus({artImages, imageSet, setPreviewImage, setPr
   useEffect(() => {
     setSelectedImage(imageSet.menus.bgImages[selectedMenuType]);
   }, [selectedMenuType, imageSet.menus.bgImages])
+
+  useEffect(() => {
+    workerRef.current = new Worker(new URL("../workers/worker.js", import.meta.url), { type: "module" });
+    workerRef.current.onmessage = (e) => {
+      setPreviewImage(e.data.base64);
+      setPreviewLoading(false);
+    }
+    return () => {
+      workerRef.current?.terminate();
+    };
+  }, []);
 
   function handleImageClick(image: ThemeImage | null) {
     const newSrc = image ? image.src : "";

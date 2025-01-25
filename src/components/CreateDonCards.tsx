@@ -6,9 +6,8 @@ import SelectShadowStyle from "./SelectShadowStyle";
 import SearchBar from "./SearchBar";
 import SelectImage from "./SelectImage";
 import { ImageSet, ThemeImage} from "@/utils/imageSet";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Jimp, JimpInstance } from "jimp";
-import { processDonCard } from "@/utils/jimpManips";
 
 
 type createDonCardsProps = {
@@ -27,30 +26,42 @@ export default function CreateDonCards({artImages, imageSet, setPreviewImage, se
 
   const [selectedImage, setSelectedImage] = useState<ThemeImage | null>(imageSet.donCards.images.DonCard);
   const [searchTerm, setSearchTerm] = useState("");
+  const workerRef = useRef<Worker | null>(null);
 
   artImages.push(emptyImage);
 
   async function updateDonCardPreview() {
+    if (!workerRef.current) return;
     if (imageSet.donCards.images.DonCard.src === "" || imageSet.donCards.images.DonCard.src === null) {
       setPreviewImage("");
       return;
     }
     setPreviewLoading(true)
     try {
-      let image = await Jimp.read(imageSet.donCards.images.DonCard.src) as JimpInstance;
-      image = await processDonCard(image, imageSet.donCards);
-      const base64 = await image.getBase64("image/png");
-      setPreviewImage(base64);
+      const image = await Jimp.read(imageSet.donCards.images.DonCard.src) as JimpInstance;
+      const buffer = await image.getBuffer("image/png");
+      const arrayBuffer = buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength);
+      workerRef.current.postMessage({ image: arrayBuffer, manip: "processDonCard", imageSet });
     }
     catch(err) {
       console.error(err);
     }
-    setPreviewLoading(false);
   }
 
   useEffect(() => {
     updateDonCardPreview();
   }, [selectedImage, imageSet.donCards]);
+
+  useEffect(() => {
+    workerRef.current = new Worker(new URL("../workers/worker.js", import.meta.url), { type: "module" });
+    workerRef.current.onmessage = (e) => {
+      setPreviewImage(e.data.base64);
+      setPreviewLoading(false);
+    }
+    return () => {
+      workerRef.current?.terminate();
+    };
+  }, []);
 
   function handleImageClick(image: ThemeImage | null) {
     const newSrc = image ? image.src : "";
