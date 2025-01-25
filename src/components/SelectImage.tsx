@@ -2,7 +2,7 @@
 
 import { ThemeImage } from "@/utils/imageSet";
 import Image from "next/image";
-import { Scrollbars } from 'react-custom-scrollbars-2';
+import CustomScrollbars from "./CustomScrollbars";
 
 type SelectImageProps = {
   aspectRatio: string;
@@ -27,11 +27,7 @@ export default function SelectImage({aspectRatio, gridCols, artImages, handleIma
 
   return (
     <div className="flex-grow overflow-auto">
-      <Scrollbars
-        // hideTracksWhenNotNeeded
-        thumbMinSize={40}
-        renderThumbVertical={props => <div {...props} className="thumb-vertical bg-zinc-100/50 rounded-full"/>}
-      >
+      <CustomScrollbars>
         <div className={`grid grid-cols-${gridCols} gap-4 mr-4`}> {/* dynamic grid cols works because whitelist in tailwind.config.ts */}
           <a
             onClick={() => handleImageClick(null)}
@@ -70,7 +66,7 @@ export default function SelectImage({aspectRatio, gridCols, artImages, handleIma
             ))
           }
         </div>
-      </Scrollbars>
+      </CustomScrollbars>
     </div>
   )
 }

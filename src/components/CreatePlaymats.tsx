@@ -8,7 +8,7 @@ import SearchBar from "./SearchBar";
 import SelectImage from "./SelectImage";
 
 import { LeaderColor, ImageSet, ThemeImage} from "@/utils/imageSet";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Jimp, JimpInstance } from "jimp";
 import { processPlaymat } from "@/utils/jimpManips";
 
@@ -32,8 +32,9 @@ export default function CreatePlaymats({artImages, imageSet, setPreviewImage, se
 
   artImages.push(emptyImage);
 
-  const updatePlaymatPreview = useCallback(async () => {
-    if (imageSet.playmats.images[selectedLeaderColor].src === "" || imageSet.playmats.images[selectedLeaderColor].src === null) {
+  async function updatePlaymatPreview() {
+    console.log(selectedLeaderColor); // Ensure latest value is logged
+    if (imageSet.playmats.images[selectedLeaderColor]?.src === "" || imageSet.playmats.images[selectedLeaderColor]?.src === null) {
       setPreviewImage("");
       return;
     }
@@ -44,27 +45,31 @@ export default function CreatePlaymats({artImages, imageSet, setPreviewImage, se
       const base64 = await image.getBase64("image/png");
       setPreviewImage(base64);
     }
-    catch(err) {
+    catch (err) {
       console.error(err);
     }
     setPreviewLoading(false);
-  }, [imageSet.playmats, selectedLeaderColor, setPreviewImage, setPreviewLoading]);
-  
+  };
+
   useEffect(() => {
     updatePlaymatPreview();
-  }, [updatePlaymatPreview]);
+  }, [selectedLeaderColor, selectedImage, imageSet.playmats]);
+
+  useEffect(() => {
+    setSelectedImage(imageSet.playmats.images[selectedLeaderColor]);
+  }, [selectedLeaderColor, imageSet.playmats.images]);
 
   function handleImageClick(image: ThemeImage | null) {
     const newSrc = image ? image.src : "";
     setSelectedImage(image);
     imageSet.playmats.images[selectedLeaderColor].src = newSrc;
-    updatePlaymatPreview();
+    // updatePlaymatPreview();
   }
 
   function handleSetLeaderColor(value: string) {
     const leaderColor = value.replaceAll(" ", "") as LeaderColor;
     setSelectedLeaderColor(leaderColor);
-    updatePlaymatPreview();
+    // updatePlaymatPreview();
   }
 
   return (

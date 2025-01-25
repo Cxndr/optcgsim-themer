@@ -8,7 +8,7 @@ import SelectImage from "./SelectImage";
 import SelectOverlayCards from "./SelectOverlayCards";
 import SelectCardBackType from "./SelectCardBackType";
 import { CardBackType, ImageSet, ThemeImage} from "@/utils/imageSet";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Jimp, JimpInstance } from "jimp";
 import { processCardBack } from "@/utils/jimpManips";
 
@@ -33,7 +33,7 @@ export default function CreatePlaymats({artImages, imageSet, setPreviewImage, se
 
   artImages.push(emptyImage);
 
-  const updateCardBackPreview = useCallback(async () => {
+  async function updateCardBackPreview() {
     if (imageSet.cardBacks.images[selectedCardBackType].src === "" || imageSet.cardBacks.images[selectedCardBackType].src === null) {
       setPreviewImage("");
       return;
@@ -49,23 +49,25 @@ export default function CreatePlaymats({artImages, imageSet, setPreviewImage, se
       console.error(err);
     }
     setPreviewLoading(false);
-  }, [imageSet.cardBacks, selectedCardBackType, setPreviewImage, setPreviewLoading]);
+  }
 
   useEffect(() => {
     updateCardBackPreview();
-  }, [updateCardBackPreview]);
+  }, [selectedCardBackType, selectedImage, imageSet.cardBacks]);
+
+  useEffect(() => {
+    setSelectedImage(imageSet.cardBacks.images[selectedCardBackType]);
+  }, [selectedCardBackType, imageSet.cardBacks.images])
 
   function handleImageClick(image: ThemeImage | null) {
     const newSrc = image ? image.src : "";
     setSelectedImage(image);
     imageSet.cardBacks.images[selectedCardBackType].src = newSrc;
-    updateCardBackPreview();
   }
 
   function handleSetCardBackType(value: string) {
     const cardBackType = value.replaceAll(" ", "") as CardBackType;
     setSelectedCardBackType(cardBackType);
-    updateCardBackPreview();
   }
   
 

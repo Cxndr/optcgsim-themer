@@ -3,10 +3,12 @@ type faqEntry = {
   a: string,
 }
 
+import CustomScrollbars from "@/components/CustomScrollbars";
+
 const faqEntries: faqEntry[] = [ // DO NOT move these into a database without removing the html parsing!!!
   {
     q: "I have discovered a bug / have a suggestion for a new feature, how can I contact you?",
-    a: `You can email me at <a href='mailto:livewellandmakethings@gmail.com'>livewellandmakethings@gmail.com<a> or <a href='https://x.com/Cxndr_'>dm/@ me on twitter</a>.`
+    a: `You can email me at <a href='mailto:livewellandmakethings@gmail.com' target='_blank'>livewellandmakethings@gmail.com</a> or <a href='https://x.com/Cxndr_' target='_blank'>dm/@ me on twitter</a>.`
   },
   {
     q: "How does this website work?",
@@ -47,18 +49,22 @@ export default function FAQPage() {
 
       <div className="w-2/3 h-full overflow-y-auto flex flex-col justify-start items-center gap-12 m-8 rounded-3xl bg-zinc-800 bg-opacity-70 pt-12 pb-14 px-10 text-zinc-50 text-2xl shadow-2xl shadow-black">
 
-        <h2 className="text-4xl font-bold">Frequently Asked Questions</h2>
+        <CustomScrollbars>
 
-        {faqEntries.map((entry, index) => (
-          <div key={index} className="flex flex-col gap-4 w-full">
-            <h5 className="font-bold text-2xl">{entry.q}</h5>
-            <p 
-              dangerouslySetInnerHTML={{ __html: entry.a }}
-              className="font-normal text-xl"
-            >  
-            </p>
-          </div>
-        ))}
+          <h2 className="text-4xl font-bold text-center">Frequently Asked Questions</h2>
+
+          {faqEntries.map((entry, index) => (
+            <div key={index} className="flex flex-col gap-4 w-full">
+              <h5 className="font-bold text-2xl mt-14 mb-2 text-accent">{entry.q}</h5>
+              <p 
+                dangerouslySetInnerHTML={{ __html: entry.a }}
+                className="font-normal text-xl text-zinc-100"
+              >
+              </p>
+            </div>
+          ))}
+
+        </CustomScrollbars>
 
       </div>
 
