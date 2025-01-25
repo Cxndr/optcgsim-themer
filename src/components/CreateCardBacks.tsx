@@ -19,19 +19,12 @@ type createPlaymatsProps = {
   setPreviewLoading: (loading: boolean) => void
 }
 
-const emptyImage: ThemeImage = { 
-  src: "",
-  name: null, 
-};
-
 export default function CreatePlaymats({artImages, imageSet, setPreviewImage, setPreviewLoading} : createPlaymatsProps) {
 
   const [selectedCardBackType, setSelectedCardBackType] = useState("DeckCards" as CardBackType);
   const [selectedImage, setSelectedImage] = useState<ThemeImage | null>(imageSet.cardBacks.images[selectedCardBackType]);
   const [searchTerm, setSearchTerm] = useState("");
   const workerRef = useRef<Worker | null>(null);
-
-  artImages.push(emptyImage);
 
   async function updateCardBackPreview() {
     if (!workerRef.current) return;

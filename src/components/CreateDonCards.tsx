@@ -17,18 +17,11 @@ type createDonCardsProps = {
   setPreviewLoading: (loading: boolean) => void
 }
 
-const emptyImage: ThemeImage = { 
-  src: "",
-  name: null, 
-};
-
 export default function CreateDonCards({artImages, imageSet, setPreviewImage, setPreviewLoading} : createDonCardsProps) {
 
   const [selectedImage, setSelectedImage] = useState<ThemeImage | null>(imageSet.donCards.images.DonCard);
   const [searchTerm, setSearchTerm] = useState("");
   const workerRef = useRef<Worker | null>(null);
-
-  artImages.push(emptyImage);
 
   async function updateDonCardPreview() {
     if (!workerRef.current) return;
