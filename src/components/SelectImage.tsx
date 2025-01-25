@@ -25,6 +25,8 @@ export default function SelectImage({aspectRatio, gridCols, artImages, handleIma
     );
   }
 
+  console.log(artImages);
+
   return (
     <div className="flex-grow overflow-auto">
       <CustomScrollbars>
@@ -34,9 +36,13 @@ export default function SelectImage({aspectRatio, gridCols, artImages, handleIma
             className="relative w-full overflow-hidden rounded-xl shadow-sm shadow-black"
             style={{ aspectRatio: aspectRatio }}
           >
-            <div className="w-full h-full flex items-center justify-center text-zinc-50">
+            <div className="w-full h-full flex items-center justify-center text-zinc-50 bg-zinc-100/10 hover:scale-110 transform transition-transform ease-in-out duration-700">
               None
             </div>
+            {
+              !selectedImage &&
+              <div className="absolute top-0 left-0 w-full h-full bg-zinc-300 bg-opacity-10 border-accent border-4 rounded-xl"></div>
+            }
           </a>
           {
             filteredImages.map((image, index) => (

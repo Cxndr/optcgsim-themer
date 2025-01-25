@@ -17,10 +17,7 @@ type CreatePlaymatsProps = {
   setPreviewLoading: (loading: boolean) => void;
 };
 
-const emptyImage: ThemeImage = { 
-  src: "",
-  name: null, 
-};
+
 
 export default function CreatePlaymats({
   artImages,
@@ -33,8 +30,6 @@ export default function CreatePlaymats({
   const [selectedImage, setSelectedImage] = useState<ThemeImage | null>(imageSet.playmats.images[selectedLeaderColor]);
   const [searchTerm, setSearchTerm] = useState("");
   const workerRef = useRef<Worker | null>(null);
-
-  artImages.push(emptyImage);
 
   async function updatePlaymatPreview() {
     if (!workerRef.current) return;

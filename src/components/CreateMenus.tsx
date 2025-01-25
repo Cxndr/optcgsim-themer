@@ -14,19 +14,12 @@ type createMenusProps = {
   setPreviewLoading: (loading: boolean) => void
 }
 
-const emptyImage: ThemeImage = { 
-  src: "", 
-  name: null, 
-};
-
 export default function CreateMenus({artImages, imageSet, setPreviewImage, setPreviewLoading} : createMenusProps) {
 
   const [selectedMenuType, setSelectedMenuType] = useState("Home" as MenuType);
   const [selectedImage, setSelectedImage] = useState<ThemeImage | null>(imageSet.menus.bgImages[selectedMenuType]);
   const [searchTerm, setSearchTerm] = useState("");
   const workerRef = useRef<Worker | null>(null);
-
-  artImages.push(emptyImage);
 
   async function updateMenuPreview() {
     if (!workerRef.current) return;
