@@ -22,7 +22,8 @@ export default function SelectLeaderColor({setLeaderColor}:selectLeaderColorProp
             onChange={(e) => handleChange(e.target.value as LeaderColor)}
           >
             {LeaderColorValues.map((color, index) => (
-              <option key={index} value={color}>{color}
+              <option key={index} value={color}>
+                {color}
               </option>
             ))}
           </select>

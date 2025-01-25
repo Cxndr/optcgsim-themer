@@ -34,3 +34,7 @@ h1 {
     text-wrap: balance;
   }
 }
+
+p a {
+  color: #3b82f6
+}

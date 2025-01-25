@@ -6,7 +6,7 @@ import {Jimp, JimpInstance} from "jimp";
 import SelectImage from "./SelectImage";
 
 import { MenuType, ImageSet, ThemeImage} from "@/utils/imageSet";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { processMenuOverlay } from "@/utils/jimpManips";
 type createMenusProps = {
   artImages: ThemeImage[],
@@ -28,7 +28,7 @@ export default function CreateMenus({artImages, imageSet, setPreviewImage, setPr
 
   artImages.push(emptyImage);
 
-  const updateMenuPreview = useCallback(async () => {
+  async function updateMenuPreview() {
     if (imageSet.menus.bgImages[selectedMenuType].src === "" || imageSet.menus.bgImages[selectedMenuType].src === null) {
       setPreviewImage("");
       return;
@@ -44,23 +44,25 @@ export default function CreateMenus({artImages, imageSet, setPreviewImage, setPr
       console.error(err);
     }
     setPreviewLoading(false);
-  }, [imageSet.menus, selectedMenuType, setPreviewImage, setPreviewLoading]);
+  }
 
   useEffect(() => {
     updateMenuPreview();
-  }, [updateMenuPreview]);
+  }, [selectedMenuType, selectedImage, imageSet.menus]);
+
+  useEffect(() => {
+    setSelectedImage(imageSet.menus.bgImages[selectedMenuType]);
+  }, [selectedMenuType, imageSet.menus.bgImages])
 
   function handleImageClick(image: ThemeImage | null) {
     const newSrc = image ? image.src : "";
     setSelectedImage(image);
     imageSet.menus.bgImages[selectedMenuType].src = newSrc;
-    updateMenuPreview();
   }
 
   function handleSetMenuType(value: string) {
     const menuType = value.replaceAll(" ", "") as MenuType;
     setSelectedMenuType(menuType);
-    updateMenuPreview();
   }
   
 
