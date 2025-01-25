@@ -16,7 +16,9 @@
     - text color for don cards.
     - overlay opacity.
     - range for border radius???
-  - Make jimp manipulations use web workers to speed up app.
+  * Make jimp manipulations use web workers to speed up app.
+  - There are blank image options at bottom of imageSelect list.
+  - Update visuals for "none" selection in imageSelect list.
 
 
 *** STRETCH ***
