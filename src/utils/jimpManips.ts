@@ -4,7 +4,7 @@ import { MenuType } from "./imageSet";
 import { CardBackType } from "./imageSet";
 
 export async function applyRoundedCorners(image: InstanceType<typeof Jimp>, radius: number){
-  // Create a mask with the same size as the image
+
   const mask = new Jimp({
     width: image.width, 
     height: image.height, 
@@ -39,7 +39,6 @@ export async function applyRoundedCorners(image: InstanceType<typeof Jimp>, radi
     mask.setPixelColor(0xffffffff, x, y); // Set pixels to opaque white
   });
 
-  // Apply the mask to the image
   image.mask(mask);
   return image;
 }
@@ -177,10 +176,10 @@ export async function processPlaymat(image: InstanceType<typeof Jimp>, settings:
 
   try {
     if (settings.overlay === "Area Markers") {
-      image = image.composite(await Jimp.read("img/overlays/area-markers.png"), 0, 0)
+      image = image.composite(await Jimp.read("/img/overlays/area-markers.png"), 0, 0)
     }
     else if (settings.overlay === "Area Markers w/ Text") {
-      image = image.composite(await Jimp.read("img/overlays/area-markers-text.png"), 0, 0)
+      image = image.composite(await Jimp.read("/img/overlays/area-markers-text.png"), 0, 0)
     }
   } catch(err) { console.error("Error applying overlay: ", err); }
 
@@ -208,10 +207,10 @@ export async function processMenuOverlay(menuType: MenuType, image: InstanceType
   image = await applySizing(image, 1920, 1080);
 
   if (menuType === "DeckEditor") {
-    image = image.composite(await Jimp.read("img/overlays/menu-deckedit-template.png"), 0, 0)
+    image = image.composite(await Jimp.read("/img/overlays/menu-deckedit-template.png"), 0, 0)
   }
   else {
-    image = image.composite(await Jimp.read("img/overlays/menu-home-template.png"), 0, 0)
+    image = image.composite(await Jimp.read("/img/overlays/menu-home-template.png"), 0, 0)
   }
   
   return image;
@@ -239,20 +238,20 @@ export async function processCardBack(cardBackType: CardBackType, image: Instanc
 
   try {
     if (settings.overlay === "OP Text") {
-      image = image.composite(await Jimp.read("img/overlays/card-back-textlogo-white.png"), 0, 0)
-      image = image.composite(await Jimp.read("img/overlays/card-oplogo-bordersoft.png"), 0, 0)
+      image = image.composite(await Jimp.read("/img/overlays/card-back-textlogo-white.png"), 0, 0)
+      image = image.composite(await Jimp.read("/img/overlays/card-oplogo-bordersoft.png"), 0, 0)
     }
     else if (settings.overlay === "OP Logo") {
-      const overlay = await Jimp.read("img/overlays/card-back-oplogo.png") as InstanceType<typeof Jimp>;
+      const overlay = await Jimp.read("/img/overlays/card-back-oplogo.png") as InstanceType<typeof Jimp>;
       image = (await applySoftLightBlend(image, overlay,0.35));
-      image = image.composite(await Jimp.read("img/overlays/card-oplogo-border.png"), 0, 0)
+      image = image.composite(await Jimp.read("/img/overlays/card-oplogo-border.png"), 0, 0)
       image.contrast(0.075);
     }
     else if (settings.overlay === "Don Symbol") {
-      image = image.composite(await Jimp.read("img/overlays/card-back-don-faded.png"), 0, 0)
+      image = image.composite(await Jimp.read("/img/overlays/card-back-don-faded.png"), 0, 0)
     }
     else if (settings.overlay === "Border Only") {
-      image = image.composite(await Jimp.read("img/overlays/card-borderonly.png"), 0, 0)
+      image = image.composite(await Jimp.read("/img/overlays/card-borderonly.png"), 0, 0)
     }
   } catch(err) { console.error("Error applying overlay: ", err); }
 
@@ -283,22 +282,22 @@ export async function processDonCard(image: InstanceType<typeof Jimp>, settings:
 
   try {
     if (settings.overlay === "Don Symbol") {
-      image = image.composite(await Jimp.read("img/overlays/card-don-full.png"), 0, 0)
+      image = image.composite(await Jimp.read("/img/overlays/card-don-full.png"), 0, 0)
     }
     else if (settings.overlay === "Don Symbol w/ White") {
-      image = image.composite(await Jimp.read("img/overlays/card-don-full-text.png"), 0, 0)
+      image = image.composite(await Jimp.read("/img/overlays/card-don-full-text.png"), 0, 0)
     }
     else if (settings.overlay === "Focus Lines") {
-      image = image.composite(await Jimp.read("img/overlays/card-don-half.png"), 0, 0)
+      image = image.composite(await Jimp.read("/img/overlays/card-don-half.png"), 0, 0)
     }
     else if (settings.overlay === "Focus Lines w/ White") {
-      image = image.composite(await Jimp.read("img/overlays/card-don-half-text.png"), 0, 0)
+      image = image.composite(await Jimp.read("/img/overlays/card-don-half-text.png"), 0, 0)
     }
     else if (settings.overlay === "Border Only") {
-      image = image.composite(await Jimp.read("img/overlays/card-don-borderonly.png"), 0, 0)
+      image = image.composite(await Jimp.read("/img/overlays/card-don-borderonly.png"), 0, 0)
     }
     else if (settings.overlay === "Border Only w/ White") {
-      image = image.composite(await Jimp.read("img/overlays/card-don-borderonly-text.png"), 0, 0)
+      image = image.composite(await Jimp.read("/img/overlays/card-don-borderonly-text.png"), 0, 0)
     }
   } catch(err) { console.error("Error applying overlay: ", err); }
 

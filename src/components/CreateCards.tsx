@@ -3,9 +3,7 @@
 import SelectEdgeStyle from "./SelectEdgeStyle";
 import SelectShadowStyle from "./SelectShadowStyle";
 import { ImageSet} from "@/utils/imageSet";
-import { useCallback, useEffect, useState } from "react";
-import { Jimp, JimpInstance} from "jimp";
-import { processCard } from "@/utils/jimpManips";
+import { useEffect, useRef, useState } from "react";
 
 
 type createCardsProps = {
@@ -18,9 +16,11 @@ type createCardsProps = {
 export default function CreateCards({imageSet, setPreviewImage, setPreviewLoading} : createCardsProps) {
 
   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
+  const workerRef = useRef<Worker | null>(null);
 
-  const updateCardPreview = useCallback(async () => {
+  async function updateCardPreview() {
     if (selectedFiles) {
+      if (!workerRef.current) return;
       if (selectedFiles[0] === null || selectedFiles[0] === undefined) {
         setPreviewImage("");
         return;
@@ -28,24 +28,31 @@ export default function CreateCards({imageSet, setPreviewImage, setPreviewLoadin
       setPreviewLoading(true);
       try {
         const arrayBuffer = await selectedFiles[0].arrayBuffer();
-        let image = await Jimp.read(arrayBuffer) as JimpInstance;
-        image = await processCard(image, imageSet.cards);
-        const base64 = await image.getBase64("image/png");
-        setPreviewImage(base64);
+        workerRef.current.postMessage({ image: arrayBuffer, manip: "processCard", imageSet });
       }
       catch(err) {
         console.error(err);
       }
-      setPreviewLoading(false);
     }
     else {
       setPreviewImage("");
     }
-  }, [imageSet.cards, selectedFiles, setPreviewImage, setPreviewLoading]);
+  }
 
   useEffect(() => {
     updateCardPreview();
-  }, [updateCardPreview]);
+  }, [imageSet.cards, selectedFiles]);
+
+  useEffect(() => {
+    workerRef.current = new Worker(new URL("../workers/worker.js", import.meta.url), { type: "module" });
+    workerRef.current.onmessage = (e) => {
+      setPreviewImage(e.data.base64);
+      setPreviewLoading(false);
+    }
+    return () => {
+      workerRef.current?.terminate();
+    };
+  }, []);
 
   function clearCardImages() {
     setSelectedFiles(null);
