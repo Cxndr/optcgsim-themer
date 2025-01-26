@@ -87,13 +87,13 @@ export default function CreateCards({imageSet, setPreviewImage, setPreviewLoadin
         <label className="form-control max-w-full h-full flex flex-col justify-evenly gap-2 lg:gap-8 items-center mt-0 lg:mt-12">
 
           <div className="label flex flex-col gap-1 lg:gap-4 w-full">
-            <h4 className="label-text text-2xl font-bold text-zinc-100 text-center w-full leading-6 sm:leading-none">Upload Card Images</h4>
-            <p className="label-text text-lg text-zinc-200 text-center w-full leading-6 sm:leading-none">We cannot host One Piece card images, please upload your own to customize.</p>
+            <h4 className="label-text text-2xl font-bold text-zinc-100 text-center w-full leading-6 lg:leading-none">Upload Card Images</h4>
+            <p className="label-text text-lg text-zinc-200 text-center w-full leading-6 lg:leading-none">We cannot host One Piece card images, please upload your own to customize.</p>
             <p className="label-text text-lg text-zinc-200 text-center w-full">These can usually be found in: </p>
-            <p className="text-center text-sm text-zinc-700 bg-zinc-200 bg-opacity-70 rounded-2xl py-2 px-4 shadow-sm shadow-black w-full font-bold leading-5 sm:leading-none ">
+            <p className="text-center text-sm text-zinc-700 bg-zinc-200 bg-opacity-70 rounded-2xl py-2 px-4 shadow-sm shadow-black w-full font-bold leading-5 lg:leading-none ">
               <span className="text-error">[YOUR OPTCGSIM INSTALL]</span> / Builds<span className="text-error">[OS]</span> / OPTCGSim_Data / StreamingAssets / Cards
             </p>
-            <p className="label-text text-lg text-zinc-200 text-center w-full leading-6 sm:leading-none"><b>Choose Files</b> below, navigate to this folder, and then click Upload.</p>
+            <p className="label-text text-lg text-zinc-200 text-center w-full leading-6 lg:leading-none"><b>Choose Files</b> below, navigate to this folder, and then click Upload.</p>
           </div>
 
           <input 

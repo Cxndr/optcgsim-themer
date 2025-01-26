@@ -49,7 +49,7 @@ export default function Header() {
 
       {isMenuOpen && (
         <nav className="lg:hidden">
-          <ul className="menu menu-vertical text-xl items-center gap-4 my-2">
+          <ul onClick={toggleMenu} className="menu menu-vertical text-xl items-center gap-4 my-2">
             <NavMenu/>
           </ul>
         </nav>
