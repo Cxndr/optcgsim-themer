@@ -30,7 +30,7 @@ export default function SelectImage({aspectRatio, gridCols, artImages, handleIma
   return (
     <div className="flex-grow overflow-auto">
       <CustomScrollbars>
-        <div className={`grid grid-cols-${gridCols} gap-4 mr-4`}> {/* dynamic grid cols works because whitelist in tailwind.config.ts */}
+        <div className={`grid grid-cols-${gridCols} gap-2 lg:gap-4 lg:mr-4`}> {/* dynamic grid cols works because whitelist in tailwind.config.ts */}
           <a
             onClick={() => handleImageClick(null)}
             className="relative w-full overflow-hidden rounded-xl shadow-sm shadow-black"

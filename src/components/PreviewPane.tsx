@@ -9,7 +9,7 @@ type PreviewPaneProps = {
 export default function PreviewPane({ previewImage, previewLoading }: PreviewPaneProps) {
   return (
     <div className="w-full h-full text-center flex flex-col">
-      <h2 className="text-center text-zinc-300 text-3xl font-bold mb-2 flex-shrink-0">
+      <h2 className="text-center text-zinc-300 text-lg lg:text-3xl font-bold lg:mb-2 flex-shrink-0">
         Preview
       </h2>
 

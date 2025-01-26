@@ -15,11 +15,11 @@ export default function SelectCardBackType({setCardBackType}:selectCardBackTypeP
   }
 
   return (
-    <label className="label bg-zinc-50 bg-opacity-70 px-4 py-3 my-6 rounded-full text-zinc-900 shadow-sm   shadow-black">
-          <span className="pr-2">Select Card Type: </span>
+    <label className="label bg-zinc-50 bg-opacity-70 px-2 pl-4 py-1.5 lg:px-4 lg:py-3 rounded-3xl lg:rounded-full text-zinc-900 shadow-sm shadow-black">
+          <span className="pr-2 text-xs lg:text-xl">Card Type: </span>
           <select 
             name="cardback-select" 
-            className="select select-sm text-lg"
+            className="select select-sm select-small-height text-lg"
             onChange={(e) => handleChange(e.target.value as CardBackType)}
           >
             {CardBackTypeValues.map((type, index) => (

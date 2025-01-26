@@ -15,11 +15,11 @@ export default function SelectMenuType({setMenuType}:selectMenuTypeProps) {
   }
 
   return (
-    <label className="label bg-zinc-50 bg-opacity-70 px-4 py-3 rounded-full text-zinc-900 shadow-sm   shadow-black">
-          <span className="pr-2">Select Menu: </span>
+    <label className="label bg-zinc-50 bg-opacity-70 px-2 pl-4 py-1.5 lg:px-4 lg:py-3 rounded-3xl lg:rounded-full text-zinc-900 shadow-sm shadow-black">
+          <span className="pr-2 text-xs lg:text-xl">Menu Type: </span>
           <select 
             name="menu-select" 
-            className="select select-sm text-lg"
+            className="select select-sm select-small-height text-lg"
             onChange={(e) => handleChange(e.target.value as MenuType)}
           >
             {MenuTypeValues.map((type, index) => (

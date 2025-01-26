@@ -56,7 +56,7 @@ export default async function CreatePage() {
   const artImages = await getArtImages();
 
   return (
-    <div className="w-full h-full p-10 gap-8 flex flex-col justify-center items-center">
+    <div className="w-full h-full p-2.5 2xl:p-10 gap-3 2xl:gap-8 flex flex-col justify-center items-center">
 
       <CreateTheme artImages={artImages}/>
 

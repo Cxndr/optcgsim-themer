@@ -38,3 +38,32 @@ h1 {
 p a {
   color: #3b82f6
 }
+
+
+.select {
+  height: 2rem;
+  width: 5rem;
+  min-height: 2rem;
+  font-size: 0.8rem;
+}
+.label-text {
+  font-size: 1rem;
+}
+
+@media (min-width: 1024px) {
+  .select {
+    height: 3rem;
+    width: auto;
+    min-height: 3rem;
+    font-size: 0.875rem;
+  }
+  .select-sm {
+    height: 2rem;
+    min-height: 2rem;
+    font-size: 1.1rem;
+  }
+  .label-text {
+    font-size: 1.25rem;
+  } 
+
+}

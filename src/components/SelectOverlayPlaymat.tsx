@@ -31,7 +31,7 @@ export default function SelectOverlayPlaymat({settings, updatePreview}:SelectOve
   return (
     <label className="label">
       
-      <span className="label-text text-zinc-50 pr-2 text-xl">Overlay: </span>
+      <span className="label-text text-zinc-50 pr-2">Overlay: </span>
 
       <select 
         name="overlay-style"

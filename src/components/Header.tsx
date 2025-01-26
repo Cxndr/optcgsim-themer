@@ -3,61 +3,58 @@
 import Image from "next/image";
 import opLogo from "/public/img/logo-op.webp";
 import Link from "next/link";
+import { useState } from "react";
+import { Menu, X } from "lucide-react";
+import NavMenu from "./NavMenu";
 
 export default function Header() {
 
-  const downloadDefault = ()  => {
-    // const zipFile = "/files/DefaultTheme.zip";
-    const link = document.createElement("a");
-    link.href = "https://utfs.io/f/tE0Y6OM99lGIqN3NOdv7U9jGWgMKR0upPJL8TYQS4CAemchi";
-    link.download = "OPTCGSimThemer-DefaultTheme.zip"; // specify the filename
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  function toggleMenu() {
+    setIsMenuOpen(!isMenuOpen);
   }
+
+
 
   return (
 
-    <header className="flex flex-row justify-between items-center min-h-24 py-3 px-2 bg-zinc-200 bg-opacity-70 text-2xl shadow-md shadow-black">
-      
+    <header className="bg-zinc-200 bg-opacity-70 text-2xl shadow-md shadow-black">
+
+      <div className="flex flex-row justify-between items-center lg:min-h-24 py-3 px-2">
+
         <Image
           src={opLogo}
           alt="Logo - One Piece Trading Card Game"
           height={144}
           width={560}
-          className="h-16 w-auto px-3"
+          className="h-8 lg:h-12 2xl:h-16 w-auto px-3"
         />
-      
-      <div className="flex flex-col justify-center">
-        <h1 className="text-center leading-[3rem]"><Link href="/" className="hover:text-primary">Sim Themer</Link></h1>
+        
+        <div className="flex flex-col justify-center">
+          <h1 className="text-[1.4rem] lg:text-[1.8rem] 2xl:text-[2.5rem] text-center lg:leading-[3rem]"><Link href="/" className="hover:text-primary">Sim Themer</Link></h1>
+        </div>
+        
+        <nav className="hidden lg:block justify-self-end mt-4 mb-1">
+          <ul className="menu menu-horizontal flex flex-row items-center gap-x-4 2xl:gap-x-8 gap-y-2 mr-8 lg:text-xl 2xl:text-2xl font-medium  justify-end">
+            <NavMenu/>
+          </ul>
+        </nav>
+
+        <button onClick={toggleMenu} className="lg:hidden p-2 mx-2">
+          {isMenuOpen ? <X size={32}/> : <Menu size={32}/>}
+        </button>
+
       </div>
-      
-      <div className="justify-self-end mt-4 mb-1">
-        <ul className="menu menu-horizontal flex items-center gap-x-8 gap-y-2 mr-8 text-2xl font-medium flex flex-row justify-end">
 
-          <li>
-            <button 
-              className="btn btn-success text-success-content text-2xl font-medium shadow-sm shadow-black"
-              onClick={downloadDefault}
-            >
-              Download Defaults
-            </button>
-          </li>
-          
-          <li>
-            <Link href="/create">Create Your Own</Link>
-          </li>
-          
-          <li>
-            <Link href="/guide">Install Guide</Link>
-          </li>
+      {isMenuOpen && (
+        <nav className="lg:hidden">
+          <ul className="menu menu-vertical text-xl items-center gap-4 my-2">
+            <NavMenu/>
+          </ul>
+        </nav>
+      )}
 
-          <li>
-            <Link href="/faq">FAQ</Link>
-          </li>
-
-        </ul>
-      </div>
 
     </header>
   )
