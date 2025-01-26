@@ -17,7 +17,7 @@ export default function PreviewPane({ previewImage, previewLoading }: PreviewPan
         { previewLoading ? (
           <div className="flex flex-col justify-center items-center">
             <DotLoader color="#FFFFFF50"/>
-            <p className="text-center text-zinc-100/50 text-xl mt-8 italic">Loading</p>
+            <p className="text-center text-zinc-100/50 text-lg lg:text-xl mt-8 italic">Loading</p>
           </div>
         ) : (
           previewImage ? (
@@ -29,7 +29,7 @@ export default function PreviewPane({ previewImage, previewLoading }: PreviewPan
               className="max-w-full max-h-full object-contain"
             />
           ) : (
-            <div className="text-zinc-100 text-3xl opacity-50 italic">No Customizations Set</div>
+            <div className="text-zinc-100 text-2xl lg:text-3xl opacity-50 italic">No Customizations Set</div>
           )
         )}
       </div>
