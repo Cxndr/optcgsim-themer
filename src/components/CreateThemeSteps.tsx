@@ -51,7 +51,7 @@ export default function CreateThemeSteps({downloadSet, currentStep, setCurrentSt
         </li>
       </ul>
       <button 
-        className="btn btn-success my-auto text-lg lg:text-xl h-10 min-h-10 lg:h-12 lg:min-h-12 shadow-sm shadow-black"
+        className="btn btn-success my-auto text-base lg:text-xl h-9 min-h-9 px-3 lg:px-4 lg:h-12 lg:min-h-12 shadow-sm shadow-black"
         onClick={handleClick}
       >
           Download Set

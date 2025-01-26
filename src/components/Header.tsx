@@ -21,7 +21,7 @@ export default function Header() {
 
     <header className="bg-zinc-200 bg-opacity-70 text-2xl shadow-md shadow-black">
 
-      <div className="flex flex-row justify-between items-center lg:min-h-24 py-3 px-2">
+      <div className="flex flex-row justify-between items-center lg:min-h-24 lg:py-3 lg:px-2">
 
         <Image
           src={opLogo}

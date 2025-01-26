@@ -21,8 +21,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" data-theme="mytheme">
-      <body className={`${inter.className} bg-sea-main bg-cover h-svh flex flex-col`}>
+    <html lang="en" data-theme="mytheme" className="bg-sea-main bg-cover bg-[top_right_-9.5rem] lg:bg-top" >
+      <body className={`${inter.className} bg-transparent h-svh flex flex-col`}>
         
         <Header />
         
