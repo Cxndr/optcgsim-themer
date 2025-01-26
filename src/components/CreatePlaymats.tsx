@@ -18,7 +18,6 @@ type CreatePlaymatsProps = {
 };
 
 
-
 export default function CreatePlaymats({
   artImages,
   imageSet,
@@ -80,16 +79,20 @@ export default function CreatePlaymats({
 
   return (
     <div className="h-full flex flex-col text-xl text-zinc-50">
-      <div className="w-full flex flex-row flex-wrap gap-4 justify-center border-b-2 border-slate-50 border-opacity-50 pb-4">
+
+      <div className="w-full flex flex-row flex-wrap gap-x-2 lg:gap-4 justify-center border-b-2 border-slate-50 border-opacity-50 pb-1 lg:pb-4">
         <SelectOverlayPlaymat settings={imageSet.playmats} updatePreview={updatePlaymatPreview}/>
         <SelectEdgeStyle settings={imageSet} settingType="playmats" updatePreview={updatePlaymatPreview}/>
         <SelectShadowStyle settings={imageSet} settingType="playmats" updatePreview={updatePlaymatPreview}/>
       </div>
-      <div className="w-full flex flex-col 2xl:flex-row flex-wrap justify-center 2xl:justify-between items-center my-6 gap-4">
+
+      <div className="w-full flex flex-row lg:flex-wrap justify-center 2xl:justify-between items-center my-3 lg:my-6 gap-3 lg:gap-4">
         <SelectLeaderColor setLeaderColor={handleSetLeaderColor}/>
         <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm}/>
       </div>
+
       <SelectImage aspectRatio="1414 / 1000" gridCols={3} artImages={artImages} handleImageClick={handleImageClick} selectedImage={selectedImage} searchTerm={searchTerm}/>
+      
     </div>
   );
 }

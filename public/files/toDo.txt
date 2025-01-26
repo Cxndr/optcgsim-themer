@@ -12,13 +12,13 @@
  * Cleanup preview reloading.
     * On cards step its 1 selection behind.
  * Add spinners for preview loading.
- - Add more options for editing:
+ - Add more options for editing: 
     - text color for don cards.
     - overlay opacity.
     - range for border radius???
   * Make jimp manipulations use web workers to speed up app.
-  - There are blank image options at bottom of imageSelect list.
-  - Update visuals for "none" selection in imageSelect list.
+  * There are blank image options at bottom of imageSelect list.
+  * Update visuals for "none" selection in imageSelect list.
 
 
 *** STRETCH ***

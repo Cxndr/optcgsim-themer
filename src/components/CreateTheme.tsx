@@ -36,17 +36,17 @@ export default function CreateTheme({ artImages }: CreateThemeProps) {
 
   return (
     <>
-      <div className="w-full py-4 flex justify-around pr-12 items-center rounded-3xl text-zinc-100 bg-zinc-800 bg-opacity-70 shadow-2xl shadow-black">
+      <div className="w-full py-3 lg:py-4 flex flex-col lg:flex-row gap-3 lg:gap-4 justify-around px-4 lg:pl-0 lg:pr-12 items-center text-sm lg:text-base rounded-3xl text-zinc-100 bg-zinc-800 bg-opacity-70 shadow-2xl shadow-black">
         <CreateThemeSteps downloadSet={downloadSet} currentStep={currentStep} setCurrentStep={setCurrentStep}/>
       </div>
 
-      <div className="w-full h-0 flex-grow gap-8 flex justify-center items-center">
+      <div className="w-full h-0 flex-grow gap-3 2xl:gap-8 flex flex-col lg:flex-row lg:justify-center items-center">
 
-        <div className="w-1/2 h-full p-6 flex-col justify-center items-center rounded-3xl bg-zinc-800 bg-opacity-70 shadow-2xl shadow-black text-zinc-100 text-3xl">
+        <div className="w-full lg:w-1/2 h-1/3 lg:h-full p-2 lg:p-6 flex-col justify-center items-center rounded-3xl bg-zinc-800 bg-opacity-70 shadow-2xl shadow-black text-zinc-100 text-3xl">
           <PreviewPane previewImage={previewImage} previewLoading={previewLoading} />
         </div>
 
-        <div className="w-1/2 h-full p-8 flex flex-col rounded-3xl bg-zinc-800 bg-opacity-70 shadow-2xl shadow-black">
+        <div className="w-full lg:w-1/2 h-2/3 lg:h-full p-2 px-4 lg:p-8 flex flex-col rounded-3xl bg-zinc-800 bg-opacity-70 shadow-2xl shadow-black">
           { currentStep === 5 
             ?
             <CreateCards imageSet={imageSet} setPreviewImage={setPreviewImage} setPreviewLoading={setPreviewLoading}/>

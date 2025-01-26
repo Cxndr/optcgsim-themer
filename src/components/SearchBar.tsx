@@ -12,12 +12,12 @@ export default function SearchBar({searchTerm, setSearchTerm}:SearchBarProps) {
   }
 
   return (
-  <label className="input flex-grow 2xl:flex-grow-0 flex items-center gap-2 text-zinc-900 shadow-sm shadow-black">
+  <label className="input min-w-4 h-10 lg:h-12 flex flex-grow 2xl:flex-grow-0 items-center gap-2 text-zinc-900 shadow-sm shadow-black">
       <input 
         type="text"
         value={searchTerm}
         onChange={handleInputChange}
-        className="grow" placeholder="Search"
+        className="grow min-w-4" placeholder="Search"
       />
       <FaMagnifyingGlass className="text-zinc-900 opacity-70 cursor-pointer"/>
     </label>
