@@ -19,9 +19,12 @@
   * Make jimp manipulations use web workers to speed up app.
   * There are blank image options at bottom of imageSelect list.
   * Update visuals for "none" selection in imageSelect list.
+  * Mobile Responsive UI.
 
 
 *** STRETCH ***
-  - Make steps animate color.
+  - Add animations:
+      - steps color.
+      - hamburger dropdown.
   - Should steps be individual? and indicate which ones have been added to (based on imageSet)?
   - Clean up Jimp type errors on "image" (they are false flags).

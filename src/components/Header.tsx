@@ -15,8 +15,6 @@ export default function Header() {
     setIsMenuOpen(!isMenuOpen);
   }
 
-
-
   return (
 
     <header className="bg-zinc-200 bg-opacity-70 text-2xl shadow-md shadow-black">
