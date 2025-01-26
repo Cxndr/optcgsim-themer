@@ -20,6 +20,8 @@
   * There are blank image options at bottom of imageSelect list.
   * Update visuals for "none" selection in imageSelect list.
   * Mobile Responsive UI.
+  - Mobile bottom bar for pixel is white, find way to change to background.
+  - Mobile ui for guide and faq pages wrong.
 
 
 *** STRETCH ***
