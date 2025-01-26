@@ -19,8 +19,13 @@
   box-sizing: border-box;
 }
 
+html {
+  height: 100svh;
+}
+
 body {
   font-family: "Inter", Arial, Helvetica, sans-serif;
+  height: 100svh;
 }
 
 h1 {
