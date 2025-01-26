@@ -29,9 +29,9 @@ export default function SelectOverlayDon({settings, updatePreview}:SelectOverlay
   }
 
   return (
-    <label className="label">
+    <label className="label flex flex-col gap-1 lg:flex-row lg:gap-0 pt-0.5 lg:pt-2">
       
-      <span className="label-text text-zinc-50 pr-2 text-xl">Overlay: </span>
+      <span className="label-text text-zinc-50 lg:pr-2">Overlay: </span>
 
       <select 
         name="overlay-style"

@@ -24,8 +24,8 @@ export default function SelectShadowStyle({settings, settingType, updatePreview}
   }
 
   return (
-    <label className="label">
-      <span className="label-text text-zinc-50 pr-2 text-xl">Shadow: </span>
+    <label className="label flex flex-col gap-1 lg:flex-row lg:gap-0 pt-0.5 lg:pt-2">
+      <span className="label-text text-zinc-50 lg:pr-2">Shadow: </span>
       <input 
         type="checkbox" 
         name="shadow-style" 
