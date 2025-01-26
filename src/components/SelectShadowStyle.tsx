@@ -29,7 +29,7 @@ export default function SelectShadowStyle({settings, settingType, updatePreview}
       <input 
         type="checkbox" 
         name="shadow-style" 
-        className="toggle toggle-accent toggle-base lg:toggle-lg"
+        className="toggle toggle-accent toggle-base lg:toggle-lg mb-1 lg:mb-0"
         checked={shadow}
         onChange={handleChange}
       />
