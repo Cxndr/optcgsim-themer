@@ -12,12 +12,41 @@ export default function CreateThemeSteps({downloadSet, currentStep, setCurrentSt
     downloadSet();
   }
 
+  const maxStep = 5;
+  const minStep = 1;
+
+  function nextStep() {
+    if (currentStep >= maxStep) {
+      setCurrentStep(maxStep);
+      return;
+    }
+    setCurrentStep(currentStep+1);
+  }
+
+  function prevStep() {
+    if (currentStep <= minStep) {
+      setCurrentStep(minStep);
+      return;
+    }
+    setCurrentStep(currentStep-1);
+  }
+
+  let prevDisabled = false;
+  if (currentStep <= minStep) prevDisabled = true;
+
+  let nextDisabled = false;
+  if (currentStep >= maxStep) nextDisabled = true;
+
+  const buttonClassName = "btn my-auto text-base lg:text-xl h-9 min-h-9 px-3 lg:px-4 lg:h-12 lg:min-h-12 shadow-sm shadow-black "
+  
+
   const classNameBase = "h-full "
   const classNameOn = classNameBase + "step step-accent my-auto cursor-pointer";
   const classNameOff = classNameBase + "step my-auto cursor-pointer";
 
   return (
-    <>
+    <div className="flex w-full">
+
       <ul className="steps w-full">
         <li 
           className={currentStep >= 0 ? classNameOn : classNameOff}
@@ -50,12 +79,35 @@ export default function CreateThemeSteps({downloadSet, currentStep, setCurrentSt
           Cards
         </li>
       </ul>
-      <button 
-        className="btn btn-success my-auto text-base lg:text-xl h-9 min-h-9 px-3 lg:px-4 lg:h-12 lg:min-h-12 shadow-sm shadow-black"
-        onClick={handleClick}
-      >
+
+      <div className="flex-grow flex gap-12 justify-between mr-4">
+        <div className="flex gap-2">
+          <button 
+            className={`${buttonClassName} btn-secondary`}
+            onClick={prevStep}
+            disabled={prevDisabled}
+          >
+            Prev
+          </button>
+
+          <button
+            className={`${buttonClassName} btn-secondary`}
+            onClick={nextStep}
+            disabled={nextDisabled}
+          >
+            Next
+          </button>
+        </div>
+
+        <button 
+          className={`${buttonClassName} btn-success`}
+          onClick={handleClick}
+        >
           Download Set
         </button>
-    </>
+
+      </div>
+      
+    </div>
   )
 }
