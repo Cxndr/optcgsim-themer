@@ -14,6 +14,9 @@ export default function Header() {
   function toggleMenu() {
     setIsMenuOpen(!isMenuOpen);
   }
+  function closeMenu() {
+    setIsMenuOpen(false);
+  }
 
   return (
 
@@ -30,7 +33,11 @@ export default function Header() {
         />
         
         <div className="flex flex-col justify-center">
-          <h1 className="text-[1.3rem] lg:text-[1.8rem] 2xl:text-[2.5rem] text-center lg:leading-[3rem]"><Link href="/" className="hover:text-primary">Sim Themer</Link></h1>
+          <h1 className="text-[1.3rem] lg:text-[1.8rem] 2xl:text-[2.5rem] text-center lg:leading-[3rem]" onClick={closeMenu}>
+            <Link href="/" className="hover:text-primary">
+              Sim Themer
+            </Link>
+          </h1>
         </div>
         
         <nav className="hidden lg:block justify-self-end mt-4 mb-1">

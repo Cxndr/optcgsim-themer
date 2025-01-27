@@ -47,7 +47,7 @@ export default function FAQPage() {
 
     <div className="w-full h-full flex flex-col justify-center items-center">
 
-      <div className="w-2/3 h-full overflow-y-auto flex flex-col justify-start items-center gap-12 m-8 rounded-3xl bg-zinc-800 bg-opacity-70 pt-12 pb-14 px-10 text-zinc-50 text-2xl shadow-2xl shadow-black">
+      <div className="w-11/12 lg:w-2/3 h-full overflow-y-auto flex flex-col justify-start items-center gap-6 lg:gap-12 mx-4 m-6 lg:m-8 rounded-3xl bg-zinc-800 bg-opacity-70 pt-12 pb-14 px-10 text-zinc-50 text-2xl shadow-2xl shadow-black">
 
         <CustomScrollbars>
 
