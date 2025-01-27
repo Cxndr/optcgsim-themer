@@ -20,8 +20,18 @@
   * There are blank image options at bottom of imageSelect list.
   * Update visuals for "none" selection in imageSelect list.
   * Mobile Responsive UI.
-  - Mobile bottom bar for pixel is white, find way to change to background.
-  - Mobile ui for guide and faq pages wrong.
+  * Mobile bottom bar for pixel is white, find way to change to background.
+  * Mobile ui for guide and faq pages wrong.
+  - Add ui for download set progress.
+  - Add buttons for next/prev for steps.
+  - Add forced square borders for cards.
+  - Seperate overlay for don and regular card backs.
+  - Add config download/upload to save progress.
+      - should we just keep in local storage instead?
+  - Make ui for intuitive for selecting leader/types.
+      - Have checkmarks/ui element for edited options.
+  - Is download set button working if cards are selected?
+      - not working for T on live.
 
 
 *** STRETCH ***
@@ -30,3 +40,4 @@
       - hamburger dropdown.
   - Should steps be individual? and indicate which ones have been added to (based on imageSet)?
   - Clean up Jimp type errors on "image" (they are false flags).
+- Add paypal donation/buy me a coffee button.
