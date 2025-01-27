@@ -21,23 +21,10 @@ export default function CreateTheme({ artImages }: CreateThemeProps) {
   const [previewImage, setPreviewImage] = useState("");
   const [previewLoading, setPreviewLoading] = useState(false);
 
-  async function downloadSet() {
-    const zipFile = await makeImageSetZip(imageSet);
-    const blob = new Blob([zipFile], { type: "application/zip" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "imageSet.zip";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  }
-
   return (
     <>
       <div className="w-full py-3 lg:py-4 flex flex-col lg:flex-row gap-3 lg:gap-4 justify-around px-4 lg:pl-0 lg:pr-12 items-center text-sm lg:text-base rounded-3xl text-zinc-100 bg-zinc-800 bg-opacity-70 shadow-2xl shadow-black">
-        <CreateThemeSteps downloadSet={downloadSet} currentStep={currentStep} setCurrentStep={setCurrentStep}/>
+        <CreateThemeSteps generateTheme={generateTheme} currentStep={currentStep} setCurrentStep={setCurrentStep}/>
       </div>
 
       <div className="w-full h-0 flex-grow gap-3 2xl:gap-8 flex flex-col lg:flex-row lg:justify-center items-center">

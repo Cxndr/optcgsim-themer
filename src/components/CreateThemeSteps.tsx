@@ -1,4 +1,4 @@
-
+import DownloadProgress from "./DownloadProgress";
 
 type CreateThemeStepsProps = {
   downloadSet: () => void,
@@ -9,7 +9,7 @@ type CreateThemeStepsProps = {
 export default function CreateThemeSteps({downloadSet, currentStep, setCurrentStep}: CreateThemeStepsProps) {
 
   function handleClick() {
-    downloadSet();
+    document.getElementById('download_modal').showModal() // this works but how do we make typesafe? / get rid of error.
   }
 
   const maxStep = 5;
@@ -105,6 +105,8 @@ export default function CreateThemeSteps({downloadSet, currentStep, setCurrentSt
         >
           Download Set
         </button>
+
+        <DownloadProgress downloadSet={downloadSet}/>
 
       </div>
       

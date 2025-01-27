@@ -210,15 +210,32 @@ export const imageSet: ImageSet = {
   }
 }
 
+function countUsed(setting: object, checkValues: Array) {
+  let count = 0;
+  for (const value of checkValues) {
+    if (setting[value].src === "" || setting[value].src === null) {
+      continue;
+    }
+    count++;
+  }
+  return count;
+}
+
 export const defaultImageSet = imageSet;
+
+let progressFeedback = "" as string;
+let progressDetails = "" as string;
 
 export async function makeImageSetZip(imageSet: ImageSet) {
 
   const zipFiles: Zippable = {};
 
   // Playmats
+  progressFeedback = "Generating Playmats";
+  const playmatCount = countUsed(imageSet.playmats.images,LeaderColorValues);
   try {
-    for (const color of LeaderColorValues) {
+    for (const [index, color] of LeaderColorValues.entries()) {
+      progressDetails = `Creating ${color} (${index}/${playmatCount}`;
       if (imageSet.playmats.images[color].src === "" || imageSet.playmats.images[color].src === null) {
         continue;
       }
@@ -234,8 +251,11 @@ export async function makeImageSetZip(imageSet: ImageSet) {
 
 
   // Menus
+  progressFeedback = "Generating Menus"
+  const menuCount = countUsed(imageSet.menus.bgImages, MenuTypeValues)
   try {
-    for (const menu of MenuTypeValues) {
+    for (const [index, menu] of MenuTypeValues.entries()) {
+      progressDetails = `Creating ${menu} (${index}/${menuCount})`
       if (imageSet.menus.bgImages[menu].src === "" || imageSet.menus.bgImages[menu].src === null) {
         continue;
       }
@@ -258,8 +278,11 @@ export async function makeImageSetZip(imageSet: ImageSet) {
 
 
   // Card backs
+  progressFeedback = "Generating Card Backs"
+  const cardBackCount = countUsed(imageSet.cardBacks.images, CardBackTypeValues);
   try {
-    for (const cardBack of CardBackTypeValues) {
+    for (const [index,cardBack] of CardBackTypeValues.entries()) {
+      progressDetails = `Creating ${cardBack} (${index}/${cardBackCount})`
       if (imageSet.cardBacks.images[cardBack].src === "" || imageSet.cardBacks.images[cardBack].src === null) {
         continue;
       }
@@ -282,6 +305,8 @@ export async function makeImageSetZip(imageSet: ImageSet) {
 
 
   // Don Cards
+  progressFeedback = "Generating Don Card";
+  progressDetails = "(1/1)"
   try {
     if (imageSet.donCards.images.DonCard.src != "" && imageSet.donCards.images.DonCard.src != null) {
       let image = await Jimp.read(imageSet.donCards.images.DonCard.src) as JimpInstance;
@@ -296,8 +321,14 @@ export async function makeImageSetZip(imageSet: ImageSet) {
 
 
   // Cards
-  for (const [cardName, card] of Object.entries(imageSet.cards.images)) {
-    if (card.src === "" || card.src === null) {
+  progressFeedback = "Generating Cards";
+  const cardEntries = Object.entries(imageSet.cards.images);
+  const cardCount = cardEntries.length;
+  let index = 0;
+  for (const [cardName, card] of cardEntries) {
+    progressDetails = `Creating ${cardName} (${index + 1}/${cardCount})`;
+    if (!card.src) {
+      index++;
       continue;
     }
     const folderName = cardName.split("-")[0];
@@ -305,9 +336,31 @@ export async function makeImageSetZip(imageSet: ImageSet) {
     image = await processCard(image, imageSet.cards);
     const buffer = await image.getBuffer('image/png',{});
     zipFiles[`Cards/${folderName}/${cardName}.png`] = new Uint8Array(buffer);
+    index++;
   }
 
   const zipData = zipSync(zipFiles, { level: 9 });
   return zipData;
 
+}
+
+async function downloadSet() {
+  const zipFile = await makeImageSetZip(imageSet);
+  const blob = new Blob([zipFile], { type: "application/zip" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "imageSet.zip";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+export const generateTheme = {
+  progressFeedback: progressFeedback as string,
+  progresDetails: progressDetails as string,
+  zipFile: {} as Zippable,
+  start: makeImageSetZip(imageSet),
+  download: downloadSet(),
 }
