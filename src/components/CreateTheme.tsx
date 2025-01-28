@@ -7,7 +7,7 @@ import CreateCardBacks from "./CreateCardBacks";
 import CreateDonCards from "./CreateDonCards";
 import CreateCards from "./CreateCards";
 import PreviewPane from "./PreviewPane";
-import { imageSet, makeImageSetZip } from "@/utils/imageSet";
+import { imageSet } from "@/utils/imageSet";
 import { ThemeImage } from "@/utils/imageSet";
 import { useState } from "react";
 
@@ -24,7 +24,7 @@ export default function CreateTheme({ artImages }: CreateThemeProps) {
   return (
     <>
       <div className="w-full py-3 lg:py-4 flex flex-col lg:flex-row gap-3 lg:gap-4 justify-around px-4 lg:pl-0 lg:pr-12 items-center text-sm lg:text-base rounded-3xl text-zinc-100 bg-zinc-800 bg-opacity-70 shadow-2xl shadow-black">
-        <CreateThemeSteps generateTheme={generateTheme} currentStep={currentStep} setCurrentStep={setCurrentStep}/>
+        <CreateThemeSteps imageSet={imageSet} currentStep={currentStep} setCurrentStep={setCurrentStep}/>
       </div>
 
       <div className="w-full h-0 flex-grow gap-3 2xl:gap-8 flex flex-col lg:flex-row lg:justify-center items-center">

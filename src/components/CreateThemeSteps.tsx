@@ -1,12 +1,13 @@
+import { imageSet, ImageSet } from "@/utils/imageSet";
 import DownloadProgress from "./DownloadProgress";
 
 type CreateThemeStepsProps = {
-  downloadSet: () => void,
+  imageSet: ImageSet,
   currentStep: number,
   setCurrentStep: (value:number) => void,
 }
 
-export default function CreateThemeSteps({downloadSet, currentStep, setCurrentStep}: CreateThemeStepsProps) {
+export default function CreateThemeSteps({imageSet, currentStep, setCurrentStep}: CreateThemeStepsProps) {
 
   function handleClick() {
     document.getElementById('download_modal').showModal() // this works but how do we make typesafe? / get rid of error.
@@ -106,7 +107,7 @@ export default function CreateThemeSteps({downloadSet, currentStep, setCurrentSt
           Download Set
         </button>
 
-        <DownloadProgress downloadSet={downloadSet}/>
+        <DownloadProgress imageSet={imageSet}/>
 
       </div>
       
