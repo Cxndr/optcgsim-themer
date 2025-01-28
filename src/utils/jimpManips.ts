@@ -1,9 +1,7 @@
 import {Jimp, JimpInstance, rgbaToInt} from "jimp";
-import { ImageSet, ThemeImage } from "./imageSet";
+import { ImageSet } from "./imageSet";
 import { MenuType } from "./imageSet";
 import { CardBackType } from "./imageSet";
-import { Zippable } from "fflate";
-
 
 
 export async function applyRoundedCorners(image: InstanceType<typeof Jimp>, radius: number){
@@ -220,7 +218,7 @@ export async function processPlaymat(image: InstanceType<typeof Jimp>, settings:
     image = await applyShadow(image, 6, 0.7)
   }
   
-  return image;
+  return image as JimpInstance;
 }
 
 
@@ -235,14 +233,14 @@ export async function processMenuOverlay(menuType: MenuType, image: InstanceType
     image = image.composite(await getOverlay("/img/overlays/menu-home-template.png"), 0, 0)
   }
   
-  return image;
+  return image as JimpInstance;
 }
 
 export async function processMenu(image: InstanceType<typeof Jimp>){
 
   image = await applySizing(image, 1920, 1080);
   
-  return image;
+  return image as JimpInstance;
 }
 
 
@@ -295,7 +293,7 @@ export async function processCardBack(cardBackType: CardBackType, image: Instanc
     // image = await applySizing(image, 180, 252);
   }
 
-  return image;
+  return image as JimpInstance;
 }
 
 export async function processDonCard(image: InstanceType<typeof Jimp>, settings: ImageSet["donCards"]){
@@ -339,35 +337,42 @@ export async function processDonCard(image: InstanceType<typeof Jimp>, settings:
 
   // image = await applySizing(image, 180, 252);
 
-  return image;
+  return image as JimpInstance;
 }
 
 
 export async function processCard(image: InstanceType<typeof Jimp>, settings: ImageSet["cards"]){
 
-  //image = await applySizing(image, 480, 671); // removed because we need to go fast and image should always be this size unless they change the app in the future. Could add an if check for image width but slows us down.
+  const width = 480;
+  const height = 671;
+
+  if (image.bitmap.width != width || image.bitmap.height != height) {
+    image = await applySizing(image, 480, 671);
+  }
 
   if (settings.edgeStyle = "Rounded") {
     applyRoundedCorners(image, 28);
   }
 
+  let result;
+
   if (settings.shadow === true) {
     if (settings.edgeStyle = "Rounded") {
-      image = await applyShadowRendered(image, "cardShadowRounded");
+      result = await applyShadowRendered(image, "cardShadowRounded");
     }
     else {
-      image = await applyShadowRendered(image, "cardShadowSquare");
+      result = await applyShadowRendered(image, "cardShadowSquare");
     }
   }
 
-  return image;
+  return result as JimpInstance;
 }
 
-export async function processCardImage(cardName: string, card: ThemeImage, cardSettings: ImageSet["cards"], zipFiles: Zippable) {
-  const folderName = cardName.split("-")[0];
-  if (!card.src) { throw new Error(`No source image found for card ${cardName}`); }
-  const image = await Jimp.read(card.src) as JimpInstance;
-  const processedImage = await processCard(image, cardSettings);
-  const buffer = await processedImage.getBuffer('image/png');
-  zipFiles[`Cards/${folderName}/${cardName}.png`] = new Uint8Array(buffer);
-}
+// export async function processCardImage(cardName: string, card: ThemeImage, cardSettings: ImageSet["cards"], zipFiles: Zippable) {
+//   const folderName = cardName.split("-")[0];
+//   if (!card.src) { throw new Error(`No source image found for card ${cardName}`); }
+//   const image = await Jimp.read(card.src) as JimpInstance;
+//   const processedImage = await processCard(image, cardSettings);
+//   const buffer = await processedImage.getBuffer('image/png');
+//   zipFiles[`Cards/${folderName}/${cardName}.png`] = new Uint8Array(buffer);
+// }

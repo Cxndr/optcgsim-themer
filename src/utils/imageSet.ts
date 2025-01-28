@@ -1,6 +1,6 @@
 import { Jimp, JimpInstance } from "jimp";
 import { zipSync, Zippable } from "fflate";
-import { processPlaymat, processMenu, processCardBack, processDonCard, processCardImage } from "./jimpManips";
+import { processPlaymat, processMenu, processCardBack, processDonCard, processCard } from "./jimpManips";
 
 export type EdgeStyle = "Square" | "Rounded Small" | "Rounded Medium" | "Rounded Large";
 export function isEdgeStyle(value: string | null): value is EdgeStyle {
@@ -232,8 +232,8 @@ function countUsed(setting: { [key: string]: { src: string | null } }, checkValu
 
 export const defaultImageSet = imageSet;
 
-let progressFeedback = "init" as string;
-let progressDetails = "init" as string;
+let progressFeedback = "" as string;
+let progressDetails = "" as string;
 
 // Add an event emitter for progress updates
 const progressEmitter = new EventTarget();
@@ -257,36 +257,38 @@ function makeThemeError(errorText: string, err: unknown) {
   console.error(errorText, err);
 }
 
-const CHUNK_SIZE = 1; // Adjust based on performance needs
+// const CHUNK_SIZE = 1; // Adjust based on performance needs
 
-async function processInBatches<T>(
-  items: T[],
-  batchSize: number,
-  processItem: (item: T, index: number) => Promise<void>
-) {
-  let completed = 0;
-  for (let i = 0; i < items.length; i += batchSize) {
-    const batch = items.slice(i, i + batchSize);
+// async function processInBatches<T>(
+//   items: T[],
+//   batchSize: number,
+//   processItem: (item: T, index: number) => Promise<void>
+// ) {
+//   let completed = 0;
+//   for (let i = 0; i < items.length; i += batchSize) {
+//     const batch = items.slice(i, i + batchSize);
     
-    // Process each batch sequentially
-    await Promise.all(
-      batch.map(async (item, index) => {
-        await processItem(item, i + index);
-      })
-    );
+//     // Process each batch sequentially
+//     await Promise.all(
+//       batch.map(async (item, index) => {
+//         await processItem(item, i + index);
+//       })
+//     );
 
-    completed += batch.length;
+//     completed += batch.length;
     
-    // Update progress at the end of each batch
-    setProgress(undefined, `Created ${completed}/${items.length} cards`);
+//     // Update progress at the end of each batch
+//     setProgress(undefined, `Created ${completed}/${items.length} cards`);
     
-    // Ensure the UI updates
-    await new Promise((resolve) => setTimeout(resolve, 0));
-  }
-}
+//     // Ensure the UI updates
+//     await new Promise((resolve) => setTimeout(resolve, 0));
+//   }
+// }
 
 export async function makeImageSetZip(imageSet: ImageSet) {
   const zipFiles: Zippable = {};
+
+  generateTheme.generating = true;
 
   // Playmats
   try {
@@ -388,18 +390,31 @@ export async function makeImageSetZip(imageSet: ImageSet) {
   // Cards
   try {
     const cardEntries = Object.entries(imageSet.cards.images);
-    if (cardEntries.length > 0) {
+    const cardCount = cardEntries.length;
+    if (cardCount > 0) {
       setProgress("Generating Cards");
-      await processInBatches(cardEntries, CHUNK_SIZE, async ([cardName, card]) => {
-        if (!card.src) return;
-        await processCardImage(cardName, card, imageSet.cards, zipFiles);
-      });
+      let index = 0;
+      for (const [cardName, card] of cardEntries) {
+        setProgress(undefined, `Creating ${cardName} Card (${index + 1}/${cardCount})`);
+        if (!card.src) {
+          index++;
+          continue;
+        }
+        const folderName = cardName.split("-")[0];
+        let image = await Jimp.read(card.src) as JimpInstance;
+        image = await processCard(image, imageSet.cards);
+        const buffer = await image.getBuffer('image/png',{});
+        zipFiles[`Cards/${folderName}/${cardName}.png`] = new Uint8Array(buffer);
+        index++;
+      }
     }
   } catch (err) {
     makeThemeError("Error generating card images", err);
   }
 
   setProgress("Theme generated successfully!", " ");
+  generateTheme.downloadReady = true;
+  generateTheme.generating = false;
 
   const zipData = zipSync(zipFiles, { level: 9 });
   return zipData;
@@ -423,6 +438,8 @@ export type GenerateTheme = {
   makeTheme: (imageSet: ImageSet) => Promise<Uint8Array>,
   downloadTheme: (zipFile: Uint8Array) => void,
   onProgress: (callback: () => void) => () => void,
+  generating: boolean,
+  downloadReady: boolean
 }
 
 export const generateTheme: GenerateTheme = {
@@ -433,5 +450,7 @@ export const generateTheme: GenerateTheme = {
   onProgress: (callback: () => void) => {
     progressEmitter.addEventListener('progress', callback);
     return () => progressEmitter.removeEventListener('progress', callback);
-  }
+  },
+  generating: false,
+  downloadReady: false
 }
