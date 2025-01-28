@@ -1,4 +1,4 @@
-import { imageSet, ImageSet } from "@/utils/imageSet";
+import { ImageSet } from "@/utils/imageSet";
 import DownloadProgress from "./DownloadProgress";
 
 type CreateThemeStepsProps = {
