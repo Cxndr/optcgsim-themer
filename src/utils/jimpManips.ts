@@ -1,7 +1,10 @@
 import {Jimp, JimpInstance, rgbaToInt} from "jimp";
-import { ImageSet } from "./imageSet";
+import { ImageSet, ThemeImage } from "./imageSet";
 import { MenuType } from "./imageSet";
 import { CardBackType } from "./imageSet";
+import { Zippable } from "fflate";
+
+
 
 export async function applyRoundedCorners(image: InstanceType<typeof Jimp>, radius: number){
 
@@ -43,6 +46,7 @@ export async function applyRoundedCorners(image: InstanceType<typeof Jimp>, radi
   return image;
 }
 
+
 export async function applySizing(
   image: InstanceType<typeof Jimp>, 
   width: number, 
@@ -68,7 +72,6 @@ export async function applySizing(
     console.error("Error applying sizing: ", err);
     throw err
   }
-
 }
 
 export async function applyShadow(
@@ -86,8 +89,8 @@ export async function applyShadow(
     const imageHeight = image.bitmap.height;
     const shadowWidth = Math.floor(imageWidth * size);
     const shadowHeight = Math.floor(imageHeight * size);
-    const imageOffsetX = Math.floor(((shadowWidth - imageWidth)/2) + edgeBuffer/2);
     const imageOffsetY = Math.floor(((shadowHeight - imageHeight)/2) + edgeBuffer/2);
+    const imageOffsetX = Math.floor(((shadowWidth - imageWidth)/2) + edgeBuffer/2);
 
     const shadow = image.clone();
     shadow.color([{apply: "darken", params: [100]}]);
@@ -107,8 +110,26 @@ export async function applyShadow(
     result.blur(blur);
 
     result = result.composite(image, imageOffsetX, imageOffsetY);
-    result.resize({w: imageWidth, h: imageHeight});
 
+    return result as JimpInstance;
+  }
+  catch(err) {
+    console.error("Error applying shadow: ", err);
+    throw err
+  }
+}
+
+
+
+export async function applyShadowRendered(
+  image: JimpInstance,
+  shadowFileName: string,
+){
+  try {
+    const shadow = await getOverlay(`/img/shadow/${shadowFileName}.png`);
+    const xOffset = ((shadow.bitmap.width)-(image.bitmap.width))/2;
+    const yOffset = ((shadow.bitmap.height)-(image.bitmap.height))/2;
+    const result = shadow.composite(image, xOffset, yOffset);
     return result as JimpInstance;
   }
   catch(err) {
@@ -168,7 +189,14 @@ async function applySoftLightBlend(
   return baseImage as JimpInstance;
 }
 
+const overlayCache: { [key: string]: JimpInstance } = {};
 
+async function getOverlay(path: string): Promise<JimpInstance> {
+  if (!overlayCache[path]) {
+    overlayCache[path] = await Jimp.read(path) as JimpInstance;
+  }
+  return overlayCache[path];
+}
 
 export async function processPlaymat(image: InstanceType<typeof Jimp>, settings: ImageSet["playmats"]){
 
@@ -176,22 +204,16 @@ export async function processPlaymat(image: InstanceType<typeof Jimp>, settings:
 
   try {
     if (settings.overlay === "Area Markers") {
-      image = image.composite(await Jimp.read("/img/overlays/area-markers.png"), 0, 0)
+      image = image.composite(await getOverlay("/img/overlays/area-markers.png"), 0, 0)
     }
     else if (settings.overlay === "Area Markers w/ Text") {
-      image = image.composite(await Jimp.read("/img/overlays/area-markers-text.png"), 0, 0)
+      image = image.composite(await getOverlay("/img/overlays/area-markers-text.png"), 0, 0)
     }
   } catch(err) { console.error("Error applying overlay: ", err); }
 
-
-  if (settings.edgeStyle === "Rounded Small"){
-    applyRoundedCorners(image, 50);
-  }
-  else if (settings.edgeStyle === "Rounded Medium"){
-    applyRoundedCorners(image, 100);
-  }
-  else if (settings.edgeStyle === "Rounded Large"){
-    applyRoundedCorners(image, 200);
+  const edgeRadii = { "Rounded Small": 50, "Rounded Medium": 100, "Rounded Large": 200 } as const;
+  if (settings.edgeStyle !== "Square" && settings.edgeStyle in edgeRadii) {
+    applyRoundedCorners(image, edgeRadii[settings.edgeStyle as keyof typeof edgeRadii]);
   }
 
   if (settings.shadow === true) {
@@ -207,10 +229,10 @@ export async function processMenuOverlay(menuType: MenuType, image: InstanceType
   image = await applySizing(image, 1920, 1080);
 
   if (menuType === "DeckEditor") {
-    image = image.composite(await Jimp.read("/img/overlays/menu-deckedit-template.png"), 0, 0)
+    image = image.composite(await getOverlay("/img/overlays/menu-deckedit-template.png"), 0, 0)
   }
   else {
-    image = image.composite(await Jimp.read("/img/overlays/menu-home-template.png"), 0, 0)
+    image = image.composite(await getOverlay("/img/overlays/menu-home-template.png"), 0, 0)
   }
   
   return image;
@@ -238,20 +260,20 @@ export async function processCardBack(cardBackType: CardBackType, image: Instanc
 
   try {
     if (settings.overlay === "OP Text") {
-      image = image.composite(await Jimp.read("/img/overlays/card-back-textlogo-white.png"), 0, 0)
-      image = image.composite(await Jimp.read("/img/overlays/card-oplogo-bordersoft.png"), 0, 0)
+      image = image.composite(await getOverlay("/img/overlays/card-back-textlogo-white.png"), 0, 0)
+      image = image.composite(await getOverlay("/img/overlays/card-oplogo-bordersoft.png"), 0, 0)
     }
     else if (settings.overlay === "OP Logo") {
-      const overlay = await Jimp.read("/img/overlays/card-back-oplogo.png") as InstanceType<typeof Jimp>;
+      const overlay = await getOverlay("/img/overlays/card-back-oplogo.png") as InstanceType<typeof Jimp>;
       image = (await applySoftLightBlend(image, overlay,0.35));
-      image = image.composite(await Jimp.read("/img/overlays/card-oplogo-border.png"), 0, 0)
+      image = image.composite(await getOverlay("/img/overlays/card-oplogo-border.png"), 0, 0)
       image.contrast(0.075);
     }
     else if (settings.overlay === "Don Symbol") {
-      image = image.composite(await Jimp.read("/img/overlays/card-back-don-faded.png"), 0, 0)
+      image = image.composite(await getOverlay("/img/overlays/card-back-don-faded.png"), 0, 0)
     }
     else if (settings.overlay === "Border Only") {
-      image = image.composite(await Jimp.read("/img/overlays/card-borderonly.png"), 0, 0)
+      image = image.composite(await getOverlay("/img/overlays/card-borderonly.png"), 0, 0)
     }
   } catch(err) { console.error("Error applying overlay: ", err); }
 
@@ -278,26 +300,26 @@ export async function processCardBack(cardBackType: CardBackType, image: Instanc
 
 export async function processDonCard(image: InstanceType<typeof Jimp>, settings: ImageSet["donCards"]){
 
-  image = await applySizing(image, 869, 1214);
+  image = await applySizing(image, 480, 670);
 
   try {
     if (settings.overlay === "Don Symbol") {
-      image = image.composite(await Jimp.read("/img/overlays/card-don-full.png"), 0, 0)
+      image = image.composite(await getOverlay("/img/overlays/card-don-full.png"), 0, 0)
     }
     else if (settings.overlay === "Don Symbol w/ White") {
-      image = image.composite(await Jimp.read("/img/overlays/card-don-full-text.png"), 0, 0)
+      image = image.composite(await getOverlay("/img/overlays/card-don-full-text.png"), 0, 0)
     }
     else if (settings.overlay === "Focus Lines") {
-      image = image.composite(await Jimp.read("/img/overlays/card-don-half.png"), 0, 0)
+      image = image.composite(await getOverlay("/img/overlays/card-don-half.png"), 0, 0)
     }
     else if (settings.overlay === "Focus Lines w/ White") {
-      image = image.composite(await Jimp.read("/img/overlays/card-don-half-text.png"), 0, 0)
+      image = image.composite(await getOverlay("/img/overlays/card-don-half-text.png"), 0, 0)
     }
     else if (settings.overlay === "Border Only") {
-      image = image.composite(await Jimp.read("/img/overlays/card-don-borderonly.png"), 0, 0)
+      image = image.composite(await getOverlay("/img/overlays/card-don-borderonly.png"), 0, 0)
     }
     else if (settings.overlay === "Border Only w/ White") {
-      image = image.composite(await Jimp.read("/img/overlays/card-don-borderonly-text.png"), 0, 0)
+      image = image.composite(await getOverlay("/img/overlays/card-don-borderonly-text.png"), 0, 0)
     }
   } catch(err) { console.error("Error applying overlay: ", err); }
 
@@ -323,22 +345,29 @@ export async function processDonCard(image: InstanceType<typeof Jimp>, settings:
 
 export async function processCard(image: InstanceType<typeof Jimp>, settings: ImageSet["cards"]){
 
-  // image = await applySizing(image, 480, 671);
-  image = await applySizing(image, 869, 1214);
+  //image = await applySizing(image, 480, 671); // removed because we need to go fast and image should always be this size unless they change the app in the future. Could add an if check for image width but slows us down.
 
-  if (settings.edgeStyle === "Rounded Small"){
-    applyRoundedCorners(image, 12);
-  }
-  else if (settings.edgeStyle === "Rounded Medium"){
-    applyRoundedCorners(image, 26);
-  }
-  else if (settings.edgeStyle === "Rounded Large"){
-    applyRoundedCorners(image, 50);
+  if (settings.edgeStyle = "Rounded") {
+    applyRoundedCorners(image, 28);
   }
 
   if (settings.shadow === true) {
-    image = await applyShadow(image, 5, 1, 1)
+    if (settings.edgeStyle = "Rounded") {
+      image = await applyShadowRendered(image, "cardShadowRounded");
+    }
+    else {
+      image = await applyShadowRendered(image, "cardShadowSquare");
+    }
   }
 
   return image;
+}
+
+export async function processCardImage(cardName: string, card: ThemeImage, cardSettings: ImageSet["cards"], zipFiles: Zippable) {
+  const folderName = cardName.split("-")[0];
+  if (!card.src) { throw new Error(`No source image found for card ${cardName}`); }
+  const image = await Jimp.read(card.src) as JimpInstance;
+  const processedImage = await processCard(image, cardSettings);
+  const buffer = await processedImage.getBuffer('image/png');
+  zipFiles[`Cards/${folderName}/${cardName}.png`] = new Uint8Array(buffer);
 }

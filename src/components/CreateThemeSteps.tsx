@@ -21,12 +21,20 @@ export default function CreateThemeSteps({imageSet, currentStep, setCurrentStep}
       setCurrentStep(maxStep);
       return;
     }
+    if (currentStep <= minStep) {
+      setCurrentStep(minStep+1);
+      return;
+    }
     setCurrentStep(currentStep+1);
   }
 
   function prevStep() {
     if (currentStep <= minStep) {
       setCurrentStep(minStep);
+      return;
+    }
+    if (currentStep >= maxStep) {
+      setCurrentStep(maxStep-1);
       return;
     }
     setCurrentStep(currentStep-1);

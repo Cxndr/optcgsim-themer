@@ -1,7 +1,7 @@
 
-import { ImageSet, isEdgeStyle } from "@/utils/imageSet";
+import { ImageSet, isEdgeStyle, isEdgeStyleSimple } from "@/utils/imageSet";
 import { useState, useEffect } from "react";
-import { EdgeStyleValues } from "@/utils/imageSet";
+import { EdgeStyleValues, EdgeStyleSimpleValues } from "@/utils/imageSet";
 
 type SelectEdgeStyleProps = {
   settings: ImageSet,
@@ -13,6 +13,12 @@ export default function SelectEdgeStyle({settings, settingType, updatePreview}:S
 
   const [edgeStyle, setEdgeStyle] = useState(settings[settingType].edgeStyle);
 
+  let values;
+  if (settingType === "cards") {
+    values = EdgeStyleSimpleValues;
+  }
+  else values = EdgeStyleValues;
+
   useEffect(() => {
     setEdgeStyle(settings[settingType].edgeStyle);
   }, [settingType, settings]);
@@ -21,7 +27,12 @@ export default function SelectEdgeStyle({settings, settingType, updatePreview}:S
   function handleChange(e: React.ChangeEvent<HTMLSelectElement>) {
     try {
       const selectedValue = e.currentTarget.value;
-      if (!isEdgeStyle(selectedValue)) throw new Error("Invalid edge style selected");
+      if (settingType === "cards") {
+        if (!isEdgeStyleSimple(selectedValue)) throw new Error("Invalid edge style selected");
+      }
+      else {
+        if (!isEdgeStyle(selectedValue)) throw new Error("Invalid edge style selected");
+      }
       setEdgeStyle(selectedValue);
       settings[settingType].edgeStyle = selectedValue;
       updatePreview();
@@ -39,7 +50,7 @@ export default function SelectEdgeStyle({settings, settingType, updatePreview}:S
         value={edgeStyle}
         onChange={handleChange}
       >
-        {EdgeStyleValues.map((style, index) => (
+        {values.map((style, index) => (
           <option key={index} value={style}>{style}
           </option>
         ))}
