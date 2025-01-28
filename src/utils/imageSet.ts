@@ -1,6 +1,6 @@
 import { Jimp, JimpInstance } from "jimp";
 import { zipSync, Zippable } from "fflate";
-import { processPlaymat, processMenu, processCardBack, processDonCard, processCard } from "./jimpManips";
+import { processPlaymat, processMenu, processCardBack, processDonCard, processCardImage } from "./jimpManips";
 
 export type EdgeStyle = "Square" | "Rounded Small" | "Rounded Medium" | "Rounded Large";
 export function isEdgeStyle(value: string | null): value is EdgeStyle {
@@ -12,6 +12,15 @@ export const EdgeStyleValues: EdgeStyle[] = [
   "Rounded Medium",
   "Rounded Large",
 ];
+
+export type EdgeStyleSimple = "Square" | "Rounded";
+export function isEdgeStyleSimple(value: string | null): value is EdgeStyleSimple {
+  return value === "Square" || value === "Rounded";
+}
+export const EdgeStyleSimpleValues: EdgeStyleSimple[] = [
+  "Square",
+  "Rounded"
+]
 
 export type PlaymatOverlayStyle = "None" | "Area Markers" | "Area Markers w/ Text";
 export function isPlaymatOverlayStyle(value: string | null): value is PlaymatOverlayStyle {
@@ -141,7 +150,7 @@ export type ImageSet = {
     };
   };
   cards: {
-    edgeStyle: EdgeStyle,
+    edgeStyle: EdgeStyleSimple,
     shadow: boolean,
     images: {
       [key: string]: ThemeImage,
@@ -203,7 +212,7 @@ export const imageSet: ImageSet = {
     }
   },
   cards: {
-    edgeStyle: "Rounded Medium",
+    edgeStyle: "Rounded",
     shadow: true,
     images: {
     }
@@ -248,6 +257,34 @@ function makeThemeError(errorText: string, err: unknown) {
   console.error(errorText, err);
 }
 
+const CHUNK_SIZE = 1; // Adjust based on performance needs
+
+async function processInBatches<T>(
+  items: T[],
+  batchSize: number,
+  processItem: (item: T, index: number) => Promise<void>
+) {
+  let completed = 0;
+  for (let i = 0; i < items.length; i += batchSize) {
+    const batch = items.slice(i, i + batchSize);
+    
+    // Process each batch sequentially
+    await Promise.all(
+      batch.map(async (item, index) => {
+        await processItem(item, i + index);
+      })
+    );
+
+    completed += batch.length;
+    
+    // Update progress at the end of each batch
+    setProgress(undefined, `Created ${completed}/${items.length} cards`);
+    
+    // Ensure the UI updates
+    await new Promise((resolve) => setTimeout(resolve, 0));
+  }
+}
+
 export async function makeImageSetZip(imageSet: ImageSet) {
   const zipFiles: Zippable = {};
 
@@ -257,7 +294,7 @@ export async function makeImageSetZip(imageSet: ImageSet) {
     if (playmatCount > 0) {
       setProgress("Generating Playmats");
       for (const [index, color] of LeaderColorValues.entries()) {
-        setProgress(undefined, `Creating ${color} Playmat (${index}/${playmatCount}`);
+        setProgress(undefined, `Creating ${color} Playmat (${index}/${playmatCount})`);
         if (imageSet.playmats.images[color].src === "" || imageSet.playmats.images[color].src === null) {
           continue;
         }
@@ -351,31 +388,18 @@ export async function makeImageSetZip(imageSet: ImageSet) {
   // Cards
   try {
     const cardEntries = Object.entries(imageSet.cards.images);
-    const cardCount = cardEntries.length;
-    if (cardCount > 0) {
+    if (cardEntries.length > 0) {
       setProgress("Generating Cards");
-      let index = 0;
-      for (const [cardName, card] of cardEntries) {
-        setProgress(undefined, `Creating ${cardName} Card (${index + 1}/${cardCount})`);
-        if (!card.src) {
-          index++;
-          continue;
-        }
-        const folderName = cardName.split("-")[0];
-        let image = await Jimp.read(card.src) as JimpInstance;
-        image = await processCard(image, imageSet.cards);
-        const buffer = await image.getBuffer('image/png',{});
-        zipFiles[`Cards/${folderName}/${cardName}.png`] = new Uint8Array(buffer);
-        index++;
-      }
+      await processInBatches(cardEntries, CHUNK_SIZE, async ([cardName, card]) => {
+        if (!card.src) return;
+        await processCardImage(cardName, card, imageSet.cards, zipFiles);
+      });
     }
-  }
-  catch(err) {
-    makeThemeError("Error generating card images", err)
+  } catch (err) {
+    makeThemeError("Error generating card images", err);
   }
 
   setProgress("Theme generated successfully!", " ");
-
 
   const zipData = zipSync(zipFiles, { level: 9 });
   return zipData;
