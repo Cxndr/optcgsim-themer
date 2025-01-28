@@ -342,16 +342,3 @@ export async function processCard(image: InstanceType<typeof Jimp>, settings: Im
 
   return image;
 }
-
-async function downloadSet() {
-  const zipFile = await makeImageSetZip(imageSet);
-  const blob = new Blob([zipFile], { type: "application/zip" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "imageSet.zip";
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-}
