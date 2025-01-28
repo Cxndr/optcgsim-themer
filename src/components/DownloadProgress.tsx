@@ -44,8 +44,8 @@ export default function DownloadProgress({imageSet}:DownloadProgressProps) {
           Click start to begin generating theme files.
         </p>
 
-        <p>Feedback: {feedback}</p>
-        <p>Details: {details}</p>
+        <h4 className="text-xl font-bold">{feedback}</h4>
+        <p>{details}</p>
 
         <button
           onClick={clickStart}

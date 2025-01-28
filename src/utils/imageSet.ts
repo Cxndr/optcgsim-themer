@@ -240,87 +240,103 @@ function setProgress(feedback?: string, details?: string) {
   progressEmitter.dispatchEvent(new Event('progress'));
 }
 
+function makeThemeError(errorText: string, err: unknown) {
+  setProgress(
+    errorText,
+    err instanceof Error ? err.message : String(err)
+  );
+  console.error(errorText, err);
+}
+
 export async function makeImageSetZip(imageSet: ImageSet) {
   const zipFiles: Zippable = {};
 
   // Playmats
-  setProgress("Generating Playmats");
-  const playmatCount = countUsed(imageSet.playmats.images,LeaderColorValues);
   try {
-    for (const [index, color] of LeaderColorValues.entries()) {
-      setProgress(undefined, `Creating ${color} (${index}/${playmatCount}`);
-      if (imageSet.playmats.images[color].src === "" || imageSet.playmats.images[color].src === null) {
-        continue;
+    const playmatCount = countUsed(imageSet.playmats.images,LeaderColorValues);
+    if (playmatCount > 0) {
+      setProgress("Generating Playmats");
+      for (const [index, color] of LeaderColorValues.entries()) {
+        setProgress(undefined, `Creating ${color} Playmat (${index}/${playmatCount}`);
+        if (imageSet.playmats.images[color].src === "" || imageSet.playmats.images[color].src === null) {
+          continue;
+        }
+        let image = await Jimp.read(imageSet.playmats.images[color].src) as JimpInstance;
+        image = await processPlaymat(image, imageSet.playmats);
+        const buffer = await image.getBuffer('image/png',{});
+        zipFiles[`Playmats/${color}.png`] = new Uint8Array(buffer);
       }
-      let image = await Jimp.read(imageSet.playmats.images[color].src) as JimpInstance;
-      image = await processPlaymat(image, imageSet.playmats);
-      const buffer = await image.getBuffer('image/png',{});
-      zipFiles[`Playmats/${color}.png`] = new Uint8Array(buffer);
     }
   }
   catch(err) {
-    console.error("Error processing playmats: ", err);
+    makeThemeError("Error generating playmats", err)
   }
 
 
   // Menus
-  setProgress("Generating Menus");
-  const menuCount = countUsed(imageSet.menus.bgImages, MenuTypeValues)
   try {
-    for (const [index, menu] of MenuTypeValues.entries()) {
-      setProgress(undefined, `Creating ${menu} (${index}/${menuCount})`)
-      if (imageSet.menus.bgImages[menu].src === "" || imageSet.menus.bgImages[menu].src === null) {
-        continue;
+    const menuCount = countUsed(imageSet.menus.bgImages, MenuTypeValues)
+    if (menuCount > 0) {
+      setProgress("Generating Menus");
+      for (const [index, menu] of MenuTypeValues.entries()) {
+        setProgress(undefined, `Creating ${menu} Menu (${index+1}/${menuCount})`)
+        if (imageSet.menus.bgImages[menu].src === "" || imageSet.menus.bgImages[menu].src === null) {
+          continue;
+        }
+        let fileName = "";
+        if (menu === "Home") {
+          fileName = "background";
+        }
+        else if (menu === "DeckEditor") {
+          fileName = "deckeditbackground";
+        }
+        let image = await Jimp.read(imageSet.menus.bgImages[menu].src) as JimpInstance;
+        image = await processMenu(image);
+        const buffer = await image.getBuffer('image/jpeg',{});
+        zipFiles[`${fileName}.jpg`] = new Uint8Array(buffer);
       }
-      let fileName = "";
-      if (menu === "Home") {
-        fileName = "background";
-      }
-      else if (menu === "DeckEditor") {
-        fileName = "deckeditbackground";
-      }
-      let image = await Jimp.read(imageSet.menus.bgImages[menu].src) as JimpInstance;
-      image = await processMenu(image);
-      const buffer = await image.getBuffer('image/jpeg',{});
-      zipFiles[`${fileName}.jpg`] = new Uint8Array(buffer);
     }
   }
   catch(err) {
-    console.error("Error processing menus: ", err);
+    makeThemeError("Error generating menus", err)
   }
 
 
   // Card backs
-  setProgress("Generating Card Backs");
-  const cardBackCount = countUsed(imageSet.cardBacks.images, CardBackTypeValues);
   try {
-    for (const [index,cardBack] of CardBackTypeValues.entries()) {
-      setProgress(undefined, `Creating ${cardBack} (${index}/${cardBackCount})`)
-      if (imageSet.cardBacks.images[cardBack].src === "" || imageSet.cardBacks.images[cardBack].src === null) {
-        continue;
+    const cardBackCount = countUsed(imageSet.cardBacks.images, CardBackTypeValues);
+    if (cardBackCount > 0) {
+    setProgress("Generating Card Backs");
+      for (const [index,cardBack] of CardBackTypeValues.entries()) {
+        setProgress(undefined, `Creating ${cardBack} Card Back (${index+1}/${cardBackCount})`)
+        if (imageSet.cardBacks.images[cardBack].src === "" || imageSet.cardBacks.images[cardBack].src === null) {
+          continue;
+        }
+        let fileName = "";
+        if (cardBack === "DeckCards") {
+          fileName = "CardBackRegular";
+        }
+        else if (cardBack === "DonCards") {
+          fileName = "CardBackDon";
+        }
+        let image = await Jimp.read(imageSet.cardBacks.images[cardBack].src) as JimpInstance;
+        image = await processCardBack(cardBack, image, imageSet.cardBacks);
+        const buffer = await image.getBuffer('image/png',{});
+        zipFiles[`CardBacks/${fileName}.png`] = new Uint8Array(buffer);
       }
-      let fileName = "";
-      if (cardBack === "DeckCards") {
-        fileName = "CardBackRegular";
-      }
-      else if (cardBack === "DonCards") {
-        fileName = "CardBackDon";
-      }
-      let image = await Jimp.read(imageSet.cardBacks.images[cardBack].src) as JimpInstance;
-      image = await processCardBack(cardBack, image, imageSet.cardBacks);
-      const buffer = await image.getBuffer('image/png',{});
-      zipFiles[`CardBacks/${fileName}.png`] = new Uint8Array(buffer);
     }
   }
   catch(err) {
-    console.error("Error processing card backs: ", err);
+    makeThemeError("Error generating card backs", err)
   }
+  
 
 
   // Don Cards
-  setProgress("Generating Don Card");
   try {
     if (imageSet.donCards.images.DonCard.src != "" && imageSet.donCards.images.DonCard.src != null) {
+      setProgress("Generating Don Card");
+      setProgress(undefined, `Creating Don Card (1/1)`)
       let image = await Jimp.read(imageSet.donCards.images.DonCard.src) as JimpInstance;
       image = await processDonCard(image, imageSet.donCards);
       const buffer = await image.getBuffer('image/png',{});
@@ -328,28 +344,38 @@ export async function makeImageSetZip(imageSet: ImageSet) {
     }
   }
   catch(err) {
-    console.error("Error processing don cards: ", err);
+    makeThemeError("Error generating don cards", err)
   }
 
 
   // Cards
-  setProgress("Generating Cards");
-  const cardEntries = Object.entries(imageSet.cards.images);
-  const cardCount = cardEntries.length;
-  let index = 0;
-  for (const [cardName, card] of cardEntries) {
-    setProgress(undefined, `Creating ${cardName} (${index + 1}/${cardCount})`);
-    if (!card.src) {
-      index++;
-      continue;
+  try {
+    const cardEntries = Object.entries(imageSet.cards.images);
+    const cardCount = cardEntries.length;
+    if (cardCount > 0) {
+      setProgress("Generating Cards");
+      let index = 0;
+      for (const [cardName, card] of cardEntries) {
+        setProgress(undefined, `Creating ${cardName} Card (${index + 1}/${cardCount})`);
+        if (!card.src) {
+          index++;
+          continue;
+        }
+        const folderName = cardName.split("-")[0];
+        let image = await Jimp.read(card.src) as JimpInstance;
+        image = await processCard(image, imageSet.cards);
+        const buffer = await image.getBuffer('image/png',{});
+        zipFiles[`Cards/${folderName}/${cardName}.png`] = new Uint8Array(buffer);
+        index++;
+      }
     }
-    const folderName = cardName.split("-")[0];
-    let image = await Jimp.read(card.src) as JimpInstance;
-    image = await processCard(image, imageSet.cards);
-    const buffer = await image.getBuffer('image/png',{});
-    zipFiles[`Cards/${folderName}/${cardName}.png`] = new Uint8Array(buffer);
-    index++;
   }
+  catch(err) {
+    makeThemeError("Error generating card images", err)
+  }
+
+  setProgress("Theme generated successfully!", " ");
+
 
   const zipData = zipSync(zipFiles, { level: 9 });
   return zipData;
