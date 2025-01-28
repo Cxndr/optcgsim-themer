@@ -8,9 +8,9 @@ type CreateThemeStepsProps = {
 }
 
 export default function CreateThemeSteps({imageSet, currentStep, setCurrentStep}: CreateThemeStepsProps) {
-
   function handleClick() {
-    document.getElementById('download_modal').showModal() // this works but how do we make typesafe? / get rid of error.
+    const modal = document.getElementById('download_modal') as HTMLDialogElement;
+    modal.showModal();
   }
 
   const maxStep = 5;
