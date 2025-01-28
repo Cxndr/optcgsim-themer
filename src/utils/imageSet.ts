@@ -210,7 +210,7 @@ export const imageSet: ImageSet = {
   }
 }
 
-function countUsed(setting: object, checkValues: Array) {
+function countUsed(setting: { [key: string]: { src: string | null } }, checkValues: Array<string>) {
   let count = 0;
   for (const value of checkValues) {
     if (setting[value].src === "" || setting[value].src === null) {

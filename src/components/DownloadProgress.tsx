@@ -9,9 +9,9 @@ export default function DownloadProgress({imageSet}:DownloadProgressProps) {
   const [zipFile, setZipFile] = useState(new Uint8Array);
   const [feedback, setFeedback] = useState(generateTheme.progressFeedback());
   const [details, setDetails] = useState(generateTheme.progressDetails());
-
   async function clickStart() {
-    setZipFile(await generateTheme.makeTheme(imageSet));
+    const themeData = await generateTheme.makeTheme(imageSet);
+    setZipFile(new Uint8Array(themeData));
   }
 
   function clickDownload() {
