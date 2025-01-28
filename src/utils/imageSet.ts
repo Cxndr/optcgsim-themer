@@ -223,19 +223,32 @@ function countUsed(setting: object, checkValues: Array) {
 
 export const defaultImageSet = imageSet;
 
-let progressFeedback = "" as string;
-let progressDetails = "" as string;
+let progressFeedback = "init" as string;
+let progressDetails = "init" as string;
+
+// Add an event emitter for progress updates
+const progressEmitter = new EventTarget();
+
+// Update how we set progress values to ensure events are dispatched
+function setProgress(feedback?: string, details?: string) {
+  if (feedback) {
+    progressFeedback = feedback;
+  }
+  if (details) {
+    progressDetails = details;
+  }
+  progressEmitter.dispatchEvent(new Event('progress'));
+}
 
 export async function makeImageSetZip(imageSet: ImageSet) {
-
   const zipFiles: Zippable = {};
 
   // Playmats
-  progressFeedback = "Generating Playmats";
+  setProgress("Generating Playmats");
   const playmatCount = countUsed(imageSet.playmats.images,LeaderColorValues);
   try {
     for (const [index, color] of LeaderColorValues.entries()) {
-      progressDetails = `Creating ${color} (${index}/${playmatCount}`;
+      setProgress(undefined, `Creating ${color} (${index}/${playmatCount}`);
       if (imageSet.playmats.images[color].src === "" || imageSet.playmats.images[color].src === null) {
         continue;
       }
@@ -251,11 +264,11 @@ export async function makeImageSetZip(imageSet: ImageSet) {
 
 
   // Menus
-  progressFeedback = "Generating Menus"
+  setProgress("Generating Menus");
   const menuCount = countUsed(imageSet.menus.bgImages, MenuTypeValues)
   try {
     for (const [index, menu] of MenuTypeValues.entries()) {
-      progressDetails = `Creating ${menu} (${index}/${menuCount})`
+      setProgress(undefined, `Creating ${menu} (${index}/${menuCount})`)
       if (imageSet.menus.bgImages[menu].src === "" || imageSet.menus.bgImages[menu].src === null) {
         continue;
       }
@@ -278,11 +291,11 @@ export async function makeImageSetZip(imageSet: ImageSet) {
 
 
   // Card backs
-  progressFeedback = "Generating Card Backs"
+  setProgress("Generating Card Backs");
   const cardBackCount = countUsed(imageSet.cardBacks.images, CardBackTypeValues);
   try {
     for (const [index,cardBack] of CardBackTypeValues.entries()) {
-      progressDetails = `Creating ${cardBack} (${index}/${cardBackCount})`
+      setProgress(undefined, `Creating ${cardBack} (${index}/${cardBackCount})`)
       if (imageSet.cardBacks.images[cardBack].src === "" || imageSet.cardBacks.images[cardBack].src === null) {
         continue;
       }
@@ -305,8 +318,7 @@ export async function makeImageSetZip(imageSet: ImageSet) {
 
 
   // Don Cards
-  progressFeedback = "Generating Don Card";
-  progressDetails = "(1/1)"
+  setProgress("Generating Don Card");
   try {
     if (imageSet.donCards.images.DonCard.src != "" && imageSet.donCards.images.DonCard.src != null) {
       let image = await Jimp.read(imageSet.donCards.images.DonCard.src) as JimpInstance;
@@ -321,12 +333,12 @@ export async function makeImageSetZip(imageSet: ImageSet) {
 
 
   // Cards
-  progressFeedback = "Generating Cards";
+  setProgress("Generating Cards");
   const cardEntries = Object.entries(imageSet.cards.images);
   const cardCount = cardEntries.length;
   let index = 0;
   for (const [cardName, card] of cardEntries) {
-    progressDetails = `Creating ${cardName} (${index + 1}/${cardCount})`;
+    setProgress(undefined, `Creating ${cardName} (${index + 1}/${cardCount})`);
     if (!card.src) {
       index++;
       continue;
@@ -341,11 +353,9 @@ export async function makeImageSetZip(imageSet: ImageSet) {
 
   const zipData = zipSync(zipFiles, { level: 9 });
   return zipData;
-
 }
 
-async function downloadSet() {
-  const zipFile = await makeImageSetZip(imageSet);
+async function downloadTheme(zipFile: Uint8Array) {
   const blob = new Blob([zipFile], { type: "application/zip" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
@@ -357,10 +367,21 @@ async function downloadSet() {
   URL.revokeObjectURL(url);
 }
 
-export const generateTheme = {
-  progressFeedback: progressFeedback as string,
-  progresDetails: progressDetails as string,
-  zipFile: {} as Zippable,
-  start: makeImageSetZip(imageSet),
-  download: downloadSet(),
+export type GenerateTheme = {
+  progressFeedback: () => string,
+  progressDetails: () => string,
+  makeTheme: (imageSet: ImageSet) => Promise<Uint8Array>,
+  downloadTheme: (zipFile: Uint8Array) => void,
+  onProgress: (callback: () => void) => () => void,
+}
+
+export const generateTheme: GenerateTheme = {
+  progressFeedback: () => progressFeedback,
+  progressDetails: () => progressDetails,
+  makeTheme: (imageSet: ImageSet) => makeImageSetZip(imageSet),
+  downloadTheme: (zipFile: Uint8Array) => downloadTheme(zipFile),
+  onProgress: (callback: () => void) => {
+    progressEmitter.addEventListener('progress', callback);
+    return () => progressEmitter.removeEventListener('progress', callback);
+  }
 }
