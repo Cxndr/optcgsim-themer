@@ -112,7 +112,7 @@ export default function CreateThemeSteps({imageSet, currentStep, setCurrentStep}
           className={`${buttonClassName} btn-success`}
           onClick={handleClick}
         >
-          Download Set
+          Download
         </button>
 
         <DownloadProgress imageSet={imageSet}/>
