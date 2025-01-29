@@ -6,12 +6,13 @@ self.onmessage = async function(e) {
   const arrayBuffer = e.data.image;
   const image = await Jimp.fromBuffer(arrayBuffer)
   const manip = e.data.manip;
+  const step = e.data.step;
 
   if (manip === "processPlaymat") {
     const settings = e.data.imageSet.playmats;
     const result = await processPlaymat(image, settings);
     const base64 = await result.getBase64("image/png");
-    self.postMessage({base64: base64})
+    self.postMessage({base64: base64, step: step})
   }
 
   if (manip === "processMenuOverlay") {
@@ -19,13 +20,13 @@ self.onmessage = async function(e) {
     if (!isMenuType(e.data.type)) throw error("menu type in wrong format");
     const result = await processMenuOverlay(e.data.type,image);
     const base64 = await result.getBase64("image/png");
-    self.postMessage({base64: base64})
+    self.postMessage({base64: base64, step: step})
   }
 
   if (manip === "processMenu") {
     const result = await processMenu(image);
     const base64 = await result.getBase64("image/png");
-    self.postMessage({base64: base64})
+    self.postMessage({base64: base64, step: step})
   }
 
   if (manip === "processCardBack") {
@@ -34,21 +35,21 @@ self.onmessage = async function(e) {
     const settings = e.data.imageSet.cardBacks;
     const result = await processCardBack(e.data.type, image, settings);
     const base64 = await result.getBase64("image/png");
-    self.postMessage({base64: base64})
+    self.postMessage({base64: base64, step: step})
   }
 
   if (manip === "processDonCard") {
     const settings = e.data.imageSet.donCards;
     const result = await processDonCard(image, settings);
     const base64 = await result.getBase64("image/png");
-    self.postMessage({base64: base64})
+    self.postMessage({base64: base64, step: step})
   }
 
   if (manip === "processCard") {
     const settings = e.data.imageSet.cards;
     const result = await processCard(image, settings);
     const base64 = await result.getBase64("image/png");
-    self.postMessage({base64: base64})
+    self.postMessage({base64: base64, step: step})
   }
 
 }

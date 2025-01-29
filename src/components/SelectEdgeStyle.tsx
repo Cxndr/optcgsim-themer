@@ -40,7 +40,7 @@ export default function SelectEdgeStyle({settings, settingType, updatePreview}:S
   }
 
   return (
-    <label className="label flex flex-col gap-1 lg:flex-row lg:gap-0 pt-0.5 lg:pt-2">
+    <label className="label flex flex-col gap-1 lg:flex-row lg:gap-0 pt-0.5 lg:py-0">
 
       <span className="label-text text-zinc-50 lg:pr-2">Edge Style: </span>
 

@@ -21,13 +21,15 @@
  * Add ui for download set progress.
  * Add buttons for next/prev for steps.
  * Seperate overlay for don and regular card backs.
- - When preview is still loading moving steps bugs out preview display.
-    - Need to cancel current request somehow.
+ * When preview is still loading moving steps bugs out preview display.
+    * Need to cancel current request somehow.
+ - Preview for Don cards is making any overlays apply at the wrong size.
+    - Happened after fixing the previous preview loading bug ^^^.
  - Make ui more intuitive for selecting leader/types.
     - Have checkmarks/ui element for edited options.
  - Add user upload of images.
  * Hide "Download" button in themeSteps if imageSet is empty.
- - Less padding on top of Overlay/EdgeStyle selection.
+ * Less padding on top of Overlay/EdgeStyle selection.
 
 
 *** STRETCH ***

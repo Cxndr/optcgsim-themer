@@ -2,61 +2,35 @@
 
 import SelectMenuType from "./SelectMenuType";
 import SearchBar from "./SearchBar";
-import {Jimp, JimpInstance} from "jimp";
 import SelectImage from "./SelectImage";
 
 import { MenuType, ImageSet, ThemeImage} from "@/utils/imageSet";
-import { useEffect, useRef, useState } from "react";
-type createMenusProps = {
-  artImages: ThemeImage[],
-  imageSet: ImageSet,
-  setPreviewImage: (image: string) => void,
-  setPreviewLoading: (loading: boolean) => void
-}
+import { useEffect, useState } from "react";
 
-export default function CreateMenus({artImages, imageSet, setPreviewImage, setPreviewLoading} : createMenusProps) {
+type CreateMenusProps = {
+  artImages: ThemeImage[];
+  imageSet: ImageSet;
+  processImage: (image: string, manip: string, settings: ImageSet, type?: string) => void;
+};
+
+export default function CreateMenus({
+  artImages,
+  imageSet,
+  processImage
+}: CreateMenusProps) {
 
   const [selectedMenuType, setSelectedMenuType] = useState("Home" as MenuType);
   const [selectedImage, setSelectedImage] = useState<ThemeImage | null>(imageSet.menus.bgImages[selectedMenuType]);
   const [searchTerm, setSearchTerm] = useState("");
-  const workerRef = useRef<Worker | null>(null);
-
-  async function updateMenuPreview() {
-    if (!workerRef.current) return;
-    if (imageSet.menus.bgImages[selectedMenuType].src === "" || imageSet.menus.bgImages[selectedMenuType].src === null) {
-      setPreviewImage("");
-      return;
-    }
-    setPreviewLoading(true);
-    try {
-      const image = await Jimp.read(imageSet.menus.bgImages[selectedMenuType].src) as JimpInstance;
-      const buffer = await image.getBuffer("image/png");
-      const arrayBuffer = buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength);
-      workerRef.current.postMessage({ image: arrayBuffer, manip: "processMenuOverlay", type:selectedMenuType, imageSet });
-    }
-    catch(err) {
-      console.error(err);
-    }
-  }
 
   useEffect(() => {
-    updateMenuPreview();
-  }, [selectedMenuType, selectedImage, imageSet.menus]);
+    const image = selectedImage?.src || "";
+    processImage(image, "processMenu", imageSet);
+  }, [selectedImage, imageSet.menus]);
 
   useEffect(() => {
     setSelectedImage(imageSet.menus.bgImages[selectedMenuType]);
-  }, [selectedMenuType, imageSet.menus.bgImages])
-
-  useEffect(() => {
-    workerRef.current = new Worker(new URL("../workers/worker.js", import.meta.url), { type: "module" });
-    workerRef.current.onmessage = (e) => {
-      setPreviewImage(e.data.base64);
-      setPreviewLoading(false);
-    }
-    return () => {
-      workerRef.current?.terminate();
-    };
-  }, []);
+  }, [selectedMenuType, imageSet.menus.bgImages]);
 
   function handleImageClick(image: ThemeImage | null) {
     const newSrc = image ? image.src : "";
@@ -79,7 +53,7 @@ export default function CreateMenus({artImages, imageSet, setPreviewImage, setPr
       </div>
 
       <SelectImage aspectRatio="1920 / 1080" gridCols={3} artImages={artImages} handleImageClick={handleImageClick} selectedImage={selectedImage} searchTerm={searchTerm}/>
-      
+
     </div>
   )
 
