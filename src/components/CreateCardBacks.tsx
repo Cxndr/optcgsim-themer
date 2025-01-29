@@ -1,6 +1,5 @@
 "use client"
 
-
 import SelectEdgeStyle from "./SelectEdgeStyle";
 import SelectShadowStyle from "./SelectShadowStyle";
 import SearchBar from "./SearchBar";
@@ -79,7 +78,7 @@ export default function CreatePlaymats({artImages, imageSet, setPreviewImage, se
     <div className="h-full flex flex-col text-xl text-zinc-50">
 
       <div className="w-full flex flex-row flex-wrap gap-x-2 lg:gap-4 justify-evenly lg:border-b-2 border-slate-50 border-opacity-50 pb-1 lg:pb-4">
-        <SelectOverlayCards settings={imageSet.cardBacks} updatePreview={updateCardBackPreview}/>
+        <SelectOverlayCards settings={imageSet.cardBacks} updatePreview={updateCardBackPreview} selectedCardBackType={selectedCardBackType}/>
         <SelectEdgeStyle settings={imageSet} settingType="cardBacks" updatePreview={updateCardBackPreview}/>
         <SelectShadowStyle settings={imageSet} settingType="cardBacks" updatePreview={updateCardBackPreview}/>
       </div>

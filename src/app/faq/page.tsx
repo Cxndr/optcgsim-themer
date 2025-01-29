@@ -20,9 +20,13 @@ const faqEntries: faqEntry[] = [ // DO NOT move these into a database without re
         JIMP is an image processing library very similar to popular image editing software like GIMP and Photoshop, but instead of using a graphic user interface it is operated through code.
       </p></br>
       <p>
-        You will need javascript turned on to be able to create your own themes, but not if you just want to download the default theme.
+        You will need javascript turned on in your browser to be able to create your own themes, but not if you just want to download the default theme.
       </p>
     `
+  },
+  {
+    q: "Can I have one playmat/sleeves for all my decks and different playmat/sleeves for my opponents?",
+    a: `Due to the way the sim works: playmats are assigned only by Leader Color, and sleeves can only have one visual for all. You can however get your own personal playmat that will also display to your opponents by <a href='https://www.patreon.com/BatsuApps' target='_blank'>subscribing to BatsuApps patreon</a> at the Warlord tier.`
   },
   {
     q: "Why does this website use a lot of my computer's resources?",

@@ -257,20 +257,24 @@ export async function processCardBack(cardBackType: CardBackType, image: Instanc
   image = await applySizing(image, 869, 1214);
 
   try {
-    if (settings.overlay === "OP Text") {
+    let overlayCardType;
+    if (cardBackType === "DeckCards") { overlayCardType = "overlayDeck"}
+    else {overlayCardType = "overlayDon"}
+    
+    if (settings[overlayCardType as keyof typeof settings] === "OP Text") {
       image = image.composite(await getOverlay("/img/overlays/card-back-textlogo-white.png"), 0, 0)
       image = image.composite(await getOverlay("/img/overlays/card-oplogo-bordersoft.png"), 0, 0)
     }
-    else if (settings.overlay === "OP Logo") {
+    else if (settings[overlayCardType as keyof typeof settings] === "OP Logo") {
       const overlay = await getOverlay("/img/overlays/card-back-oplogo.png") as InstanceType<typeof Jimp>;
       image = (await applySoftLightBlend(image, overlay,0.35));
       image = image.composite(await getOverlay("/img/overlays/card-oplogo-border.png"), 0, 0)
       image.contrast(0.075);
     }
-    else if (settings.overlay === "Don Symbol") {
+    else if (settings[overlayCardType as keyof typeof settings] === "Don Symbol") {
       image = image.composite(await getOverlay("/img/overlays/card-back-don-faded.png"), 0, 0)
     }
-    else if (settings.overlay === "Border Only") {
+    else if (settings[overlayCardType as keyof typeof settings] === "Border Only") {
       image = image.composite(await getOverlay("/img/overlays/card-borderonly.png"), 0, 0)
     }
   } catch(err) { console.error("Error applying overlay: ", err); }
