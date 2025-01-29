@@ -1,6 +1,6 @@
 "use client";
 
-import { CardBackType, CardBackTypeValues } from "@/utils/imageSet";
+import { CardBackType, CardBackTypeValues, imageSet } from "@/utils/imageSet";
 import { addSpacesToText } from "@/utils/textUtils";
 
 type selectCardBackTypeProps = {
@@ -23,7 +23,8 @@ export default function SelectCardBackType({setCardBackType}:selectCardBackTypeP
             onChange={(e) => handleChange(e.target.value as CardBackType)}
           >
             {CardBackTypeValues.map((type, index) => (
-              <option key={index} value={type}>{addSpacesToText(type)}
+              <option key={index} value={type}>
+                {addSpacesToText(type)} {imageSet.cardBacks.images[type].src && ("✔️")}
               </option>
             ))}
           </select>

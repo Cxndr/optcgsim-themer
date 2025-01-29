@@ -50,9 +50,21 @@ export default function CreateCardBacks({
     <div className="h-full flex flex-col text-xl text-zinc-50">
 
       <div className="w-full flex flex-row flex-wrap gap-x-2 lg:gap-4 justify-evenly lg:border-b-2 border-slate-50 border-opacity-50 pb-1 lg:pb-4">
-        <SelectOverlayCards settings={imageSet.cardBacks} updatePreview={() => processImage(selectedImage?.src || "", "processCardBack", imageSet, selectedCardBackType)} selectedCardBackType={selectedCardBackType}/>
-        <SelectEdgeStyle settings={imageSet} settingType="cardBacks" updatePreview={() => processImage(selectedImage?.src || "", "processCardBack", imageSet, selectedCardBackType)}/>
-        <SelectShadowStyle settings={imageSet} settingType="cardBacks" updatePreview={() => processImage(selectedImage?.src || "", "processCardBack", imageSet, selectedCardBackType)}/>
+        <SelectOverlayCards 
+          settings={imageSet.cardBacks} 
+          selectedCardBackType={selectedCardBackType}
+          updatePreview={() => processImage(selectedImage?.src || "", "processCardBack", imageSet, selectedCardBackType)} 
+        />
+        <SelectEdgeStyle 
+          settings={imageSet} 
+          settingType="cardBacks" 
+          updatePreview={() => processImage(selectedImage?.src || "", "processCardBack", imageSet, selectedCardBackType)}
+        />
+        <SelectShadowStyle 
+          settings={imageSet} 
+          settingType="cardBacks" 
+          updatePreview={() => processImage(selectedImage?.src || "", "processCardBack", imageSet, selectedCardBackType)}
+        />
       </div>
 
       <div className="w-full flex flex-row lg:flex-wrap justify-center 2xl:justify-between items-center my-3 mt-0 lg:my-6 gap-3 lg:gap-4">

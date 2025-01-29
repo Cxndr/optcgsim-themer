@@ -1,6 +1,6 @@
 "use client";
 
-import { MenuType, MenuTypeValues } from "@/utils/imageSet";
+import { imageSet, MenuType, MenuTypeValues } from "@/utils/imageSet";
 import { addSpacesToText } from "@/utils/textUtils";
 
 type selectMenuTypeProps = {
@@ -23,7 +23,8 @@ export default function SelectMenuType({setMenuType}:selectMenuTypeProps) {
             onChange={(e) => handleChange(e.target.value as MenuType)}
           >
             {MenuTypeValues.map((type, index) => (
-              <option key={index} value={type}>{addSpacesToText(type)}
+              <option key={index} value={type}>
+                {addSpacesToText(type)} {imageSet.menus.bgImages[type].src && ("✔️")}
               </option>
             ))}
           </select>

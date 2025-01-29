@@ -1,4 +1,4 @@
-import { ImageSet, isImageSetEmpty } from "@/utils/imageSet";
+import { CardBackTypeValues, getCardBacksCount, getCardsCount, getDonCardsCount, getMenusCount, getPlaymatCount, ImageSet, isImageSetEmpty, LeaderColorValues, MenuTypeValues } from "@/utils/imageSet";
 import DownloadProgress from "./DownloadProgress";
 import { useEffect, useState } from "react";
 
@@ -69,36 +69,90 @@ export default function CreateThemeSteps({imageSet, currentStep, setCurrentStep}
     <div className="flex w-full">
 
       <ul className="steps w-full">
+
         <li 
           className={currentStep >= 0 ? classNameOn : classNameOff}
           onClick={() => setCurrentStep(1)}
         >
-          Playmats
+          <div className="indicator">
+            Playmats
+            { getPlaymatCount() 
+            ? 
+              <span className={`indicator-item badge text-xs -right-6 top-2 px-1.5 py-0 shadow-black/70 shadow-sm ${
+                getPlaymatCount() === LeaderColorValues.length ? 'badge-success' : 'badge-error'
+              }`}>
+                {getPlaymatCount()}/{LeaderColorValues.length}
+              </span>
+            : ""}
+          </div>
         </li>
+
         <li  
           className={currentStep >= 2 ? classNameOn : classNameOff}
           onClick={() => setCurrentStep(2)}
         >
-          Menus
+          <div className="indicator">
+            Menus
+            { getMenusCount() 
+              ? 
+                <span className={`indicator-item badge text-xs -right-6 top-2 px-1.5 py-0 shadow-black/70 shadow-sm ${
+                  getMenusCount() === MenuTypeValues.length ? 'badge-success' : 'badge-error'
+                }`}>
+                  {getMenusCount()}/{MenuTypeValues.length}
+                </span>
+              : ""}
+          </div>
         </li> 
+
         <li 
           className={currentStep >= 3 ? classNameOn : classNameOff}
           onClick={() => setCurrentStep(3)}
         >
-          Card Backs
+          <div className="indicator">
+            Card Backs
+            { getCardBacksCount() 
+                ? 
+                <span className={`indicator-item badge text-xs -right-6 top-2 px-1.5 py-0 shadow-black/70 shadow-sm ${
+                    getCardBacksCount() === CardBackTypeValues.length ? 'badge-success' : 'badge-error'
+                  }`}>
+                  {getCardBacksCount()}/{CardBackTypeValues.length}
+                </span>
+                : ""}
+          </div>
         </li>
+
         <li 
           className={currentStep >= 4 ? classNameOn : classNameOff}
           onClick={() => setCurrentStep(4)}
         >
-          Don Cards
+          <div className="indicator">
+            Don Cards
+            { getDonCardsCount()
+                ?
+                  <span className={`indicator-item badge text-xs -right-5 top-2 px-1.5 py-0 shadow-black/70 shadow-sm ${
+                    getDonCardsCount() === 1 ? 'badge-success' : 'badge-error'
+                  }`}>
+                  {getDonCardsCount()}/1
+                </span>
+                : ""}
+          </div>
         </li>
+
         <li 
           className={currentStep >= 5 ? classNameOn : classNameOff}
           onClick={() => setCurrentStep(5)}
         >
-          Cards
+          <div className="indicator">
+            Cards
+            { getCardsCount()
+                ?
+                  <span className={`indicator-item badge text-xs -right-5 top-2 px-1.5 py-0 shadow-black/70 shadow-sm badge-success`}>
+                  {getCardsCount()}
+                </span>
+                : ""}
+          </div>
         </li>
+
       </ul>
 
       <div className="flex-grow flex gap-12 justify-between mr-4">
