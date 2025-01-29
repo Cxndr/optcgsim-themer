@@ -23,8 +23,14 @@
  * Seperate overlay for don and regular card backs.
  * When preview is still loading moving steps bugs out preview display.
     * Need to cancel current request somehow.
- - Preview for Don cards is making any overlays apply at the wrong size.
-    - Happened after fixing the previous preview loading bug ^^^.
+ * Preview for Don cards is making any overlays apply at the wrong size.
+    * Happened after fixing the previous preview loading bug ^^^.
+ * Loading spinner not showing when moving to step with existing image set.
+    * Again happened with previous fix ^^^^^
+ * Need way to force square edges on cards.
+    * lots of cards from op01/2 etc already have rounded edges.
+ - Make rounded edges have better aliasing?
+    - could resize up, do corners, and resize down. what is performance impact though?
  - Make ui more intuitive for selecting leader/types.
     - Have checkmarks/ui element for edited options.
  - Add user upload of images.

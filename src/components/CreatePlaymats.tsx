@@ -32,6 +32,8 @@ export default function CreatePlaymats({
     const image = imageSet.playmats.images[selectedLeaderColor].src;
     if (image) {
       processImage(image, "processPlaymat", imageSet);
+    } else {
+      processImage("", "processPlaymat", imageSet);
     }
   }, [selectedLeaderColor, selectedImage, imageSet.playmats]);
 
