@@ -18,21 +18,32 @@ export default function CreateCards({
 
   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
 
-  async function updateCardPreview() {
+  // Helper function to get the first card's src
+  const getFirstCardSrc = () => {
+    const cardKeys = Object.keys(imageSet.cards.images);
+    if (cardKeys.length > 0) {
+      const firstCard = imageSet.cards.images[cardKeys[0]];
+      return firstCard?.src || "";
+    }
+    return "";
+  };
+
+  useEffect(() => {
+    processImage(getFirstCardSrc(), "processCard", imageSet);
+  }, []);
+
+  useEffect(() => {
     if (selectedFiles && selectedFiles[0]) {
       try {
-        const arrayBuffer = await selectedFiles[0].arrayBuffer();
-        processImage(URL.createObjectURL(new Blob([arrayBuffer])), "processCard", imageSet);
+        selectedFiles[0].arrayBuffer().then(arrayBuffer => {
+          processImage(URL.createObjectURL(new Blob([arrayBuffer])), "processCard", imageSet);
+        });
       } catch(err) {
         console.error(err);
       }
     } else {
       processImage("", "processCard", imageSet);
     }
-  }
-
-  useEffect(() => {
-    updateCardPreview();
   }, [imageSet.cards, selectedFiles]);
 
   function clearCardImages() {
@@ -53,7 +64,6 @@ export default function CreateCards({
       }
     }
   }
-  
 
   return (
     <div className="h-full flex flex-col text-xl text-zinc-50">
@@ -62,20 +72,28 @@ export default function CreateCards({
         <SelectEdgeStyle 
           settings={imageSet} 
           settingType="cards" 
-          updatePreview={() => processImage("", "processCard", imageSet)}
+          updatePreview={() => {
+            processImage(getFirstCardSrc(), "processCard", imageSet);
+          }}
         />
-        <SelectShadowStyle settings={imageSet} settingType="cards" updatePreview={() => processImage("", "processCard", imageSet)} />
+        <SelectShadowStyle 
+          settings={imageSet} 
+          settingType="cards" 
+          updatePreview={() => processImage(getFirstCardSrc(), "processCard", imageSet)} 
+        />
       </div>
 
-      <div className="flex justify-center items-center w-full h-full">
+      <div className="flex flex-col justify-center items-center w-full h-full">
 
-        <label className="form-control max-w-full h-full flex flex-col justify-evenly gap-2 lg:gap-8 items-center mt-0 lg:mt-12">
+ 
+
+        <label className="form-control max-w-full h-full flex flex-col justify-evenly gap-2 lg:gap-2 items-center mt-0 lg:mt-0">
 
           <div className="label flex flex-col gap-1 lg:gap-4 w-full px-0 lg:px-2">
-            <h4 className="label-text text-2xl font-bold text-zinc-100 text-center w-full leading-6 lg:leading-none">Upload Card Images</h4>
+            <h4 className="text-2xl mb-4 font-bold text-zinc-100 text-center w-full leading-6 lg:leading-none ">Upload Card Images</h4>
             <p className="label-text text-lg text-zinc-200 text-center w-full leading-6 lg:leading-none">We cannot host One Piece card images, please upload your own to customize.</p>
             <p className="label-text text-lg text-zinc-200 text-center w-full">These can usually be found in: </p>
-            <p className="text-center text-sm text-zinc-700 bg-zinc-200 bg-opacity-70 rounded-2xl py-2 px-4 shadow-sm shadow-black w-full font-bold leading-5 lg:leading-none ">
+            <p className="text-center text-sm text-zinc-700 bg-zinc-200 bg-opacity-70 rounded-2xl py-2 mb-1 shadow-sm shadow-black w-full font-bold leading-5 lg:leading-none ">
               <span className="text-error">[YOUR OPTCGSIM INSTALL]</span> / Builds<span className="text-error">[OS]</span> / OPTCGSim_Data / StreamingAssets / Cards
             </p>
             <p className="label-text text-lg text-zinc-200 text-center w-full leading-6 lg:leading-none"><b>Choose Files</b> below, navigate to this folder, and then click Upload.</p>
@@ -91,6 +109,9 @@ export default function CreateCards({
             onChange={handleFileChange}
             className="file-input file-input-bordered file-input-secondary w-full max-w-xs text-zinc-400 shadow-sm shadow-zinc-900"
           />
+          { imageSet.cards.images &&
+            <h5 className="text-center font-bold text-zinc-50/90 bg-zinc-50/15 px-4 py-2 rounded-full">{Object.keys(imageSet.cards.images).length} cards loaded</h5>
+          }
 
         </label>
       </div>

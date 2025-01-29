@@ -17,6 +17,7 @@ export default function DownloadProgress({imageSet}:DownloadProgressProps) {
 
   function clickDownload() {
     generateTheme.downloadTheme(zipFile);
+    console.log(imageSet);
   }
 
   // Poll for changes in progress values

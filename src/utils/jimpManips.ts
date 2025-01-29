@@ -1,4 +1,4 @@
-import {Jimp, JimpInstance, rgbaToInt} from "jimp";
+import {intToRGBA, Jimp, JimpInstance, rgbaToInt} from "jimp";
 import { ImageSet } from "./imageSet";
 import { MenuType } from "./imageSet";
 import { CardBackType } from "./imageSet";
@@ -52,18 +52,6 @@ export async function applySizing(
 ){
 
   try {
-    // const imageHeight = image.bitmap.height;
-    // const imageWidth = image.bitmap.width;
-    // const imageAspectRatio = imageWidth / imageHeight;
-  
-    // if (imageAspectRatio < 1) {
-    //   image.resize({w: width});
-    // }
-    // else {
-    //   image.resize({h: height});
-    // }
-  
-    // image.crop({x: 0, y: 0, w: width, h: height});
     image.cover({w:width, h:height});
     return image;
   } catch(err) {
@@ -116,7 +104,6 @@ export async function applyShadow(
     throw err
   }
 }
-
 
 
 export async function applyShadowRendered(
@@ -186,6 +173,24 @@ async function applySoftLightBlend(
 
   return baseImage as JimpInstance;
 }
+
+export function forceSquareEdges(image: JimpInstance) {
+
+  const blockSize = 18;
+  const sampleDistance = 10;
+
+  const sampleColor = image.getPixelColor(sampleDistance, sampleDistance);
+  const cornerBlock = new Jimp({width: blockSize, height: blockSize, color: sampleColor});
+
+  image.composite(cornerBlock, 0, 0);
+  image.composite(cornerBlock, image.bitmap.width - blockSize, 0)
+  image.composite(cornerBlock, 0, image.bitmap.height - blockSize)
+  image.composite(cornerBlock, image.bitmap.width - blockSize, image.bitmap.height - blockSize)
+
+  return image;
+
+}
+
 
 const overlayCache: { [key: string]: JimpInstance } = {};
 
@@ -302,7 +307,7 @@ export async function processCardBack(cardBackType: CardBackType, image: Instanc
 
 export async function processDonCard(image: InstanceType<typeof Jimp>, settings: ImageSet["donCards"]){
 
-  image = await applySizing(image, 480, 670);
+  image = await applySizing(image, 869, 1214);
 
   try {
     if (settings.overlay === "Don Symbol") {
@@ -346,7 +351,6 @@ export async function processDonCard(image: InstanceType<typeof Jimp>, settings:
 
 
 export async function processCard(image: InstanceType<typeof Jimp>, settings: ImageSet["cards"]){
-
   const width = 480;
   const height = 671;
 
@@ -354,29 +358,23 @@ export async function processCard(image: InstanceType<typeof Jimp>, settings: Im
     image = await applySizing(image, 480, 671);
   }
 
-  if (settings.edgeStyle = "Rounded") {
-    applyRoundedCorners(image, 28);
+  // console.log("PIXEL COLOR: ", intToRGBA(image.getPixelColor(0,0)));
+  if (intToRGBA(image.getPixelColor(0,0)).a < 255) {
+    console.log("DETECTED TRANSPARENT EDGE")
+    image = forceSquareEdges(image);
   }
 
-  let result;
+  if (settings.edgeStyle === "Rounded") {
+    image = await applyRoundedCorners(image, 28); //28
+  }
 
   if (settings.shadow === true) {
-    if (settings.edgeStyle = "Rounded") {
-      result = await applyShadowRendered(image, "cardShadowRounded");
-    }
-    else {
-      result = await applyShadowRendered(image, "cardShadowSquare");
+    if (settings.edgeStyle === "Rounded") {
+      image = await applyShadowRendered(image, "cardShadowRounded");
+    } else {
+      image = await applyShadowRendered(image, "cardShadowSquare");
     }
   }
 
-  return result as JimpInstance;
+  return image as JimpInstance;
 }
-
-// export async function processCardImage(cardName: string, card: ThemeImage, cardSettings: ImageSet["cards"], zipFiles: Zippable) {
-//   const folderName = cardName.split("-")[0];
-//   if (!card.src) { throw new Error(`No source image found for card ${cardName}`); }
-//   const image = await Jimp.read(card.src) as JimpInstance;
-//   const processedImage = await processCard(image, cardSettings);
-//   const buffer = await processedImage.getBuffer('image/png');
-//   zipFiles[`Cards/${folderName}/${cardName}.png`] = new Uint8Array(buffer);
-// }
