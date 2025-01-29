@@ -221,6 +221,42 @@ export const imageSet: ImageSet = {
   }
 }
 
+export function isImageSetEmpty(imageSetToCheck: ImageSet) {
+  // Check playmats
+  for (const value of LeaderColorValues) {
+    if (imageSetToCheck.playmats.images[value].src !== "") {
+      return false;
+    }
+  }
+
+  // Check menu backgrounds
+  if (imageSetToCheck.menus.bgImages.Home.src !== "" || 
+      imageSetToCheck.menus.bgImages.DeckEditor.src !== "") {
+    return false;
+  }
+
+  // Check card backs
+  if (imageSetToCheck.cardBacks.images.DeckCards.src !== "" ||
+      imageSetToCheck.cardBacks.images.DonCards.src !== "") {
+    return false;
+  }
+
+  // Check don cards
+  if (imageSetToCheck.donCards.images.DonCard.src !== "") {
+    return false;
+  }
+
+  // Check cards
+  for (const key in imageSetToCheck.cards.images) {
+    if (imageSetToCheck.cards.images[key].src !== "") {
+      return false;
+    }
+  }
+
+  return true;
+
+}
+
 function countUsed(setting: { [key: string]: { src: string | null } }, checkValues: Array<string>) {
   let count = 0;
   for (const value of checkValues) {
