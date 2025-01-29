@@ -3,56 +3,37 @@
 import SelectEdgeStyle from "./SelectEdgeStyle";
 import SelectShadowStyle from "./SelectShadowStyle";
 import { ImageSet} from "@/utils/imageSet";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 
-type createCardsProps = {
-  imageSet: ImageSet,
-  setPreviewImage: (image: string) => void,
-  setPreviewLoading: (loading: boolean) => void
-}
+type CreateCardsProps = {
+  imageSet: ImageSet;
+  processImage: (image: string, manip: string, settings: ImageSet, type?: string) => void;
+};
 
-
-export default function CreateCards({imageSet, setPreviewImage, setPreviewLoading} : createCardsProps) {
+export default function CreateCards({
+  imageSet,
+  processImage
+}: CreateCardsProps) {
 
   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
-  const workerRef = useRef<Worker | null>(null);
 
   async function updateCardPreview() {
-    if (selectedFiles) {
-      if (!workerRef.current) return;
-      if (selectedFiles[0] === null || selectedFiles[0] === undefined) {
-        setPreviewImage("");
-        return;
-      }
-      setPreviewLoading(true);
+    if (selectedFiles && selectedFiles[0]) {
       try {
         const arrayBuffer = await selectedFiles[0].arrayBuffer();
-        workerRef.current.postMessage({ image: arrayBuffer, manip: "processCard", imageSet });
-      }
-      catch(err) {
+        processImage(URL.createObjectURL(new Blob([arrayBuffer])), "processCard", imageSet);
+      } catch(err) {
         console.error(err);
       }
-    }
-    else {
-      setPreviewImage("");
+    } else {
+      processImage("", "processCard", imageSet);
     }
   }
 
   useEffect(() => {
     updateCardPreview();
   }, [imageSet.cards, selectedFiles]);
-
-  useEffect(() => {
-    workerRef.current = new Worker(new URL("../workers/worker.js", import.meta.url), { type: "module" });
-    workerRef.current.onmessage = (e) => {
-      setPreviewImage(e.data.base64);
-      setPreviewLoading(false);
-    }
-    return () => {
-      workerRef.current?.terminate();
-    };
-  }, []);
 
   function clearCardImages() {
     setSelectedFiles(null);
@@ -78,8 +59,12 @@ export default function CreateCards({imageSet, setPreviewImage, setPreviewLoadin
     <div className="h-full flex flex-col text-xl text-zinc-50">
 
       <div className="w-full flex flex-row flex-wrap gap-x-2 lg:gap-4 justify-evenly lg:border-b-2 border-slate-50 border-opacity-50 pb-0 lg:pb-4">
-        <SelectEdgeStyle settings={imageSet} settingType="cards" updatePreview={updateCardPreview} />
-        <SelectShadowStyle settings={imageSet} settingType="cards" updatePreview={updateCardPreview} />
+        <SelectEdgeStyle 
+          settings={imageSet} 
+          settingType="cards" 
+          updatePreview={() => processImage("", "processCard", imageSet)}
+        />
+        <SelectShadowStyle settings={imageSet} settingType="cards" updatePreview={() => processImage("", "processCard", imageSet)} />
       </div>
 
       <div className="flex justify-center items-center w-full h-full">
