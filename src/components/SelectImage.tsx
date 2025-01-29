@@ -25,8 +25,6 @@ export default function SelectImage({aspectRatio, gridCols, artImages, handleIma
     );
   }
 
-  console.log(artImages);
-
   return (
     <div className="flex-grow overflow-auto">
       <CustomScrollbars>

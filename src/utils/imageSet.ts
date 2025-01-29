@@ -133,7 +133,8 @@ export type ImageSet = {
     };
   };
   cardBacks: {
-    overlay: CardOverlayStyle,
+    overlayDeck: CardOverlayStyle,
+    overlayDon: CardOverlayStyle,
     edgeStyle: EdgeStyle,
     shadow: boolean,
     images: {
@@ -195,7 +196,8 @@ export const imageSet: ImageSet = {
     }
   },
   cardBacks: {
-    overlay: "None",
+    overlayDeck: "None",
+    overlayDon: "None",
     edgeStyle: "Rounded Medium",
     shadow: true,
     images: {

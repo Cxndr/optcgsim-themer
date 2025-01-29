@@ -1,27 +1,40 @@
 
-import { ImageSet, isCardOverlayStyle } from "@/utils/imageSet"
+import { CardBackType, ImageSet, isCardOverlayStyle } from "@/utils/imageSet"
 import { useState, useEffect } from "react";
 import { CardOverlayStyleValues } from "@/utils/imageSet";
 
 type SelectOverlayCardsProps = {
   settings: ImageSet["cardBacks"],
-  updatePreview: () => void;
+  updatePreview: () => void,
+  selectedCardBackType: CardBackType,
 }
 
-export default function SelectOverlayCards({settings, updatePreview}:SelectOverlayCardsProps) {
+export default function SelectOverlayCards({settings, updatePreview, selectedCardBackType }:SelectOverlayCardsProps) {
 
-  const [overlay, setOverlay] = useState(settings.overlay);
+  const [overlay, setOverlay] = useState(settings.overlayDeck);
 
   useEffect(() => {
-    setOverlay(settings.overlay);
-  }, [settings.overlay]);
+    if (selectedCardBackType === "DeckCards") {
+      setOverlay(settings.overlayDeck);
+    }
+    else {
+      setOverlay(settings.overlayDon);
+    }
+
+  }, [settings.overlayDeck, settings.overlayDon, selectedCardBackType]);
 
   function handleChange(e: React.ChangeEvent<HTMLSelectElement>) {
     try {
       const selectedValue = e.currentTarget.value;
       if (!isCardOverlayStyle(selectedValue)) throw new Error("Invalid overlay style selected");
-      setOverlay(selectedValue);
-      settings.overlay = selectedValue;
+      if (selectedCardBackType === "DeckCards") {
+        setOverlay(selectedValue);
+        settings.overlayDeck = selectedValue;
+      }
+      else {
+        setOverlay(selectedValue);
+        settings.overlayDon = selectedValue;
+      }
       updatePreview();
     } catch (err) {
       console.error("Invalid overlay style selected: ", err);
