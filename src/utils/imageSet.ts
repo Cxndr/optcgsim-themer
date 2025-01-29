@@ -254,8 +254,37 @@ export function isImageSetEmpty(imageSetToCheck: ImageSet) {
   }
 
   return true;
-
 }
+
+export function getPlaymatCount() {
+  let count = 0;
+  LeaderColorValues.forEach((leaderColor) => {
+    if (imageSet.playmats.images[leaderColor].src !== "") { count += 1; }
+  })
+  return count;
+}
+export function getMenusCount() {
+  let count = 0;
+  MenuTypeValues.forEach((menuType) => {
+    if (imageSet.menus.bgImages[menuType].src !== "") { count += 1; }
+  })
+  return count;
+}
+export function getCardBacksCount() {
+  let count = 0;
+  CardBackTypeValues.forEach((cardBackType) => {
+    if (imageSet.cardBacks.images[cardBackType].src !== "") { count += 1; }
+  })
+  return count;
+}
+export function getDonCardsCount() {
+  if (imageSet.donCards.images.DonCard.src !== "") return 1
+  return 0;
+}
+export function getCardsCount() {
+  return Object.keys(imageSet.cards.images).length;
+}
+
 
 function countUsed(setting: { [key: string]: { src: string | null } }, checkValues: Array<string>) {
   let count = 0;

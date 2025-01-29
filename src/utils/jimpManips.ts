@@ -220,7 +220,7 @@ export async function processPlaymat(image: InstanceType<typeof Jimp>, settings:
   }
 
   if (settings.shadow === true) {
-    image = await applyShadow(image, 6, 0.7)
+    image = await applyShadowRendered(image, `playmatShadow${settings.edgeStyle.replaceAll(" ","")}`)
   }
   
   return image as JimpInstance;
@@ -295,7 +295,7 @@ export async function processCardBack(cardBackType: CardBackType, image: Instanc
   }
 
   if (settings.shadow === true) {
-    image = await applyShadow(image, 6, 0.7)
+    image = await applyShadowRendered(image, `largeCardShadow${settings.edgeStyle.replaceAll(" ","")}`)
   }
 
   if (cardBackType === "DonCards") {
@@ -341,7 +341,7 @@ export async function processDonCard(image: InstanceType<typeof Jimp>, settings:
   }
 
   if (settings.shadow === true) {
-    image = await applyShadow(image, 6, 0.7)
+    image = await applyShadowRendered(image, `largeCardShadow${settings.edgeStyle.replaceAll(" ","")}`)
   }
 
   // image = await applySizing(image, 180, 252);

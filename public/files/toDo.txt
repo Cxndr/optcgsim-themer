@@ -29,10 +29,12 @@
     * Again happened with previous fix ^^^^^
  * Need way to force square edges on cards.
     * lots of cards from op01/2 etc already have rounded edges.
- - Make rounded edges have better aliasing?
-    - could resize up, do corners, and resize down. what is performance impact though?
- - Make ui more intuitive for selecting leader/types.
-    - Have checkmarks/ui element for edited options.
+ * Make rounded edges have better aliasing?
+    * could resize up, do corners, and resize down. what is performance impact though?
+    * ended up writing anti-aliasing algo instead. works much better than previous anti-alias algo.
+ * Use pre-rendered shadows for all elements.
+ * Make ui more intuitive for selecting leader/types.
+    * Have checkmarks/ui element for edited options.
  - Add user upload of images.
  * Hide "Download" button in themeSteps if imageSet is empty.
  * Less padding on top of Overlay/EdgeStyle selection.

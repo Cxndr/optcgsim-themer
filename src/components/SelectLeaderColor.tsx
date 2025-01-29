@@ -1,6 +1,6 @@
 "use client";
 
-import { LeaderColor, LeaderColorValues } from "@/utils/imageSet";
+import { imageSet, LeaderColor, LeaderColorValues } from "@/utils/imageSet";
 
 type selectLeaderColorProps = {
   setLeaderColor: (value:LeaderColor) => void;
@@ -23,7 +23,7 @@ export default function SelectLeaderColor({setLeaderColor}:selectLeaderColorProp
           >
             {LeaderColorValues.map((color, index) => (
               <option key={index} value={color}>
-                {color}
+                {color} {imageSet.playmats.images[color].src && ("✔️")}
               </option>
             ))}
           </select>

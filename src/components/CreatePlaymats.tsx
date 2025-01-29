@@ -71,7 +71,16 @@ export default function CreatePlaymats({
             }
           }}
         />
-        <SelectShadowStyle settings={imageSet} settingType="playmats" updatePreview={() => {}}/>
+        <SelectShadowStyle 
+          settings={imageSet} 
+          settingType="playmats" 
+          updatePreview={() => {
+            const src = imageSet.playmats.images[selectedLeaderColor].src;
+            if (src) {
+              processImage(src, "processPlaymat", imageSet);
+            }
+          }}
+        />
       </div>
 
       <div className="w-full flex flex-row lg:flex-wrap justify-center 2xl:justify-between items-center my-3 mt-0 lg:my-6 gap-3 lg:gap-4">
