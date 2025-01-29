@@ -1,5 +1,6 @@
-import { ImageSet } from "@/utils/imageSet";
+import { ImageSet, isImageSetEmpty } from "@/utils/imageSet";
 import DownloadProgress from "./DownloadProgress";
+import { useEffect, useState } from "react";
 
 type CreateThemeStepsProps = {
   imageSet: ImageSet,
@@ -8,13 +9,25 @@ type CreateThemeStepsProps = {
 }
 
 export default function CreateThemeSteps({imageSet, currentStep, setCurrentStep}: CreateThemeStepsProps) {
-  function handleClick() {
+
+  const [showDownload, setShowDownload] = useState(!isImageSetEmpty(imageSet));
+  const [tooltipClassName, setTooltipClassName] = useState(showDownload ? "" : "tooltip tooltip-warning");
+
+  const imageSetString = JSON.stringify(imageSet);
+
+  useEffect(() => {
+    setShowDownload(!isImageSetEmpty(imageSet));
+    setTooltipClassName(showDownload ? "" : "tooltip tooltip-error tooltip-bottom");
+  }, [imageSet, imageSetString, showDownload]);
+  
+  const maxStep = 5;
+  const minStep = 1;
+
+  function handleDownloadClick() {
+    if (!showDownload) return;
     const modal = document.getElementById('download_modal') as HTMLDialogElement;
     modal.showModal();
   }
-
-  const maxStep = 5;
-  const minStep = 1;
 
   function nextStep() {
     if (currentStep >= maxStep) {
@@ -47,7 +60,6 @@ export default function CreateThemeSteps({imageSet, currentStep, setCurrentStep}
   if (currentStep >= maxStep) nextDisabled = true;
 
   const buttonClassName = "btn my-auto text-base lg:text-xl h-9 min-h-9 px-3 lg:px-4 lg:h-12 lg:min-h-12 shadow-sm shadow-black "
-  
 
   const classNameBase = "h-full "
   const classNameOn = classNameBase + "step step-accent my-auto cursor-pointer";
@@ -108,12 +120,18 @@ export default function CreateThemeSteps({imageSet, currentStep, setCurrentStep}
           </button>
         </div>
 
-        <button 
-          className={`${buttonClassName} btn-success`}
-          onClick={handleClick}
+        <span
+          className={`flex justify-center ${tooltipClassName}`}
+          data-tip="No customizations set!"
         >
-          Download
-        </button>
+          <button 
+            className={`${buttonClassName} btn-success `}
+            
+            onClick={handleDownloadClick}
+          >
+            Download
+          </button> 
+        </span>
 
         <DownloadProgress imageSet={imageSet}/>
 
