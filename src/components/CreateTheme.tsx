@@ -22,6 +22,7 @@ export default function CreateTheme({ artImages }: CreateThemeProps) {
   const [previewLoading, setPreviewLoading] = useState(false);
   const workerRef = useRef<Worker | null>(null);
   const currentStepRef = useRef(currentStep);
+  const processingRef = useRef<boolean>(false);
 
   useEffect(() => {
     currentStepRef.current = currentStep;
@@ -31,9 +32,10 @@ export default function CreateTheme({ artImages }: CreateThemeProps) {
     workerRef.current = new Worker(new URL("../workers/worker.js", import.meta.url), { type: "module" });
     
     workerRef.current.onmessage = (e) => {
-      if (e.data.step === currentStepRef.current) {
+      if (e.data.step === currentStepRef.current && processingRef.current) {
         setPreviewImage(e.data.base64);
         setPreviewLoading(false);
+        processingRef.current = false;
       }
     };
 
@@ -45,30 +47,44 @@ export default function CreateTheme({ artImages }: CreateThemeProps) {
   useEffect(() => {
     setPreviewImage("");
     setPreviewLoading(false);
+    processingRef.current = false;
   }, [currentStep]);
 
-  const processImage = async (image: string, manip: string, settings: ImageSet, type?: string) => {
-    if (!workerRef.current || !image) {
+  const processImage = async (image: string | null, manip: string, settings: ImageSet, type?: string) => {
+    if (!workerRef.current) {
       setPreviewImage("");
+      setPreviewLoading(false);
+      return;
+    }
+
+    if (!image) {
+      setPreviewImage("");
+      setPreviewLoading(false);
+      processingRef.current = false;
       return;
     }
 
     setPreviewLoading(true);
+    processingRef.current = true;
+
     try {
       const jimpImage = await Jimp.read(image);
       const buffer = await jimpImage.getBuffer("image/png");
       const arrayBuffer = buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength);
       
-      workerRef.current.postMessage({ 
-        image: arrayBuffer, 
-        manip, 
-        imageSet: settings,
-        type,
-        step: currentStepRef.current
-      });
+      if (processingRef.current) {
+        workerRef.current.postMessage({ 
+          image: arrayBuffer, 
+          manip, 
+          imageSet: settings,
+          type,
+          step: currentStepRef.current
+        });
+      }
     } catch (err) {
       console.error(err);
       setPreviewLoading(false);
+      processingRef.current = false;
     }
   };
 
