@@ -59,7 +59,7 @@ export default function CreateCards({
       for (const file of Array.from(files)) {
         if (file.name.includes("Don")) continue; // Don cards are handled seperately
         const newSrc = URL.createObjectURL(file);
-        const fileName = file.name.split(/\.(png|jpg|jpeg)$/i)[0];
+        const fileName = file.name;
         imageSet.cards.images[fileName] = { src: newSrc, name: fileName};
       }
     }

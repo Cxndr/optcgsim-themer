@@ -351,14 +351,18 @@ export async function processDonCard(image: InstanceType<typeof Jimp>, settings:
 
 
 export async function processCard(image: InstanceType<typeof Jimp>, settings: ImageSet["cards"]){
-  const width = 480;
-  const height = 671;
+  let width = 480;
+  let height = 671;
 
-  if (image.bitmap.width != width || image.bitmap.height != height) {
-    image = await applySizing(image, 480, 671);
+  if (image.bitmap.width === 120) { // for _small cards, added by Batsu in 1.27a for use in deck editor
+    width = 120;
+    height = 167;
   }
 
-  // console.log("PIXEL COLOR: ", intToRGBA(image.getPixelColor(0,0)));
+  if (image.bitmap.width != width || image.bitmap.height != height) {
+    image = await applySizing(image, width, height);
+  }
+
   if (intToRGBA(image.getPixelColor(0,0)).a < 255) {
     console.log("DETECTED TRANSPARENT EDGE")
     image = forceSquareEdges(image);

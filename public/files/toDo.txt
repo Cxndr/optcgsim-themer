@@ -35,27 +35,29 @@
  * Use pre-rendered shadows for all elements.
  * Make ui more intuitive for selecting leader/types.
     * Have checkmarks/ui element for edited options.
- - Add user upload of images.
+
  * Hide "Download" button in themeSteps if imageSet is empty.
  * Less padding on top of Overlay/EdgeStyle selection.
  - Menus not showing overlay and not included in export.
- - op09 and 10 not working with cards.
-   - because they use jpg instead of png, so the files are there but not being used.
-   - we can either find a way to delete the default jpg files.
-   - OR: convert to jpg instead based on file extension.
- - Sim creator has added "small" versions of every card 😭😭😭.
-   - need to accomodate in card generation.
-   - will this slow our export down too much?
-   - is it faster to duplicate at smaller resolution or process the _small file instead?
+ * op09 and 10 not working with cards.
+   * because they use jpg instead of png, so the files are there but not being used.
+   * we can either find a way to delete the default jpg files.
+   * OR: convert to jpg instead based on file extension.
+ * Sim creator has added "small" versions of every card 😭😭😭.
+   * need to accomodate in card generation.
+   * will this slow our export down too much?
+   * is it faster to duplicate at smaller resolution or process the _small file instead?
+ - Replace applyRoundedEdges function with a pre-rendered mask. Faster and built improved anti-aliasing hopefully.
  - Clean up new ui element for movile responsiveness.
 
 
 *** STRETCH ***
-  - Add animations:
-      - steps color.
-      - hamburger dropdown.
-  - Should steps be individual? and indicate which ones have been added to (based on imageSet)?
-  - Clean up Jimp type errors on "image" (they are false flags).
+- Add user upload of images.
+- Add animations:
+   - steps color.
+   - hamburger dropdown.
+   - Should steps be individual? and indicate which ones have been added to (based on imageSet)?
+   - Clean up Jimp type errors on "image" (they are false flags).
 - Add paypal donation/buy me a coffee button.
 - Add "this is taking too long" button to download modal: play gta or subway surfer video.
   - do a setTimeout and pop button up if goes past certain amount of time.

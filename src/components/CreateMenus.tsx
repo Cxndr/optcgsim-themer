@@ -25,7 +25,7 @@ export default function CreateMenus({
 
   useEffect(() => {
     const image = selectedImage?.src || "";
-    processImage(image, "processMenu", imageSet);
+    processImage(image, "processMenuOverlay", imageSet, selectedMenuType);
   }, [selectedImage, imageSet.menus]);
 
   useEffect(() => {
