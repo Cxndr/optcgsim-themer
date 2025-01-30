@@ -7,7 +7,7 @@ export default function NavMenu() {
   const downloadDefault = ()  => {
     // const zipFile = "/files/DefaultTheme.zip";
     const link = document.createElement("a");
-    link.href = "https://utfs.io/f/tE0Y6OM99lGIqN3NOdv7U9jGWgMKR0upPJL8TYQS4CAemchi";
+    link.href = "https://xhotkne7zc.ufs.sh/f/tE0Y6OM99lGIoSvm4dTBqtI9YRnNLUpkbHM32dOxvAPuDK1E";
     link.download = "OPTCGSimThemer-DefaultTheme.zip"; // specify the filename
     document.body.appendChild(link);
     link.click();
