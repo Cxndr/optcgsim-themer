@@ -372,10 +372,12 @@ export async function processDonCard(image: InstanceType<typeof Jimp>, settings:
 export async function processCard(image: InstanceType<typeof Jimp>, settings: ImageSet["cards"]){
   let width = 480;
   let height = 671;
+  let small = false;
 
   if (image.bitmap.width === 120) { // for _small cards, added by Batsu in 1.27a for use in deck editor
     width = 120;
     height = 167;
+    small = true;
   }
 
   if (image.bitmap.width != width || image.bitmap.height != height) {
@@ -383,20 +385,35 @@ export async function processCard(image: InstanceType<typeof Jimp>, settings: Im
   }
 
   if (intToRGBA(image.getPixelColor(0,0)).a < 255) {
-    console.log("DETECTED TRANSPARENT EDGE")
     image = forceSquareEdges(image);
   }
 
-  if (settings.edgeStyle === "Rounded") {
-    // image = await applyRoundedCorners(image, 28);
-    image = await applyRoundedCornersRendered(image, "cardMask");
-  }
-
-  if (settings.shadow === true) {
+  if (small === true) {
     if (settings.edgeStyle === "Rounded") {
-      image = await applyShadowRendered(image, "cardShadowRounded");
-    } else {
-      image = await applyShadowRendered(image, "cardShadowSquare");
+      // image = await applyRoundedCorners(image, 28);
+      image = await applyRoundedCornersRendered(image, "cardSmallMask");
+    }
+
+    if (settings.shadow === true) {
+      if (settings.edgeStyle === "Rounded") {
+        image = await applyShadowRendered(image, "cardSmallShadowRounded");
+      } else {
+        image = await applyShadowRendered(image, "cardSmallShadowSquare");
+      }
+    }
+  }
+  else {
+    if (settings.edgeStyle === "Rounded") {
+      // image = await applyRoundedCorners(image, 28);
+      image = await applyRoundedCornersRendered(image, "cardMask");
+    }
+
+    if (settings.shadow === true) {
+      if (settings.edgeStyle === "Rounded") {
+        image = await applyShadowRendered(image, "cardShadowRounded");
+      } else {
+        image = await applyShadowRendered(image, "cardShadowSquare");
+      }
     }
   }
 
