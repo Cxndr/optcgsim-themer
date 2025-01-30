@@ -192,16 +192,22 @@ export function forceSquareEdges(image: JimpInstance) {
 
   const blockSize = 18;
   const sampleDistance = 10;
+  const blankBack = new Jimp({width: image.bitmap.width, height: image.bitmap.height, color: rgbaToInt(0,0,0,0)});
 
-  const sampleColor = image.getPixelColor(sampleDistance, sampleDistance);
-  const cornerBlock = new Jimp({width: blockSize, height: blockSize, color: sampleColor});
+  const sampleColorLeft = image.getPixelColor(sampleDistance, sampleDistance);
+  const cornerBlockLeft = new Jimp({width: blockSize, height: blockSize, color: sampleColorLeft});
+  blankBack.composite(cornerBlockLeft, 0, 0);
+  blankBack.composite(cornerBlockLeft, 0, image.bitmap.height - blockSize)
 
-  image.composite(cornerBlock, 0, 0);
-  image.composite(cornerBlock, image.bitmap.width - blockSize, 0)
-  image.composite(cornerBlock, 0, image.bitmap.height - blockSize)
-  image.composite(cornerBlock, image.bitmap.width - blockSize, image.bitmap.height - blockSize)
 
-  return image;
+  const sampleColorRight = image.getPixelColor(image.bitmap.width - sampleDistance, sampleDistance);
+  const cornerBlockRight = new Jimp({width: blockSize, height: blockSize, color: sampleColorRight});
+  blankBack.composite(cornerBlockRight, image.bitmap.width - blockSize, 0)
+  blankBack.composite(cornerBlockRight, image.bitmap.width - blockSize, image.bitmap.height - blockSize)
+
+  const result = blankBack.composite(image, 0, 0);
+
+  return result as JimpInstance;
 
 }
 
