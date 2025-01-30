@@ -391,15 +391,15 @@ export async function makeImageSetZip(imageSet: ImageSet) {
         }
         let fileName = "";
         if (menu === "Home") {
-          fileName = "background";
+          fileName = "menu_home";
         }
         else if (menu === "DeckEditor") {
-          fileName = "deckeditbackground";
+          fileName = "menu_deckedit";
         }
         let image = await Jimp.read(imageSet.menus.bgImages[menu].src) as JimpInstance;
         image = await processMenu(image);
         const buffer = await image.getBuffer('image/jpeg',{});
-        zipFiles[`${fileName}.jpg`] = new Uint8Array(buffer);
+        zipFiles[`Menus/${fileName}.jpg`] = new Uint8Array(buffer);
       }
     }
   }
