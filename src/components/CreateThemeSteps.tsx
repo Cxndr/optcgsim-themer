@@ -61,6 +61,8 @@ export default function CreateThemeSteps({imageSet, currentStep, setCurrentStep}
 
   const buttonClassName = "btn my-auto text-base lg:text-xl h-9 min-h-9 px-3 lg:px-4 lg:h-12 lg:min-h-12 shadow-sm shadow-black "
 
+  const badgeClassName = "indicator-item badge text-xs right-0 -top-2 lg:translate-x-[110%] top-0 lg:top-2 px-1 py-0 lg:px-1.5 lg:py-0 shadow-black/70 shadow-sm";
+
   const classNameBase = "h-full "
   const classNameOn = classNameBase + "step step-accent my-auto cursor-pointer";
   const classNameOff = classNameBase + "step my-auto cursor-pointer";
@@ -74,11 +76,11 @@ export default function CreateThemeSteps({imageSet, currentStep, setCurrentStep}
           className={currentStep >= 0 ? classNameOn : classNameOff}
           onClick={() => setCurrentStep(1)}
         >
-          <div className="indicator">
+          <div className="indicator text-xs lg:text-base">
             Playmats
             { getPlaymatCount() 
             ? 
-              <span className={`indicator-item badge text-xs -right-6 top-2 px-1.5 py-0 shadow-black/70 shadow-sm ${
+              <span className={`${badgeClassName} ${
                 getPlaymatCount() === LeaderColorValues.length ? 'badge-success' : 'badge-error'
               }`}>
                 {getPlaymatCount()}/{LeaderColorValues.length}
@@ -91,11 +93,11 @@ export default function CreateThemeSteps({imageSet, currentStep, setCurrentStep}
           className={currentStep >= 2 ? classNameOn : classNameOff}
           onClick={() => setCurrentStep(2)}
         >
-          <div className="indicator">
+          <div className="indicator text-xs lg:text-base">
             Menus
             { getMenusCount() 
               ? 
-                <span className={`indicator-item badge text-xs -right-6 top-2 px-1.5 py-0 shadow-black/70 shadow-sm ${
+                <span className={`${badgeClassName} ${
                   getMenusCount() === MenuTypeValues.length ? 'badge-success' : 'badge-error'
                 }`}>
                   {getMenusCount()}/{MenuTypeValues.length}
@@ -108,11 +110,11 @@ export default function CreateThemeSteps({imageSet, currentStep, setCurrentStep}
           className={currentStep >= 3 ? classNameOn : classNameOff}
           onClick={() => setCurrentStep(3)}
         >
-          <div className="indicator">
+          <div className="indicator text-xs lg:text-base">
             Card Backs
             { getCardBacksCount() 
                 ? 
-                <span className={`indicator-item badge text-xs -right-6 top-2 px-1.5 py-0 shadow-black/70 shadow-sm ${
+                <span className={`${badgeClassName} ${
                     getCardBacksCount() === CardBackTypeValues.length ? 'badge-success' : 'badge-error'
                   }`}>
                   {getCardBacksCount()}/{CardBackTypeValues.length}
@@ -125,11 +127,11 @@ export default function CreateThemeSteps({imageSet, currentStep, setCurrentStep}
           className={currentStep >= 4 ? classNameOn : classNameOff}
           onClick={() => setCurrentStep(4)}
         >
-          <div className="indicator">
-            Don Cards
+          <div className="indicator text-xs lg:text-base">
+            Don
             { getDonCardsCount()
                 ?
-                  <span className={`indicator-item badge text-xs -right-5 top-2 px-1.5 py-0 shadow-black/70 shadow-sm ${
+                  <span className={`${badgeClassName} ${
                     getDonCardsCount() === 1 ? 'badge-success' : 'badge-error'
                   }`}>
                   {getDonCardsCount()}/1
@@ -142,11 +144,11 @@ export default function CreateThemeSteps({imageSet, currentStep, setCurrentStep}
           className={currentStep >= 5 ? classNameOn : classNameOff}
           onClick={() => setCurrentStep(5)}
         >
-          <div className="indicator">
+          <div className="indicator text-xs lg:text-base">
             Cards
             { getCardsCount()
                 ?
-                  <span className={`indicator-item badge text-xs -right-5 top-2 px-1.5 py-0 shadow-black/70 shadow-sm badge-success`}>
+                  <span className={`${badgeClassName} badge-success`}>
                   {getCardsCount()}
                 </span>
                 : ""}
@@ -155,10 +157,10 @@ export default function CreateThemeSteps({imageSet, currentStep, setCurrentStep}
 
       </ul>
 
-      <div className="flex-grow flex gap-12 justify-between mr-4">
-        <div className="flex gap-2">
+      <div className="flex-grow flex flex-col lg:flex-row gap-2 lg:gap-12 justify-between lg:mr-4">
+        <div className="join">
           <button 
-            className={`${buttonClassName} btn-secondary`}
+            className={`${buttonClassName} btn-secondary join-item text-xs lg:text-base`}
             onClick={prevStep}
             disabled={prevDisabled}
           >
@@ -166,7 +168,7 @@ export default function CreateThemeSteps({imageSet, currentStep, setCurrentStep}
           </button>
 
           <button
-            className={`${buttonClassName} btn-secondary`}
+            className={`${buttonClassName} btn-secondary join-item  text-xs lg:text-base`}
             onClick={nextStep}
             disabled={nextDisabled}
           >
