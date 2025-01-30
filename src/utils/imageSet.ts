@@ -471,7 +471,7 @@ export async function makeImageSetZip(imageSet: ImageSet) {
         let image = await Jimp.read(card.src) as JimpInstance;
         image = await processCard(image, imageSet.cards);
         const buffer = await image.getBuffer('image/png',{});
-        zipFiles[`Cards/${folderName}/${cardName}.png`] = new Uint8Array(buffer);
+        zipFiles[`Cards/${folderName}/${cardName}`] = new Uint8Array(buffer);
         index++;
       }
     }
