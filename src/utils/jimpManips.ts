@@ -109,7 +109,7 @@ export async function applyShadow(
 export async function applyShadowRendered(
   image: JimpInstance,
   shadowFileName: string,
-){
+) {
   try {
     const shadow = await getOverlay(`/img/shadow/${shadowFileName}.png`);
     const xOffset = ((shadow.bitmap.width)-(image.bitmap.width))/2;
@@ -121,7 +121,21 @@ export async function applyShadowRendered(
     console.error("Error applying shadow: ", err);
     throw err
   }
+}
 
+export async function applyRoundedCornersRendered(
+  image: JimpInstance,
+  maskFileName: string,
+) {
+  try {
+    const mask = await Jimp.read(`/img/masks/${maskFileName}.png`);
+    image.mask(mask);
+    return image as JimpInstance;
+  }
+  catch(err) {
+    console.error("Error applying rounded corners: ", err);
+    throw err
+  }
 }
 
 async function applySoftLightBlend(
@@ -214,9 +228,14 @@ export async function processPlaymat(image: InstanceType<typeof Jimp>, settings:
     }
   } catch(err) { console.error("Error applying overlay: ", err); }
 
-  const edgeRadii = { "Rounded Small": 50, "Rounded Medium": 100, "Rounded Large": 200 } as const;
-  if (settings.edgeStyle !== "Square" && settings.edgeStyle in edgeRadii) {
-    applyRoundedCorners(image, edgeRadii[settings.edgeStyle as keyof typeof edgeRadii]);
+  if (settings.edgeStyle === "Rounded Small"){
+    image = await applyRoundedCornersRendered(image, "playmatSmallMask");
+  }
+  else if (settings.edgeStyle === "Rounded Medium"){
+    image = await applyRoundedCornersRendered(image, "playmatMediumMask");
+  }
+  else if (settings.edgeStyle === "Rounded Large"){
+    image = await applyRoundedCornersRendered(image, "playmatLargeMask");
   }
 
   if (settings.shadow === true) {
@@ -285,13 +304,13 @@ export async function processCardBack(cardBackType: CardBackType, image: Instanc
   } catch(err) { console.error("Error applying overlay: ", err); }
 
   if (settings.edgeStyle === "Rounded Small"){
-    applyRoundedCorners(image, 25);
+    image = await applyRoundedCornersRendered(image, "cardBackSmallMask");
   }
   else if (settings.edgeStyle === "Rounded Medium"){
-    applyRoundedCorners(image, 50);
+    image = await applyRoundedCornersRendered(image, "cardBackMediumMask");
   }
   else if (settings.edgeStyle === "Rounded Large"){
-    applyRoundedCorners(image, 100);
+    image = await applyRoundedCornersRendered(image, "cardBackLargeMask");
   }
 
   if (settings.shadow === true) {
@@ -331,13 +350,13 @@ export async function processDonCard(image: InstanceType<typeof Jimp>, settings:
   } catch(err) { console.error("Error applying overlay: ", err); }
 
   if (settings.edgeStyle === "Rounded Small"){
-    applyRoundedCorners(image, 25);
+    image = await applyRoundedCornersRendered(image, "cardBackSmallMask");
   }
   else if (settings.edgeStyle === "Rounded Medium"){
-    applyRoundedCorners(image, 50);
+    image = await applyRoundedCornersRendered(image, "cardBackMediumMask");
   }
   else if (settings.edgeStyle === "Rounded Large"){
-    applyRoundedCorners(image, 100);
+    image = await applyRoundedCornersRendered(image, "cardBackLargeMask");
   }
 
   if (settings.shadow === true) {
@@ -369,7 +388,8 @@ export async function processCard(image: InstanceType<typeof Jimp>, settings: Im
   }
 
   if (settings.edgeStyle === "Rounded") {
-    image = await applyRoundedCorners(image, 28); //28
+    // image = await applyRoundedCorners(image, 28);
+    image = await applyRoundedCornersRendered(image, "cardMask");
   }
 
   if (settings.shadow === true) {
