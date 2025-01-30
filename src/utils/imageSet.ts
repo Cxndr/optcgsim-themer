@@ -494,7 +494,7 @@ async function downloadTheme(zipFile: Uint8Array) {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = "imageSet.zip";
+  a.download = "OPTCGSimTheme.zip";
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
