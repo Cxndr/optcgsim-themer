@@ -391,15 +391,15 @@ export async function makeImageSetZip(imageSet: ImageSet) {
         }
         let fileName = "";
         if (menu === "Home") {
-          fileName = "menu_home";
+          fileName = "background";
         }
         else if (menu === "DeckEditor") {
-          fileName = "menu_deckedit";
+          fileName = "deckeditbackground";
         }
         let image = await Jimp.read(imageSet.menus.bgImages[menu].src) as JimpInstance;
         image = await processMenu(image);
         const buffer = await image.getBuffer('image/jpeg',{});
-        zipFiles[`Menus/${fileName}.jpg`] = new Uint8Array(buffer);
+        zipFiles[`${fileName}.jpg`] = new Uint8Array(buffer);
       }
     }
   }
@@ -462,7 +462,9 @@ export async function makeImageSetZip(imageSet: ImageSet) {
       setProgress("Generating Cards");
       let index = 0;
       for (const [cardName, card] of cardEntries) {
-        setProgress(undefined, `Creating ${cardName} Card (${index + 1}/${cardCount})`);
+        let trimmedCardName = cardName.split(".")[0];
+        trimmedCardName = trimmedCardName.split("_small")[0];
+        setProgress(undefined, `Creating ${trimmedCardName} Card (${index + 1}/${cardCount})`);
         if (!card.src) {
           index++;
           continue;
