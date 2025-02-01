@@ -3,6 +3,7 @@ import {Inter} from 'next/font/google';
 import "./globals.css";
 import Header from "@/components/Header";
 import Head from "next/head";
+import { Analytics } from "@vercel/analytics/react"
 // import Footer from "@/components/Footer";
 
 
@@ -33,7 +34,7 @@ export default function RootLayout({
         <main className="flex-grow overflow-hidden">{children}</main>
         
         {/* <Footer /> */}
-
+        <Analytics />
       </body>
     </html>
   );
