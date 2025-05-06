@@ -1,7 +1,7 @@
 "use client"
 
 import { ReactNode } from "react"
-import {Scrollbars} from "react-custom-scrollbars-2"
+import { Scrollbars } from "react-custom-scrollbars-2"
 
 type CustomScrollBarProps = {
   children: ReactNode;
