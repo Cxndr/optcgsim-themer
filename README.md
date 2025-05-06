@@ -9,7 +9,7 @@ The One Piece Trading Card Game Sim is great, offering a free digital platform t
 ## Basic Usage
 
 1. Visit [the live site](https://www.optcgsimthemer.com/create).
-2. Select the customizations you want. You can set a different playmat for each leader color.
+2. Select the customizations you want.
 3. Click **Download** and select **Generate Theme**. Once it's finished generating click **Download Theme**
 4. Extract the downloaded zip file and copy the contents this folder of your sim install: **[YOUR OPTCGSIM INSTALL]/Builds[YOUR_OS]/OPTCGSim_Data/StreamingAssets***
 
