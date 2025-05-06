@@ -4,7 +4,9 @@
 
 ### Live Site: [optcgsimthemer.com](https://www.optcgsimthemer.com/)
 
-The One Piece Trading Card Game Sim is great, offering a free digital platform to play the trading card game online with other players across the world in the absense of an official client. The sim is very well designed technically and gets constant updates to accomodate new cards and mechanics. The only downside of the Sim is that the default graphics are very basic and the exectuion in general is not very aesthetically focused. This tool aims to offer a solution to that for players who want a more aesthetically pleasing experience using custom playmats, backgrounds, card sleeves, don cards and play cards.
+The One Piece Trading Card Game Sim is great, offering a free digital platform to play the trading card game online with other players across the world in the absense of an official client. The sim is very well designed technically and gets constant updates to accomodate new cards and mechanics. 
+
+The only downside of the Sim is that the default graphics are very basic and the exectuion in general is not very aesthetically focused. This tool aims to offer a solution to that for players who want a more aesthetically pleasing experience using custom playmats, backgrounds, card sleeves, don cards and play cards.
 
 ## Basic Usage
 
