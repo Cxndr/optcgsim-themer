@@ -4,9 +4,17 @@ on:
   # Run manually
   workflow_dispatch:
   
-  # Run weekly on Sundays at 2 AM UTC (in case new images are added)
+  # Run daily at 2 AM UTC to check for new images
   schedule:
-    - cron: '0 2 * * 0'
+    - cron: '0 2 * * *'
+  
+  # Run when someone pushes to main (in case Google Drive setup changes)
+  push:
+    branches: [ main ]
+    paths:
+      - 'scripts/generate-image-manifest.js'
+      - '.env.local'
+      - 'src/utils/googleDrive.ts'
 
 jobs:
   update-manifest:
@@ -25,28 +33,80 @@ jobs:
       - name: Install dependencies
         run: npm ci
         
+      - name: Store current manifest info
+        run: |
+          if [ -f "public/image-manifest.json" ]; then
+            echo "OLD_COUNT=$(jq '. | length' public/image-manifest.json)" >> $GITHUB_ENV
+            echo "OLD_HASH=$(sha256sum public/image-manifest.json | cut -d' ' -f1)" >> $GITHUB_ENV
+          else
+            echo "OLD_COUNT=0" >> $GITHUB_ENV
+            echo "OLD_HASH=none" >> $GITHUB_ENV
+          fi
+        
       - name: Generate new manifest
         env:
           GOOGLE_DRIVE_FOLDER_ID: ${{ secrets.GOOGLE_DRIVE_FOLDER_ID }}
           GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
         run: npm run generate-manifest
         
-      - name: Check for changes
-        id: verify-changed-files
+      - name: Check for meaningful changes
+        id: verify-changes
         run: |
-          if [ -n "$(git status --porcelain)" ]; then
-            echo "changed=true" >> $GITHUB_OUTPUT
+          if [ -f "public/image-manifest.json" ]; then
+            NEW_COUNT=$(jq '. | length' public/image-manifest.json)
+            NEW_HASH=$(sha256sum public/image-manifest.json | cut -d' ' -f1)
+            
+            echo "📊 Manifest comparison:"
+            echo "   Old: $OLD_COUNT images (hash: ${OLD_HASH:0:8}...)"
+            echo "   New: $NEW_COUNT images (hash: ${NEW_HASH:0:8}...)"
+            
+            if [ "$OLD_HASH" != "$NEW_HASH" ]; then
+              echo "🔄 Changes detected!"
+              echo "changed=true" >> $GITHUB_OUTPUT
+              echo "old_count=$OLD_COUNT" >> $GITHUB_OUTPUT
+              echo "new_count=$NEW_COUNT" >> $GITHUB_OUTPUT
+              
+              if [ "$NEW_COUNT" -gt "$OLD_COUNT" ]; then
+                DIFF=$((NEW_COUNT - OLD_COUNT))
+                echo "message=Added $DIFF new images ($OLD_COUNT → $NEW_COUNT)" >> $GITHUB_OUTPUT
+              elif [ "$NEW_COUNT" -lt "$OLD_COUNT" ]; then
+                DIFF=$((OLD_COUNT - NEW_COUNT))
+                echo "message=Removed $DIFF images ($OLD_COUNT → $NEW_COUNT)" >> $GITHUB_OUTPUT
+              else
+                echo "message=Updated image metadata ($NEW_COUNT images)" >> $GITHUB_OUTPUT
+              fi
+            else
+              echo "✅ No changes detected"
+              echo "changed=false" >> $GITHUB_OUTPUT
+            fi
           else
+            echo "❌ Failed to generate manifest"
             echo "changed=false" >> $GITHUB_OUTPUT
           fi
           
       - name: Commit and push changes
-        if: steps.verify-changed-files.outputs.changed == 'true'
+        if: steps.verify-changes.outputs.changed == 'true'
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add public/image-manifest.json
-          git commit -m "chore: update image manifest [skip ci]"
+          git commit -m "chore: ${{ steps.verify-changes.outputs.message }} [skip ci]"
           git push
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Create summary
+        run: |
+          echo "## 🖼️ Image Manifest Update" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ steps.verify-changes.outputs.changed }}" == "true" ]; then
+            echo "✅ **Changes detected and committed**" >> $GITHUB_STEP_SUMMARY
+            echo "- ${{ steps.verify-changes.outputs.message }}" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "ℹ️ **No changes detected**" >> $GITHUB_STEP_SUMMARY
+            echo "- Manifest is up to date with Google Drive" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Manifest Status:**" >> $GITHUB_STEP_SUMMARY
+          echo "- Images: $(jq '. | length' public/image-manifest.json)" >> $GITHUB_STEP_SUMMARY
+          echo "- Last updated: $(date)" >> $GITHUB_STEP_SUMMARY 
