@@ -4,7 +4,7 @@ import { ThemeImage } from "@/utils/imageSet";
 import Image from "next/image";
 import CustomScrollbars from "./CustomScrollbars";
 
-type SelectImageProps = {
+type SelectImageProps = { 
   aspectRatio: string;
   gridCols: number;
   artImages: ThemeImage[];
@@ -58,6 +58,12 @@ export default function SelectImage({aspectRatio, gridCols, artImages, handleIma
                     alt={image.name || "no image set"}
                     className="w-full h-full object-cover hover:scale-110 transform transition-transform ease-in-out duration-700"
                     width={400} height={400}
+                    onError={(e) => {
+                      console.error('🖼️ Image failed to load:', image.src, e);
+                    }}
+                    onLoad={() => {
+                      console.log('🖼️ Image loaded successfully:', image.src);
+                    }}
                   />
                 }
                 {

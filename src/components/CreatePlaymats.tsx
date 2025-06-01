@@ -35,7 +35,7 @@ export default function CreatePlaymats({
     } else {
       processImage("", "processPlaymat", imageSet);
     }
-  }, [selectedLeaderColor, selectedImage, imageSet.playmats]);
+  }, [selectedLeaderColor, selectedImage, imageSet.playmats, imageSet, processImage]);
 
   function handleImageClick(image: ThemeImage | null) {
     const newSrc = image ? image.src : "";

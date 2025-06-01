@@ -9,20 +9,59 @@ import CreateCards from "./CreateCards";
 import PreviewPane from "./PreviewPane";
 import { ImageSet, imageSet } from "@/utils/imageSet";
 import { ThemeImage } from "@/utils/imageSet";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Jimp } from "jimp";
+import { getJimpCompatibleUrl, isGoogleDriveUrl } from "@/utils/imageHelpers";
 
-type CreateThemeProps = {
-  artImages: ThemeImage[];
-};
-
-export default function CreateTheme({ artImages }: CreateThemeProps) {
+export default function CreateTheme() {
+  const [artImages, setArtImages] = useState<ThemeImage[]>([]);
+  const [imagesLoading, setImagesLoading] = useState(true);
+  const [imagesError, setImagesError] = useState<string | null>(null);
   const [currentStep, setCurrentStep] = useState(0);
   const [previewImage, setPreviewImage] = useState("");
   const [previewLoading, setPreviewLoading] = useState(false);
   const workerRef = useRef<Worker | null>(null);
   const currentStepRef = useRef(currentStep);
   const processingRef = useRef<boolean>(false);
+
+  // Fetch images on component mount
+  useEffect(() => {
+    async function fetchImages() {
+      try {
+        setImagesLoading(true);
+        
+        // Try to fetch from the fast manifest endpoint first
+        let response = await fetch('/api/images/manifest');
+        
+        // If manifest doesn't exist, fall back to the slower Google Drive API
+        if (!response.ok && response.status === 404) {
+          console.log('Static manifest not found, falling back to Google Drive API...');
+          response = await fetch('/api/images');
+        }
+        
+        if (!response.ok) {
+          throw new Error(`Failed to fetch images: ${response.statusText}`);
+        }
+        
+        const images = await response.json();
+        
+        // Check if this is an error response
+        if (images.error) {
+          throw new Error(images.error);
+        }
+        
+        setArtImages(images);
+        
+      } catch (error) {
+        console.error("Error fetching images:", error);
+        setImagesError(error instanceof Error ? error.message : "Failed to load images");
+      } finally {
+        setImagesLoading(false);
+      }
+    }
+
+    fetchImages();
+  }, []);
 
   useEffect(() => {
     currentStepRef.current = currentStep;
@@ -50,7 +89,7 @@ export default function CreateTheme({ artImages }: CreateThemeProps) {
     processingRef.current = false;
   }, [currentStep]);
 
-  const processImage = async (image: string | null, manip: string, settings: ImageSet, type?: string) => {
+  const processImage = useCallback(async (image: string | null, manip: string, settings: ImageSet, type?: string) => {
     if (!workerRef.current) {
       setPreviewImage("");
       setPreviewLoading(false);
@@ -68,7 +107,13 @@ export default function CreateTheme({ artImages }: CreateThemeProps) {
     processingRef.current = true;
 
     try {
-      const jimpImage = await Jimp.read(image);
+      // Convert Google Drive URLs to Jimp-compatible format if needed
+      let imageUrl = image;
+      if (isGoogleDriveUrl(image)) {
+        imageUrl = await getJimpCompatibleUrl(image);
+      }
+
+      const jimpImage = await Jimp.read(imageUrl);
       const buffer = await jimpImage.getBuffer("image/png");
       const arrayBuffer = buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength);
       
@@ -82,11 +127,40 @@ export default function CreateTheme({ artImages }: CreateThemeProps) {
         });
       }
     } catch (err) {
-      console.error(err);
+      console.error('Error processing image:', err);
       setPreviewLoading(false);
       processingRef.current = false;
     }
-  };
+  }, []); // Empty dependency array since the function doesn't depend on any state
+
+  // Show loading state while fetching images
+  if (imagesLoading) {
+    return (
+      <div className="w-full h-full flex flex-col justify-center items-center text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+        <p className="text-lg text-zinc-100">Loading images...</p>
+        <p className="text-sm text-zinc-400">This may take a moment</p>
+      </div>
+    );
+  }
+
+  // Show error state if image loading failed
+  if (imagesError) {
+    return (
+      <div className="w-full h-full flex flex-col justify-center items-center text-center">
+        <div className="text-red-400 mb-4">
+          <p className="text-lg">Error loading images</p>
+          <p className="text-sm">{imagesError}</p>
+        </div>
+        <button 
+          onClick={() => window.location.reload()}
+          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
 
   return (
     <>

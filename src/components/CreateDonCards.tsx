@@ -25,9 +25,13 @@ export default function CreateDonCards({
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
-    const image = selectedImage?.src || "";
-    processImage(image, "processDonCard", imageSet);
-  }, [selectedImage, imageSet.donCards]);
+    const src = selectedImage?.src || "";
+    if (src) {
+      processImage(src, "processDonCard", imageSet);
+    } else {
+      processImage("", "processDonCard", imageSet);
+    }
+  }, [selectedImage, imageSet, processImage]);
 
   function handleImageClick(image: ThemeImage | null) {
     const newSrc = image ? image.src : "";
