@@ -24,8 +24,8 @@ if (process.env.GOOGLE_SERVICE_ACCOUNT_JSON) {
 const drive = google.drive({ version: 'v3', auth });
 
 function getDisplayImageUrl(fileId) {
-  // Use the export=view format for publicly shared files
-  return `https://drive.google.com/uc?export=view&id=${fileId}`;
+  // Use the format that works for direct image loading in browsers
+  return `https://lh3.googleusercontent.com/d/${fileId}`;
 }
 
 async function generateImageManifest() {
