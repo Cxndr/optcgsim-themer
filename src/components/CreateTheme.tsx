@@ -24,6 +24,11 @@ export default function CreateTheme() {
   const currentStepRef = useRef(currentStep);
   const processingRef = useRef<boolean>(false);
 
+  // Handle image upload - add new image to the beginning of the list
+  const handleImageUpload = useCallback((newImage: ThemeImage) => {
+    setArtImages(prevImages => [newImage, ...prevImages]);
+  }, []);
+
   // Fetch images on component mount
   useEffect(() => {
     async function fetchImages() {
@@ -188,6 +193,7 @@ export default function CreateTheme() {
               artImages={artImages} 
               imageSet={imageSet} 
               processImage={processImage} 
+              onImageUpload={handleImageUpload}
             />
             :
             currentStep === 3 
@@ -196,6 +202,7 @@ export default function CreateTheme() {
               artImages={artImages} 
               imageSet={imageSet} 
               processImage={processImage}
+              onImageUpload={handleImageUpload}
             />
             :
             currentStep === 2 
@@ -204,12 +211,14 @@ export default function CreateTheme() {
               artImages={artImages} 
               imageSet={imageSet} 
               processImage={processImage} 
+              onImageUpload={handleImageUpload}
             />
             :
             <CreatePlaymats 
               artImages={artImages} 
               imageSet={imageSet} 
               processImage={processImage} 
+              onImageUpload={handleImageUpload}
             />
           }
           

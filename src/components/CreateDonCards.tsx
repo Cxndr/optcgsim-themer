@@ -13,12 +13,14 @@ type CreateDonCardsProps = {
   artImages: ThemeImage[];
   imageSet: ImageSet;
   processImage: (image: string, manip: string, settings: ImageSet, type?: string) => void;
+  onImageUpload?: (newImage: ThemeImage) => void;
 };
 
 export default function CreateDonCards({
   artImages,
   imageSet,
-  processImage
+  processImage,
+  onImageUpload
 }: CreateDonCardsProps) {
 
   const [selectedImage, setSelectedImage] = useState<ThemeImage | null>(imageSet.donCards.images.DonCard);
@@ -64,7 +66,7 @@ export default function CreateDonCards({
         <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm}/>
       </div>
 
-      <SelectImage aspectRatio="869 / 1214" gridCols={4} artImages={artImages} handleImageClick={handleImageClick} selectedImage={selectedImage} searchTerm={searchTerm}/>
+      <SelectImage aspectRatio="869 / 1214" gridCols={4} artImages={artImages} handleImageClick={handleImageClick} selectedImage={selectedImage} searchTerm={searchTerm} onImageUpload={onImageUpload}/>
       
     </div>
   )

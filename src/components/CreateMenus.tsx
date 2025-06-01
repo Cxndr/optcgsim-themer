@@ -11,12 +11,14 @@ type CreateMenusProps = {
   artImages: ThemeImage[];
   imageSet: ImageSet;
   processImage: (image: string, manip: string, settings: ImageSet, type?: string) => void;
+  onImageUpload?: (newImage: ThemeImage) => void;
 };
 
 export default function CreateMenus({
   artImages,
   imageSet,
-  processImage
+  processImage,
+  onImageUpload
 }: CreateMenusProps) {
 
   const [selectedMenuType, setSelectedMenuType] = useState("Home" as MenuType);
@@ -56,7 +58,7 @@ export default function CreateMenus({
         <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm}/>
       </div>
 
-      <SelectImage aspectRatio="1920 / 1080" gridCols={3} artImages={artImages} handleImageClick={handleImageClick} selectedImage={selectedImage} searchTerm={searchTerm}/>
+      <SelectImage aspectRatio="1920 / 1080" gridCols={3} artImages={artImages} handleImageClick={handleImageClick} selectedImage={selectedImage} searchTerm={searchTerm} onImageUpload={onImageUpload}/>
 
     </div>
   )
