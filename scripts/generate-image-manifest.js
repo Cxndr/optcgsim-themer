@@ -24,8 +24,8 @@ if (process.env.GOOGLE_SERVICE_ACCOUNT_JSON) {
 const drive = google.drive({ version: 'v3', auth });
 
 function getDisplayImageUrl(fileId) {
-  // Use the format that works for direct image loading in browsers
-  return `https://lh3.googleusercontent.com/d/${fileId}`;
+  // Use the thumbnail format that works for direct image loading in browsers
+  return `https://drive.google.com/thumbnail?id=${fileId}&sz=w400`;
 }
 
 async function generateImageManifest() {

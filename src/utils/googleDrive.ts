@@ -33,8 +33,8 @@ function initializeDriveAPI() {
 
 // Convert Google Drive file ID to thumbnail/display URL (works in browsers)
 export function getDisplayImageUrl(fileId: string): string {
-  // Use the lh3.googleusercontent.com format that works for direct image loading in browsers
-  return `https://lh3.googleusercontent.com/d/${fileId}`;
+  // Use the thumbnail format that works for direct image loading in browsers
+  return `https://drive.google.com/thumbnail?id=${fileId}&sz=w400`;
 }
 
 // Convert Google Drive file ID to direct download URL (for Jimp processing)

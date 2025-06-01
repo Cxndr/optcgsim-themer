@@ -1,13 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ['res.cloudinary.com'],
+    domains: ['res.cloudinary.com', 'drive.google.com', 'googleusercontent.com', 'lh3.googleusercontent.com'],
     unoptimized: true, // Disable image optimization until usage reset
   },
-  swcMinify: false, // switches to tensor minification - bug regarding jimp and nextjs: https://github.com/jimp-dev/jimp/issues/1344
+  // Note: swcMinify is deprecated in Next.js 13+ and removed in Next.js 15
+  // SWC minification is now enabled by default
 };
-
-
 
 export default nextConfig;
 

@@ -13,12 +13,14 @@ type CreatePlaymatsProps = {
   artImages: ThemeImage[];
   imageSet: ImageSet;
   processImage: (image: string, manip: string, settings: ImageSet, type?: string) => void;
+  onImageUpload?: (newImage: ThemeImage) => void;
 };
 
 export default function CreatePlaymats({
   artImages,
   imageSet,
-  processImage
+  processImage,
+  onImageUpload
 }: CreatePlaymatsProps) {
   const [selectedLeaderColor, setSelectedLeaderColor] = useState("Black" as LeaderColor);
   const [selectedImage, setSelectedImage] = useState<ThemeImage | null>(imageSet.playmats.images[selectedLeaderColor]);
@@ -88,7 +90,7 @@ export default function CreatePlaymats({
         <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm}/>
       </div>
 
-      <SelectImage aspectRatio="1414 / 1000" gridCols={3} artImages={artImages} handleImageClick={handleImageClick} selectedImage={selectedImage} searchTerm={searchTerm}/>
+      <SelectImage aspectRatio="1414 / 1000" gridCols={3} artImages={artImages} handleImageClick={handleImageClick} selectedImage={selectedImage} searchTerm={searchTerm} onImageUpload={onImageUpload}/>
 
     </div>
   );
