@@ -4,16 +4,19 @@ export async function getJimpCompatibleUrl(googleDriveUrl: string): Promise<stri
     // Extract file ID from different Google Drive URL formats
     let fileId: string | null = null;
     
-    // Format 1: https://drive.google.com/uc?export=view&id=FILE_ID
-    const exportViewMatch = googleDriveUrl.match(/[?&]id=([^&]+)/);
-    if (exportViewMatch) {
-      fileId = exportViewMatch[1];
+    // Format 1: https://lh3.googleusercontent.com/d/FILE_ID (current format)
+    const lh3Match = googleDriveUrl.match(/\/d\/([^/?=]+)/);
+    if (lh3Match) {
+      fileId = lh3Match[1];
     }
     
-    // Format 2: https://lh3.googleusercontent.com/d/FILE_ID (with optional parameters)
-    const googleUserContentMatch = googleDriveUrl.match(/\/d\/([^/?=]+)/);
-    if (googleUserContentMatch) {
-      fileId = googleUserContentMatch[1];
+    // Format 2: https://drive.google.com/uc?export=view&id=FILE_ID (old format)
+    // Format 3: https://drive.usercontent.google.com/download?id=FILE_ID&export=view (old format)
+    if (!fileId) {
+      const idMatch = googleDriveUrl.match(/[?&]id=([^&]+)/);
+      if (idMatch) {
+        fileId = idMatch[1];
+      }
     }
     
     if (!fileId) {
@@ -40,5 +43,5 @@ export async function getJimpCompatibleUrl(googleDriveUrl: string): Promise<stri
 
 // Check if a URL is a Google Drive URL
 export function isGoogleDriveUrl(url: string): boolean {
-  return url.includes('drive.google.com') || url.includes('googleusercontent.com');
+  return url.includes('drive.google.com') || url.includes('drive.usercontent.google.com') || url.includes('googleusercontent.com');
 } 
