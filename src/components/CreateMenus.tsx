@@ -24,9 +24,13 @@ export default function CreateMenus({
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
-    const image = selectedImage?.src || "";
-    processImage(image, "processMenuOverlay", imageSet, selectedMenuType);
-  }, [selectedImage, imageSet.menus]);
+    const src = selectedImage?.src || "";
+    if (src) {
+      processImage(src, "processMenu", imageSet, selectedMenuType);
+    } else {
+      processImage("", "processMenu", imageSet, selectedMenuType);
+    }
+  }, [selectedImage, selectedMenuType, imageSet, processImage]);
 
   useEffect(() => {
     setSelectedImage(imageSet.menus.bgImages[selectedMenuType]);

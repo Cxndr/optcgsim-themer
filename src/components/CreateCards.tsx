@@ -3,7 +3,7 @@
 import SelectEdgeStyle from "./SelectEdgeStyle";
 import SelectShadowStyle from "./SelectShadowStyle";
 import { ImageSet} from "@/utils/imageSet";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
 
 type CreateCardsProps = {
@@ -19,18 +19,18 @@ export default function CreateCards({
   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
 
   // Helper function to get the first card's src
-  const getFirstCardSrc = () => {
+  const getFirstCardSrc = useCallback(() => {
     const cardKeys = Object.keys(imageSet.cards.images);
     if (cardKeys.length > 0) {
       const firstCard = imageSet.cards.images[cardKeys[0]];
       return firstCard?.src || "";
     }
     return "";
-  };
+  }, [imageSet.cards.images]);
 
   useEffect(() => {
     processImage(getFirstCardSrc(), "processCard", imageSet);
-  }, []);
+  }, [getFirstCardSrc, imageSet, processImage]);
 
   useEffect(() => {
     if (selectedFiles && selectedFiles[0]) {
@@ -44,7 +44,7 @@ export default function CreateCards({
     } else {
       processImage("", "processCard", imageSet);
     }
-  }, [imageSet.cards, selectedFiles]);
+  }, [imageSet.cards, selectedFiles, imageSet, processImage]);
 
   function clearCardImages() {
     setSelectedFiles(null);

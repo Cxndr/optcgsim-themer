@@ -26,9 +26,13 @@ export default function CreateCardBacks({
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
-    const image = selectedImage?.src || "";
-    processImage(image, "processCardBack", imageSet, selectedCardBackType);
-  }, [selectedImage, selectedCardBackType, imageSet.cardBacks]);
+    const src = selectedImage?.src || "";
+    if (src) {
+      processImage(src, "processCardBack", imageSet, selectedCardBackType);
+    } else {
+      processImage("", "processCardBack", imageSet, selectedCardBackType);
+    }
+  }, [selectedImage, selectedCardBackType, imageSet, processImage]);
 
   useEffect(() => {
     setSelectedImage(imageSet.cardBacks.images[selectedCardBackType]);

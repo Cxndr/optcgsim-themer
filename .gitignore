@@ -40,3 +40,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Google Drive service account key (keep private!)
+google-service-account.json
+
+# Temporary files
+*.tmp
+*.temp
