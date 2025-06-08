@@ -164,7 +164,7 @@ export default function SelectImage({aspectRatio, gridCols, artImages, handleIma
                     alt={image.name || "no image set"}
                     className="w-full h-full object-cover hover:scale-110 transform transition-transform ease-in-out duration-700"
                     width={400} height={400}
-                    onError={(e) => {
+                    onError={() => {
                       console.warn('⚠️ Uploaded image failed to load:', image.name);
                     }}
                     onLoad={() => {
