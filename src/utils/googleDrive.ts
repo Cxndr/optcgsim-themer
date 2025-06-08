@@ -37,6 +37,16 @@ export function getDisplayImageUrl(fileId: string): string {
   return `https://drive.google.com/thumbnail?id=${fileId}&sz=w400`;
 }
 
+// Alternative thumbnail URL formats for fallback
+export function getAlternativeImageUrls(fileId: string): string[] {
+  return [
+    `https://drive.google.com/thumbnail?id=${fileId}&sz=w400`,
+    `https://lh3.googleusercontent.com/d/${fileId}=w400`,
+    `https://drive.google.com/uc?export=view&id=${fileId}`,
+    `https://drive.usercontent.google.com/download?id=${fileId}&export=view&authuser=0`
+  ];
+}
+
 // Convert Google Drive file ID to direct download URL (for Jimp processing)
 export function getDownloadImageUrl(fileId: string): string {
   return `https://drive.google.com/uc?export=download&id=${fileId}`;

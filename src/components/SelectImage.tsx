@@ -165,10 +165,10 @@ export default function SelectImage({aspectRatio, gridCols, artImages, handleIma
                     className="w-full h-full object-cover hover:scale-110 transform transition-transform ease-in-out duration-700"
                     width={400} height={400}
                     onError={(e) => {
-                      console.error('🖼️ Image failed to load:', image.src, e);
+                      console.warn('⚠️ Uploaded image failed to load:', image.name);
                     }}
                     onLoad={() => {
-                      console.log('🖼️ Image loaded successfully:', image.src);
+                      console.log('✅ Uploaded image loaded successfully:', image.name);
                     }}
                   />
                 }
@@ -186,23 +186,44 @@ export default function SelectImage({aspectRatio, gridCols, artImages, handleIma
               <a 
                 onClick={() => handleImageClick(image)}
                 key={`regular-${index}`}
-                className="relative w-full overflow-hidden rounded-xl shadow-sm shadow-black"
+                className="relative w-full overflow-hidden rounded-xl shadow-sm shadow-black group"
                 style={{ aspectRatio: aspectRatio }}
               >
-                {image.src &&
-                  <Image 
-                    src={image.src || ''}
-                    alt={image.name || "no image set"}
-                    className="w-full h-full object-cover hover:scale-110 transform transition-transform ease-in-out duration-700"
-                    width={400} height={400}
-                    onError={(e) => {
-                      console.error('🖼️ Image failed to load:', image.src, e);
-                    }}
-                    onLoad={() => {
-                      console.log('🖼️ Image loaded successfully:', image.src);
-                    }}
-                  />
-                }
+                {image.src ? (
+                  <div className="w-full h-full relative">
+                    <Image 
+                      src={image.src}
+                      alt={image.name || "no image set"}
+                      className="w-full h-full object-cover hover:scale-110 transform transition-transform ease-in-out duration-700"
+                      width={400} height={400}
+                      onError={(e) => {
+                        // Show fallback placeholder instead of console error
+                        const target = e.target as HTMLImageElement;
+                        target.style.display = 'none';
+                        const parent = target.parentElement;
+                        if (parent && !parent.querySelector('.image-fallback')) {
+                          const fallback = document.createElement('div');
+                          fallback.className = 'image-fallback w-full h-full flex items-center justify-center bg-zinc-700/50 text-zinc-400 text-xs text-center p-2';
+                          fallback.innerHTML = `<div><div class="text-lg mb-1">🖼️</div><div>Thumbnail<br/>unavailable</div></div>`;
+                          parent.appendChild(fallback);
+                        }
+                      }}
+                      onLoad={() => {
+                        // Only log successful loads in development
+                        if (process.env.NODE_ENV === 'development') {
+                          console.log('✅ Image loaded:', image.name);
+                        }
+                      }}
+                    />
+                  </div>
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-zinc-700/50 text-zinc-400 text-xs text-center p-2">
+                    <div>
+                      <div className="text-lg mb-1">🖼️</div>
+                      <div>No image<br/>available</div>
+                    </div>
+                  </div>
+                )}
                 {
                   selectedImage &&
                   image.src === selectedImage.src && <div className="absolute top-0 left-0 w-full h-full bg-zinc-300 bg-opacity-10 border-accent border-4 rounded-xl"></div>
