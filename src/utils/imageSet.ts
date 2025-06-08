@@ -1,6 +1,7 @@
 import { Jimp, JimpInstance } from "jimp";
 import { zipSync, Zippable } from "fflate";
 import { processPlaymat, processMenu, processCardBack, processDonCard, processCard } from "./jimpManips";
+import { getJimpCompatibleUrl, isGoogleDriveUrl } from "./imageHelpers";
 
 export type EdgeStyle = "Square" | "Rounded Small" | "Rounded Medium" | "Rounded Large";
 export function isEdgeStyle(value: string | null): value is EdgeStyle {
@@ -324,6 +325,15 @@ function makeThemeError(errorText: string, err: unknown) {
   console.error(errorText, err);
 }
 
+// Helper function to convert URLs for Jimp processing
+async function getImageForJimp(imageUrl: string): Promise<JimpInstance> {
+  let processedUrl = imageUrl;
+  if (isGoogleDriveUrl(imageUrl)) {
+    processedUrl = await getJimpCompatibleUrl(imageUrl);
+  }
+  return await Jimp.read(processedUrl) as JimpInstance;
+}
+
 // const CHUNK_SIZE = 1; // Adjust based on performance needs
 
 // async function processInBatches<T>(
@@ -367,7 +377,7 @@ export async function makeImageSetZip(imageSet: ImageSet) {
         if (imageSet.playmats.images[color].src === "" || imageSet.playmats.images[color].src === null) {
           continue;
         }
-        let image = await Jimp.read(imageSet.playmats.images[color].src) as JimpInstance;
+        let image = await getImageForJimp(imageSet.playmats.images[color].src);
         image = await processPlaymat(image, imageSet.playmats);
         const buffer = await image.getBuffer('image/png',{});
         zipFiles[`Playmats/${color}.png`] = new Uint8Array(buffer);
@@ -396,7 +406,7 @@ export async function makeImageSetZip(imageSet: ImageSet) {
         else if (menu === "DeckEditor") {
           fileName = "deckeditbackground";
         }
-        let image = await Jimp.read(imageSet.menus.bgImages[menu].src) as JimpInstance;
+        let image = await getImageForJimp(imageSet.menus.bgImages[menu].src);
         image = await processMenu(image);
         const buffer = await image.getBuffer('image/jpeg',{});
         zipFiles[`${fileName}.jpg`] = new Uint8Array(buffer);
@@ -425,7 +435,7 @@ export async function makeImageSetZip(imageSet: ImageSet) {
         else if (cardBack === "DonCards") {
           fileName = "CardBackDon";
         }
-        let image = await Jimp.read(imageSet.cardBacks.images[cardBack].src) as JimpInstance;
+        let image = await getImageForJimp(imageSet.cardBacks.images[cardBack].src);
         image = await processCardBack(cardBack, image, imageSet.cardBacks);
         const buffer = await image.getBuffer('image/png',{});
         zipFiles[`CardBacks/${fileName}.png`] = new Uint8Array(buffer);
@@ -443,7 +453,7 @@ export async function makeImageSetZip(imageSet: ImageSet) {
     if (imageSet.donCards.images.DonCard.src != "" && imageSet.donCards.images.DonCard.src != null) {
       setProgress("Generating Don Card");
       setProgress(undefined, `Creating Don Card (1/1)`)
-      let image = await Jimp.read(imageSet.donCards.images.DonCard.src) as JimpInstance;
+      let image = await getImageForJimp(imageSet.donCards.images.DonCard.src);
       image = await processDonCard(image, imageSet.donCards);
       const buffer = await image.getBuffer('image/png',{});
       zipFiles[`Cards/Don/Don.png`] = new Uint8Array(buffer);
@@ -470,7 +480,7 @@ export async function makeImageSetZip(imageSet: ImageSet) {
           continue;
         }
         const folderName = cardName.split("-")[0];
-        let image = await Jimp.read(card.src) as JimpInstance;
+        let image = await getImageForJimp(card.src);
         image = await processCard(image, imageSet.cards);
         const buffer = await image.getBuffer('image/png',{});
         zipFiles[`Cards/${folderName}/${cardName}`] = new Uint8Array(buffer);
