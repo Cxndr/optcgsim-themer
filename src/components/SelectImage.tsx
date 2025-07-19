@@ -155,7 +155,7 @@ export default function SelectImage({aspectRatio, gridCols, artImages, handleIma
               <a 
                 onClick={() => handleImageClick(image)}
                 key={`uploaded-${index}`}
-                className="relative w-full overflow-hidden rounded-xl shadow-sm shadow-black"
+                className="relative w-full overflow-hidden rounded-xl shadow-sm shadow-black select-none"
                 style={{ aspectRatio: aspectRatio }}
               >
                 {image.src &&
@@ -164,6 +164,7 @@ export default function SelectImage({aspectRatio, gridCols, artImages, handleIma
                     alt={image.name || "no image set"}
                     className="w-full h-full object-cover hover:scale-110 transform transition-transform ease-in-out duration-700"
                     width={400} height={400}
+                    draggable={false}
                     onError={() => {
                       console.warn('⚠️ Uploaded image failed to load:', image.name);
                     }}
@@ -186,7 +187,7 @@ export default function SelectImage({aspectRatio, gridCols, artImages, handleIma
               <a 
                 onClick={() => handleImageClick(image)}
                 key={`regular-${index}`}
-                className="relative w-full overflow-hidden rounded-xl shadow-sm shadow-black group"
+                className="relative w-full overflow-hidden rounded-xl shadow-sm shadow-black group select-none"
                 style={{ aspectRatio: aspectRatio }}
               >
                 {image.src ? (
@@ -196,6 +197,7 @@ export default function SelectImage({aspectRatio, gridCols, artImages, handleIma
                       alt={image.name || "no image set"}
                       className="w-full h-full object-cover hover:scale-110 transform transition-transform ease-in-out duration-700"
                       width={400} height={400}
+                      draggable={false}
                       onError={(e) => {
                         // Show fallback placeholder instead of console error
                         const target = e.target as HTMLImageElement;
