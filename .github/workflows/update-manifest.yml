@@ -101,6 +101,16 @@ jobs:
           git commit -m "chore: ${{ steps.verify-changes.outputs.message }} [skip ci]"
           git push
           
+      - name: Refresh application cache
+        if: steps.verify-changes.outputs.changed == 'true'
+        run: |
+          echo "🔄 Triggering cache refresh in production..."
+          curl -X POST \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{"source": "github-action", "manifest_updated": true}' \
+            https://www.optcgsimthemer.com/api/refresh-cache || echo "⚠️ Cache refresh failed, but manifest was updated"
+          
       - name: Create summary
         run: |
           echo "## 🖼️ Image Manifest Update" >> $GITHUB_STEP_SUMMARY
