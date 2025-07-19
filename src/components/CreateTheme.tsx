@@ -285,14 +285,6 @@ export default function CreateTheme() {
     <>
       <div className="w-full py-3 lg:py-4 flex flex-col lg:flex-row gap-3 lg:gap-4 justify-around px-4 lg:pl-0 lg:pr-12 items-center text-sm lg:text-base rounded-3xl text-zinc-100 bg-zinc-800 bg-opacity-70 shadow-2xl shadow-black">
         <CreateThemeSteps imageSet={imageSet} currentStep={currentStep} setCurrentStep={setCurrentStep}/>
-        <button 
-          onClick={refreshImages} 
-          className="px-3 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700 disabled:opacity-50"
-          disabled={imagesLoading}
-          title="Refresh images from Google Drive"
-        >
-          {imagesLoading ? 'Refreshing...' : 'Refresh Images'}
-        </button>
       </div>
 
       <div className="w-full h-0 flex-grow gap-3 2xl:gap-8 flex flex-col lg:flex-row lg:justify-center items-center">
