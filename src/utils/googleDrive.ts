@@ -89,8 +89,131 @@ async function getMimeType(fileId: string): Promise<string> {
   }
 }
 
-// Lightweight function to get just file metadata (fast)
+// Optimized function to get just file metadata (much faster)
 export async function getImageMetadataFromGoogleDrive(folderId: string): Promise<ThemeImage[]> {
+  const drive = initializeDriveAPI();
+  const images: ThemeImage[] = [];
+  
+  // Use a more efficient approach: get all files in one go with recursive query
+  try {
+    console.log('🚀 Starting optimized Google Drive fetch...');
+    
+    // Strategy: Get all descendants of the folder in batches to avoid deep nesting timeouts
+    // We'll use a breadth-first search approach
+    const allFiles = new Map<string, any>();
+    const foldersToProcess = [folderId];
+    const processedFolders = new Set<string>();
+    
+    while (foldersToProcess.length > 0) {
+      const currentFolders = foldersToProcess.splice(0, 10); // Process up to 10 folders at once
+      
+      // Create parallel requests for current batch of folders
+      const batchPromises = currentFolders.map(async (folderToProcess) => {
+        if (processedFolders.has(folderToProcess)) return [];
+        processedFolders.add(folderToProcess);
+        
+        try {
+          const response = await drive.files.list({
+            q: `'${folderToProcess}' in parents and trashed=false`,
+            fields: 'files(id, name, parents, mimeType)',
+            pageSize: 1000,
+          });
+          
+          return response.data.files || [];
+        } catch (error) {
+          console.error(`Error fetching files from folder ${folderToProcess}:`, error);
+          return [];
+        }
+      });
+      
+      // Wait for all requests in this batch to complete
+      const batchResults = await Promise.all(batchPromises);
+      
+      // Process the results
+      for (const files of batchResults) {
+        for (const file of files) {
+          allFiles.set(file.id!, file);
+          
+          // If it's a folder, add it to the queue for processing
+          if (file.mimeType === 'application/vnd.google-apps.folder') {
+            if (!processedFolders.has(file.id!)) {
+              foldersToProcess.push(file.id!);
+            }
+          }
+        }
+      }
+    }
+
+    console.log(`📁 Found ${allFiles.size} total files/folders across all nested folders`);
+    
+    // Build a map of folder IDs to folder names for path reconstruction
+    const folderMap = new Map<string, string>();
+    const parentMap = new Map<string, string[]>();
+    
+    // First pass: identify all folders and build parent relationships
+    for (const file of allFiles.values()) {
+      if (file.mimeType === 'application/vnd.google-apps.folder') {
+        folderMap.set(file.id, file.name);
+      }
+      
+      if (file.parents) {
+        parentMap.set(file.id, file.parents);
+      }
+    }
+    
+    // Function to build the full path for a file
+    const buildPath = (fileId: string, visited = new Set<string>()): string => {
+      if (visited.has(fileId)) return ''; // Prevent infinite loops
+      visited.add(fileId);
+      
+      const parents = parentMap.get(fileId);
+      if (!parents || parents.length === 0 || parents[0] === folderId) {
+        return '';
+      }
+      
+      const parentId = parents[0];
+      const parentName = folderMap.get(parentId);
+      if (!parentName) return '';
+      
+      const parentPath = buildPath(parentId, visited);
+      return parentPath ? `${parentPath}/${parentName}` : parentName;
+    };
+
+    // Second pass: process image files
+    let imageCount = 0;
+    for (const file of allFiles.values()) {
+      if (file.mimeType?.startsWith('image/')) {
+        const pathPrefix = buildPath(file.id);
+        const imageName = (pathPrefix ? `${pathPrefix}/` : '') + file.name.replace(/\.[^/.]+$/, '');
+        
+        images.push({
+          name: imageName,
+          src: getDisplayImageUrl(file.id),
+        });
+        
+        imageCount++;
+      }
+    }
+    
+    console.log(`🖼️ Processed ${imageCount} images from ${allFiles.size} total files`);
+    
+  } catch (error) {
+    console.error('❌ Error in optimized Google Drive fetch:', error);
+    
+    // Fallback to the old recursive method if the optimized approach fails
+    console.log('🔄 Falling back to recursive method...');
+    return await getImageMetadataRecursive(folderId);
+  }
+  
+  // Sort images by name
+  images.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+  
+  console.log(`✅ Optimized fetch complete: ${images.length} images`);
+  return images;
+}
+
+// Fallback recursive method (the original slow approach)
+async function getImageMetadataRecursive(folderId: string): Promise<ThemeImage[]> {
   const drive = initializeDriveAPI();
   const images: ThemeImage[] = [];
 
