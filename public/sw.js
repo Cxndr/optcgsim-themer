@@ -1,5 +1,5 @@
 // Service Worker for aggressive caching - Generated at build time
-const VERSION = 'mdanlrhn';
+const VERSION = 'mdaunx4q';
 const CACHE_NAME = `optcg-themer-${VERSION}`;
 const STATIC_CACHE = `optcg-static-${VERSION}`;
 const IMAGE_CACHE = `optcg-images-${VERSION}`;
@@ -112,6 +112,11 @@ async function handleStaticRequest(request) {
 
 // Manifest handling - cache first with background update
 async function handleManifestRequest(request) {
+  // Don't cache POST requests - let them pass through directly
+  if (request.method !== 'GET') {
+    return fetch(request);
+  }
+
   try {
     const cachedResponse = await caches.match(request);
     
@@ -172,6 +177,11 @@ async function handleImageRequest(request) {
 
 // API request handling - network first
 async function handleApiRequest(request) {
+  // Don't cache POST requests - let them pass through directly
+  if (request.method !== 'GET') {
+    return fetch(request);
+  }
+
   try {
     const networkResponse = await fetch(request);
     if (networkResponse.ok) {
