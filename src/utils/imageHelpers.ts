@@ -23,8 +23,6 @@ export async function getJimpCompatibleUrl(googleDriveUrl: string): Promise<stri
       throw new Error('Could not extract file ID from Google Drive URL');
     }
     
-    console.log('🔍 Extracted file ID:', fileId, 'from URL:', googleDriveUrl);
-    
     // Use our API to get the image data as base64
     const response = await fetch(`/api/images/${fileId}`);
     

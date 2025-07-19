@@ -1,9 +1,22 @@
-// Service Worker for aggressive caching - Generated at build time
-const VERSION = 'mdanlrhn';
-const CACHE_NAME = `optcg-themer-${VERSION}`;
-const STATIC_CACHE = `optcg-static-${VERSION}`;
-const IMAGE_CACHE = `optcg-images-${VERSION}`;
-const API_CACHE = `optcg-api-${VERSION}`;
+const fs = require('fs');
+const path = require('path');
+
+// Generate unique version from environment variables
+const generateVersion = () => {
+  // Use Vercel's commit SHA if available, fallback to timestamp
+  const commitSha = process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 8);
+  const timestamp = Date.now().toString(36);
+  
+  return commitSha || timestamp;
+};
+
+// Service worker template
+const generateServiceWorker = (version) => `// Service Worker for aggressive caching - Generated at build time
+const VERSION = '${version}';
+const CACHE_NAME = \`optcg-themer-\${VERSION}\`;
+const STATIC_CACHE = \`optcg-static-\${VERSION}\`;
+const IMAGE_CACHE = \`optcg-images-\${VERSION}\`;
+const API_CACHE = \`optcg-api-\${VERSION}\`;
 
 // URLs to cache on install
 const STATIC_ASSETS = [
@@ -215,3 +228,28 @@ self.addEventListener('unhandledrejection', (event) => {
   console.error('Service Worker unhandled rejection:', event.reason);
   event.preventDefault();
 });
+`;
+
+// Main execution
+const main = () => {
+  const version = generateVersion();
+  const swContent = generateServiceWorker(version);
+  const outputPath = path.join(process.cwd(), 'public', 'sw.js');
+  
+  console.log(`🔨 Generating service worker with version: ${version}`);
+  
+  fs.writeFileSync(outputPath, swContent, 'utf8');
+  
+  console.log(`✅ Service worker generated at: ${outputPath}`);
+  console.log(`📦 Cache names will be:`);
+  console.log(`   - optcg-themer-${version}`);
+  console.log(`   - optcg-static-${version}`);
+  console.log(`   - optcg-images-${version}`);
+  console.log(`   - optcg-api-${version}`);
+};
+
+if (require.main === module) {
+  main();
+}
+
+module.exports = { generateVersion, generateServiceWorker }; 
