@@ -1,13 +1,6 @@
 import { google } from 'googleapis';
 import { ThemeImage } from './imageSet';
-
-export interface GoogleDriveFile {
-  id: string;
-  name: string;
-  parents?: string[];
-  mimeType: string;
-  webViewLink?: string;
-}
+import type { drive_v3 } from 'googleapis';
 
 // Initialize Google Drive API
 function initializeDriveAPI() {
@@ -100,7 +93,7 @@ export async function getImageMetadataFromGoogleDrive(folderId: string): Promise
     
     // Strategy: Get all descendants of the folder in batches to avoid deep nesting timeouts
     // We'll use a breadth-first search approach
-    const allFiles = new Map<string, any>();
+    const allFiles = new Map<string, drive_v3.Schema$File>();
     const foldersToProcess = [folderId];
     const processedFolders = new Set<string>();
     
@@ -132,12 +125,15 @@ export async function getImageMetadataFromGoogleDrive(folderId: string): Promise
       // Process the results
       for (const files of batchResults) {
         for (const file of files) {
-          allFiles.set(file.id!, file);
+          // Only process files with valid id and name
+          if (!file.id || !file.name) continue;
+          
+          allFiles.set(file.id, file);
           
           // If it's a folder, add it to the queue for processing
           if (file.mimeType === 'application/vnd.google-apps.folder') {
-            if (!processedFolders.has(file.id!)) {
-              foldersToProcess.push(file.id!);
+            if (!processedFolders.has(file.id)) {
+              foldersToProcess.push(file.id);
             }
           }
         }
@@ -152,6 +148,9 @@ export async function getImageMetadataFromGoogleDrive(folderId: string): Promise
     
     // First pass: identify all folders and build parent relationships
     for (const file of allFiles.values()) {
+      // Skip files without required properties
+      if (!file.id || !file.name) continue;
+      
       if (file.mimeType === 'application/vnd.google-apps.folder') {
         folderMap.set(file.id, file.name);
       }
@@ -182,7 +181,10 @@ export async function getImageMetadataFromGoogleDrive(folderId: string): Promise
     // Second pass: process image files
     let imageCount = 0;
     for (const file of allFiles.values()) {
-      if (file.mimeType?.startsWith('image/')) {
+      // Skip files without required properties
+      if (!file.id || !file.name || !file.mimeType) continue;
+      
+      if (file.mimeType.startsWith('image/')) {
         const pathPrefix = buildPath(file.id);
         const imageName = (pathPrefix ? `${pathPrefix}/` : '') + file.name.replace(/\.[^/.]+$/, '');
         
