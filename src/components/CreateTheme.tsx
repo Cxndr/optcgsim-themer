@@ -39,6 +39,61 @@ export default function CreateTheme() {
     setArtImages(prevImages => [newImage, ...prevImages]);
   }, []);
 
+  // Add refresh functionality
+  const refreshImages = useCallback(async () => {
+    try {
+      setImagesLoading(true);
+      setImagesError(null);
+      
+      // First try to refresh the manifest cache
+      try {
+        const refreshResponse = await fetch('/api/images/manifest', { method: 'POST' });
+        if (refreshResponse.ok) {
+          console.log('Manifest cache refreshed');
+        }
+      } catch (error) {
+        console.warn('Failed to refresh manifest cache:', error);
+      }
+      
+      // Wait a moment for cache to clear, then refetch
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Try to fetch from the fast manifest endpoint first
+      let response = await fetch('/api/images/manifest', { 
+        cache: 'no-cache',
+        headers: { 'Cache-Control': 'no-cache' }
+      });
+      
+      // If manifest doesn't exist, fall back to the slower Google Drive API
+      if (!response.ok && response.status === 404) {
+        console.log('Static manifest not found, falling back to Google Drive API...');
+        response = await fetch('/api/images', { 
+          cache: 'no-cache',
+          headers: { 'Cache-Control': 'no-cache' }
+        });
+      }
+      
+      if (!response.ok) {
+        throw new Error(`Failed to fetch images: ${response.statusText}`);
+      }
+      
+      const images = await response.json();
+      
+      // Check if this is an error response
+      if (images.error) {
+        throw new Error(images.error);
+      }
+      
+      setArtImages(images);
+      
+    } catch (error) {
+      console.error("Error refreshing images:", error);
+      setImagesError(error instanceof Error ? error.message : "Failed to refresh images");
+    } finally {
+      setImagesLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     async function fetchImages() {
       try {
@@ -207,12 +262,21 @@ export default function CreateTheme() {
       <div className="w-full h-full flex flex-col justify-center items-center text-center">
         <p className="text-lg text-red-400 mb-4">Error loading images</p>
         <p className="text-sm text-zinc-400 mb-4">{imagesError}</p>
-        <button 
-          onClick={() => window.location.reload()} 
-          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-        >
-          Retry
-        </button>
+        <div className="flex gap-4">
+          <button 
+            onClick={() => window.location.reload()} 
+            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          >
+            Retry
+          </button>
+          <button 
+            onClick={refreshImages} 
+            className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+            disabled={imagesLoading}
+          >
+            {imagesLoading ? 'Refreshing...' : 'Force Refresh'}
+          </button>
+        </div>
       </div>
     );
   }
@@ -220,7 +284,15 @@ export default function CreateTheme() {
   return (
     <>
       <div className="w-full py-3 lg:py-4 flex flex-col lg:flex-row gap-3 lg:gap-4 justify-around px-4 lg:pl-0 lg:pr-12 items-center text-sm lg:text-base rounded-3xl text-zinc-100 bg-zinc-800 bg-opacity-70 shadow-2xl shadow-black">
-                 <CreateThemeSteps imageSet={imageSet} currentStep={currentStep} setCurrentStep={setCurrentStep}/>
+        <CreateThemeSteps imageSet={imageSet} currentStep={currentStep} setCurrentStep={setCurrentStep}/>
+        <button 
+          onClick={refreshImages} 
+          className="px-3 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700 disabled:opacity-50"
+          disabled={imagesLoading}
+          title="Refresh images from Google Drive"
+        >
+          {imagesLoading ? 'Refreshing...' : 'Refresh Images'}
+        </button>
       </div>
 
       <div className="w-full h-0 flex-grow gap-3 2xl:gap-8 flex flex-col lg:flex-row lg:justify-center items-center">
