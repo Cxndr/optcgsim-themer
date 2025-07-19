@@ -5,6 +5,9 @@ type faqEntry = {
 
 import CustomScrollbars from "@/components/CustomScrollbars";
 
+// Enable static generation for this page (content rarely changes)
+export const revalidate = 86400; // Revalidate every 24 hours
+
 const faqEntries: faqEntry[] = [ // DO NOT move these into a database without removing the html parsing!!!
   {
     q: "I have discovered a bug / have a suggestion for a new feature, how can I contact you?",

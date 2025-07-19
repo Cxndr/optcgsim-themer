@@ -1,4 +1,7 @@
 
+// Enable static generation for this page (content rarely changes)
+export const revalidate = 86400; // Revalidate every 24 hours
+
 export default function GuidePage() {
 
 

@@ -12,6 +12,8 @@
   "dependencies": {
     "@jimp/plugin-shadow": "^1.6.0",
     "@jimp/types": "^1.6.0",
+    "@tanstack/react-query": "^5.83.0",
+    "@tanstack/react-query-devtools": "^5.83.0",
     "@vercel/analytics": "^1.4.1",
     "cloudinary": "^2.5.1",
     "embla-carousel-autoplay": "^8.3.0",

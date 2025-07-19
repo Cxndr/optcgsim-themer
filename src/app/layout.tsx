@@ -4,6 +4,8 @@ import "./globals.css";
 import Header from "@/components/Header";
 import Head from "next/head";
 import { Analytics } from "@vercel/analytics/react"
+import { QueryProvider } from "@/components/QueryProvider";
+import { ServiceWorkerProvider } from "@/components/ServiceWorkerProvider";
 // import Footer from "@/components/Footer";
 
 
@@ -28,13 +30,15 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-title" content="OPTCG Sim Themer" />
       </Head>
       <body className={`${inter.className} bg-transparent h-svh flex flex-col`}>
-        
-        <Header />
-        
-        <main className="flex-grow overflow-hidden">{children}</main>
-        
-        {/* <Footer /> */}
-        <Analytics />
+        <QueryProvider>
+          <ServiceWorkerProvider />
+          <Header />
+          
+          <main className="flex-grow overflow-hidden">{children}</main>
+          
+          {/* <Footer /> */}
+          <Analytics />
+        </QueryProvider>
       </body>
     </html>
   );
