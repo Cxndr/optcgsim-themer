@@ -14,15 +14,13 @@ import CreateDonCards from "@/components/CreateDonCards";
 import CreateCards from "@/components/CreateCards";
 
 export default function CreateTheme() {
-  console.log('🔄 CreateTheme loaded - SIMPLE RACE CONDITION FIX VERSION');
-  
   const [artImages, setArtImages] = useState<ThemeImage[]>([]);
   const [imagesLoading, setImagesLoading] = useState(true);
   const [imagesError, setImagesError] = useState<string | null>(null);
   const [currentStep, setCurrentStep] = useState(0);
   const [previewImage, setPreviewImage] = useState("");
   const [previewLoading, setPreviewLoading] = useState(false);
-  const [imageSet, setImageSet] = useState<ImageSet>(defaultImageSet);
+  const [imageSet] = useState<ImageSet>(defaultImageSet);
   const workerRef = useRef<Worker | null>(null);
   const currentStepRef = useRef(currentStep);
   const processingRef = useRef<boolean>(false);
@@ -90,13 +88,11 @@ export default function CreateTheme() {
       if (e.data.step === currentStepRef.current && processingRef.current) {
         // Only display if this is the most recent request
         if (e.data.requestId === latestRequestRef.current) {
-          console.log('✅ Displaying current request result:', e.data.requestId);
           setPreviewImage(e.data.base64);
           setPreviewLoading(false);
           processingRef.current = false;
-        } else {
-          console.log('🚫 Ignoring old request:', e.data.requestId, 'latest:', latestRequestRef.current);
         }
+        // Ignore old requests silently
       }
     };
 
@@ -145,8 +141,6 @@ export default function CreateTheme() {
       // Generate unique request ID for this processing request
       const requestId = Date.now().toString() + Math.random().toString(36).substr(2, 9);
       latestRequestRef.current = requestId;
-      
-      console.log('🚀 New request:', requestId, 'for image:', image.substring(image.lastIndexOf('/') + 1, image.lastIndexOf('/') + 15) + '...');
 
       try {
         // Convert Google Drive URLs to Jimp-compatible format if needed
@@ -159,11 +153,10 @@ export default function CreateTheme() {
         let arrayBuffer = imageCache.current.get(imageUrl);
         
         if (!arrayBuffer) {
-          console.log('📥 Loading and resizing image...');
           const jimpImage = await Jimp.read(imageUrl);
           
-          // Resize image for faster preview processing (major performance boost!)
-          const MAX_PREVIEW_SIZE = 1024; // Increased for better quality while still being fast
+          // Resize image for faster preview processing
+          const MAX_PREVIEW_SIZE = 1024;
           const resizedImage = jimpImage.scaleToFit({ w: MAX_PREVIEW_SIZE, h: MAX_PREVIEW_SIZE });
           
           const buffer = await resizedImage.getBuffer("image/png");
@@ -177,17 +170,9 @@ export default function CreateTheme() {
             const firstKey = imageCache.current.keys().next().value;
             if (firstKey) imageCache.current.delete(firstKey);
           }
-          
-          console.log('📐 Resized and cached:', 
-            `${jimpImage.bitmap.width}x${jimpImage.bitmap.height}` + 
-            ` → ${resizedImage.bitmap.width}x${resizedImage.bitmap.height}`
-          );
-        } else {
-          console.log('⚡ Using cached resized image!');
         }
         
         if (processingRef.current && arrayBuffer && workerRef.current) {
-          console.log('📤 Sending to worker:', requestId);
           workerRef.current.postMessage({ 
             image: arrayBuffer, 
             manip, 

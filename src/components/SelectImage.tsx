@@ -168,9 +168,6 @@ export default function SelectImage({aspectRatio, gridCols, artImages, handleIma
                     onError={() => {
                       console.warn('⚠️ Uploaded image failed to load:', image.name);
                     }}
-                    onLoad={() => {
-                      console.log('✅ Uploaded image loaded successfully:', image.name);
-                    }}
                   />
                 }
                 {
@@ -210,12 +207,7 @@ export default function SelectImage({aspectRatio, gridCols, artImages, handleIma
                           parent.appendChild(fallback);
                         }
                       }}
-                      onLoad={() => {
-                        // Only log successful loads in development
-                        if (process.env.NODE_ENV === 'development') {
-                          console.log('✅ Image loaded:', image.name);
-                        }
-                      }}
+
                     />
                   </div>
                 ) : (

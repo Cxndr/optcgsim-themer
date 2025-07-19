@@ -4,10 +4,12 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "prebuild": "node scripts/generate-sw.js",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "generate-manifest": "node scripts/generate-image-manifest.js"
+    "generate-manifest": "node scripts/generate-image-manifest.js",
+    "generate-sw": "node scripts/generate-sw.js"
   },
   "dependencies": {
     "@jimp/plugin-shadow": "^1.6.0",
