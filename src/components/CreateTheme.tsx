@@ -1,35 +1,46 @@
 "use client";
 
-import CreateThemeSteps from "./CreateThemeSteps";
-import CreatePlaymats from "./CreatePlaymats";
-import CreateMenus from "./CreateMenus";
-import CreateCardBacks from "./CreateCardBacks";
-import CreateDonCards from "./CreateDonCards";
-import CreateCards from "./CreateCards";
-import PreviewPane from "./PreviewPane";
-import { ImageSet, imageSet } from "@/utils/imageSet";
-import { ThemeImage } from "@/utils/imageSet";
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
+import { ImageSet, defaultImageSet, ThemeImage } from "@/utils/imageSet";
+import { isGoogleDriveUrl, getJimpCompatibleUrl } from "@/utils/imageHelpers";
 import { Jimp } from "jimp";
-import { getJimpCompatibleUrl, isGoogleDriveUrl } from "@/utils/imageHelpers";
+
+import CreateThemeSteps from "@/components/CreateThemeSteps";
+import PreviewPane from "@/components/PreviewPane";
+import CreatePlaymats from "@/components/CreatePlaymats";
+import CreateMenus from "@/components/CreateMenus";
+import CreateCardBacks from "@/components/CreateCardBacks";
+import CreateDonCards from "@/components/CreateDonCards";
+import CreateCards from "@/components/CreateCards";
 
 export default function CreateTheme() {
+  console.log('🔄 CreateTheme loaded - SIMPLE RACE CONDITION FIX VERSION');
+  
   const [artImages, setArtImages] = useState<ThemeImage[]>([]);
   const [imagesLoading, setImagesLoading] = useState(true);
   const [imagesError, setImagesError] = useState<string | null>(null);
   const [currentStep, setCurrentStep] = useState(0);
   const [previewImage, setPreviewImage] = useState("");
   const [previewLoading, setPreviewLoading] = useState(false);
+  const [imageSet, setImageSet] = useState<ImageSet>(defaultImageSet);
   const workerRef = useRef<Worker | null>(null);
   const currentStepRef = useRef(currentStep);
   const processingRef = useRef<boolean>(false);
+  
+  // Simple race condition fix: track the latest request ID
+  const latestRequestRef = useRef<string>('');
+  
+  // Simple image cache for loaded images (avoids re-downloading)
+  const imageCache = useRef<Map<string, ArrayBuffer>>(new Map());
+  
+  // Debounce timeout to prevent excessive processing
+  const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Handle image upload - add new image to the beginning of the list
   const handleImageUpload = useCallback((newImage: ThemeImage) => {
     setArtImages(prevImages => [newImage, ...prevImages]);
   }, []);
 
-  // Fetch images on component mount
   useEffect(() => {
     async function fetchImages() {
       try {
@@ -77,9 +88,15 @@ export default function CreateTheme() {
     
     workerRef.current.onmessage = (e) => {
       if (e.data.step === currentStepRef.current && processingRef.current) {
-        setPreviewImage(e.data.base64);
-        setPreviewLoading(false);
-        processingRef.current = false;
+        // Only display if this is the most recent request
+        if (e.data.requestId === latestRequestRef.current) {
+          console.log('✅ Displaying current request result:', e.data.requestId);
+          setPreviewImage(e.data.base64);
+          setPreviewLoading(false);
+          processingRef.current = false;
+        } else {
+          console.log('🚫 Ignoring old request:', e.data.requestId, 'latest:', latestRequestRef.current);
+        }
       }
     };
 
@@ -92,6 +109,13 @@ export default function CreateTheme() {
     setPreviewImage("");
     setPreviewLoading(false);
     processingRef.current = false;
+    latestRequestRef.current = ''; // Clear latest request when changing steps
+    
+    // Clear any pending debounced calls when changing steps
+    if (debounceTimeoutRef.current) {
+      clearTimeout(debounceTimeoutRef.current);
+      debounceTimeoutRef.current = null;
+    }
   }, [currentStep]);
 
   const processImage = useCallback(async (image: string | null, manip: string, settings: ImageSet, type?: string) => {
@@ -108,35 +132,78 @@ export default function CreateTheme() {
       return;
     }
 
-    setPreviewLoading(true);
-    processingRef.current = true;
-
-    try {
-      // Convert Google Drive URLs to Jimp-compatible format if needed
-      let imageUrl = image;
-      if (isGoogleDriveUrl(image)) {
-        imageUrl = await getJimpCompatibleUrl(image);
-      }
-
-      const jimpImage = await Jimp.read(imageUrl);
-      const buffer = await jimpImage.getBuffer("image/png");
-      const arrayBuffer = buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength);
-      
-      if (processingRef.current) {
-        workerRef.current.postMessage({ 
-          image: arrayBuffer, 
-          manip, 
-          imageSet: settings,
-          type,
-          step: currentStepRef.current
-        });
-      }
-    } catch (err) {
-      console.error('Error processing image:', err);
-      setPreviewLoading(false);
-      processingRef.current = false;
+    // Clear any existing debounce timeout
+    if (debounceTimeoutRef.current) {
+      clearTimeout(debounceTimeoutRef.current);
     }
-  }, []); // Empty dependency array since the function doesn't depend on any state
+
+    // Debounce rapid clicks (300ms delay)
+    debounceTimeoutRef.current = setTimeout(async () => {
+      setPreviewLoading(true);
+      processingRef.current = true;
+      
+      // Generate unique request ID for this processing request
+      const requestId = Date.now().toString() + Math.random().toString(36).substr(2, 9);
+      latestRequestRef.current = requestId;
+      
+      console.log('🚀 New request:', requestId, 'for image:', image.substring(image.lastIndexOf('/') + 1, image.lastIndexOf('/') + 15) + '...');
+
+      try {
+        // Convert Google Drive URLs to Jimp-compatible format if needed
+        let imageUrl = image;
+        if (isGoogleDriveUrl(image)) {
+          imageUrl = await getJimpCompatibleUrl(image);
+        }
+
+        // Check cache first
+        let arrayBuffer = imageCache.current.get(imageUrl);
+        
+        if (!arrayBuffer) {
+          console.log('📥 Loading and resizing image...');
+          const jimpImage = await Jimp.read(imageUrl);
+          
+          // Resize image for faster preview processing (major performance boost!)
+          const MAX_PREVIEW_SIZE = 1024; // Increased for better quality while still being fast
+          const resizedImage = jimpImage.scaleToFit({ w: MAX_PREVIEW_SIZE, h: MAX_PREVIEW_SIZE });
+          
+          const buffer = await resizedImage.getBuffer("image/png");
+          arrayBuffer = buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength) as ArrayBuffer;
+          
+          // Cache the processed image
+          imageCache.current.set(imageUrl, arrayBuffer);
+          
+          // Limit cache size (keep last 10 processed images)
+          if (imageCache.current.size > 10) {
+            const firstKey = imageCache.current.keys().next().value;
+            if (firstKey) imageCache.current.delete(firstKey);
+          }
+          
+          console.log('📐 Resized and cached:', 
+            `${jimpImage.bitmap.width}x${jimpImage.bitmap.height}` + 
+            ` → ${resizedImage.bitmap.width}x${resizedImage.bitmap.height}`
+          );
+        } else {
+          console.log('⚡ Using cached resized image!');
+        }
+        
+        if (processingRef.current && arrayBuffer && workerRef.current) {
+          console.log('📤 Sending to worker:', requestId);
+          workerRef.current.postMessage({ 
+            image: arrayBuffer, 
+            manip, 
+            imageSet: settings,
+            type,
+            step: currentStepRef.current,
+            requestId
+          });
+        }
+      } catch (err) {
+        console.error('Error processing image:', err);
+        setPreviewLoading(false);
+        processingRef.current = false;
+      }
+    }, 300); // 300ms debounce delay
+  }, []);
 
   // Show loading state while fetching images
   if (imagesLoading) {
@@ -149,17 +216,15 @@ export default function CreateTheme() {
     );
   }
 
-  // Show error state if image loading failed
+  // Show error state if loading failed
   if (imagesError) {
     return (
       <div className="w-full h-full flex flex-col justify-center items-center text-center">
-        <div className="text-red-400 mb-4">
-          <p className="text-lg">Error loading images</p>
-          <p className="text-sm">{imagesError}</p>
-        </div>
+        <p className="text-lg text-red-400 mb-4">Error loading images</p>
+        <p className="text-sm text-zinc-400 mb-4">{imagesError}</p>
         <button 
-          onClick={() => window.location.reload()}
-          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+          onClick={() => window.location.reload()} 
+          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
         >
           Retry
         </button>
@@ -170,7 +235,7 @@ export default function CreateTheme() {
   return (
     <>
       <div className="w-full py-3 lg:py-4 flex flex-col lg:flex-row gap-3 lg:gap-4 justify-around px-4 lg:pl-0 lg:pr-12 items-center text-sm lg:text-base rounded-3xl text-zinc-100 bg-zinc-800 bg-opacity-70 shadow-2xl shadow-black">
-        <CreateThemeSteps imageSet={imageSet} currentStep={currentStep} setCurrentStep={setCurrentStep}/>
+                 <CreateThemeSteps imageSet={imageSet} currentStep={currentStep} setCurrentStep={setCurrentStep}/>
       </div>
 
       <div className="w-full h-0 flex-grow gap-3 2xl:gap-8 flex flex-col lg:flex-row lg:justify-center items-center">
@@ -190,34 +255,34 @@ export default function CreateTheme() {
             currentStep === 4
             ?
             <CreateDonCards 
-              artImages={artImages} 
-              imageSet={imageSet} 
-              processImage={processImage} 
-              onImageUpload={handleImageUpload}
-            />
-            :
-            currentStep === 3 
-            ?
-            <CreateCardBacks 
-              artImages={artImages} 
+              artImages={artImages}
               imageSet={imageSet} 
               processImage={processImage}
               onImageUpload={handleImageUpload}
             />
             :
-            currentStep === 2 
+            currentStep === 3
+            ?
+            <CreateCardBacks 
+              artImages={artImages}
+              imageSet={imageSet} 
+              processImage={processImage}
+              onImageUpload={handleImageUpload}
+            />
+            :
+            currentStep === 2
             ?
             <CreateMenus 
-              artImages={artImages} 
+              artImages={artImages}
               imageSet={imageSet} 
-              processImage={processImage} 
+              processImage={processImage}
               onImageUpload={handleImageUpload}
             />
             :
             <CreatePlaymats 
-              artImages={artImages} 
+              artImages={artImages}
               imageSet={imageSet} 
-              processImage={processImage} 
+              processImage={processImage}
               onImageUpload={handleImageUpload}
             />
           }
@@ -226,4 +291,4 @@ export default function CreateTheme() {
       </div>
     </>
   );
-}
+} 

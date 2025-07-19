@@ -33,8 +33,17 @@ export async function GET(
       return NextResponse.json({ error: 'File ID is required' }, { status: 400 });
     }
 
-    // Use cached image data fetch
-    const dataUrl = await getCachedImageData(fileId);
+    // Try to use cached image data fetch, fallback to direct fetch for large images
+    let dataUrl: string;
+    try {
+      dataUrl = await getCachedImageData(fileId);
+    } catch (cacheError) {
+      // If caching fails (likely due to 2MB limit), fetch directly without caching
+      console.log(`Cache failed for large image ${fileId}, fetching directly:`, (cacheError as Error).message);
+      console.log(`Fetching image data for file: ${fileId}`);
+      dataUrl = await getImageDataUrl(fileId);
+      console.log(`Successfully fetched image data for file: ${fileId}`);
+    }
     
     // Enhanced cache headers for better performance
     const response = NextResponse.json({ dataUrl });
