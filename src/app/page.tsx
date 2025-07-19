@@ -1,5 +1,8 @@
 import DemoCarousel from "@/components/DemoCarousel"
 
+// Enable static generation for this page
+export const revalidate = 3600; // Revalidate every hour
+
 export default function HomePage() {
 
 

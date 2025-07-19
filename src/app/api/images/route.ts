@@ -1,10 +1,26 @@
 import { NextResponse } from 'next/server';
+import { unstable_cache } from 'next/cache';
 import { getImageMetadataFromGoogleDrive } from '@/utils/googleDrive';
-import { ThemeImage } from '@/utils/imageSet';
 
-// Cache for storing image metadata
-let imageCache: { data: ThemeImage[], timestamp: number } | null = null;
-const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes in milliseconds
+// Enhanced cache configuration
+const CACHE_DURATION = 5 * 60; // 5 minutes in seconds for unstable_cache
+const CLIENT_CACHE_DURATION = 300; // 5 minutes for client cache
+const CDN_CACHE_DURATION = 600; // 10 minutes for CDN cache
+
+// Create a cached version of the Google Drive fetch function
+const getCachedImageMetadata = unstable_cache(
+  async (folderId: string) => {
+    console.log('Fetching fresh image metadata from Google Drive...');
+    const images = await getImageMetadataFromGoogleDrive(folderId);
+    console.log(`Fetched metadata for ${images.length} images from Google Drive`);
+    return images;
+  },
+  ['google-drive-images'], // Cache key
+  {
+    revalidate: CACHE_DURATION, // Revalidate every 5 minutes
+    tags: ['google-drive', 'images'], // Tags for selective revalidation
+  }
+);
 
 export async function GET() {
   try {
@@ -17,28 +33,18 @@ export async function GET() {
       );
     }
 
-    // Check if we have cached data that's still valid
-    if (imageCache && (Date.now() - imageCache.timestamp) < CACHE_DURATION) {
-      console.log(`Returning cached metadata for ${imageCache.data.length} images`);
-      return NextResponse.json(imageCache.data);
-    }
-
-    console.log('Fetching fresh image metadata from Google Drive...');
+    // Use NextJS 15's unstable_cache for persistent caching across deployments
+    const images = await getCachedImageMetadata(mainFolderId);
     
-    // Use fast metadata-only approach - no image data processing
-    const images = await getImageMetadataFromGoogleDrive(mainFolderId);
+    console.log(`Serving ${images.length} cached images`);
     
-    // Cache the results
-    imageCache = {
-      data: images,
-      timestamp: Date.now()
-    };
-    
-    console.log(`Fetched and cached metadata for ${images.length} images from Google Drive`);
-    
-    // Set cache headers for the client
+    // Enhanced cache headers for optimal performance
     const response = NextResponse.json(images);
-    response.headers.set('Cache-Control', 'public, max-age=300'); // 5 minutes client cache
+    response.headers.set('Cache-Control', 
+      `public, max-age=${CLIENT_CACHE_DURATION}, s-maxage=${CDN_CACHE_DURATION}, stale-while-revalidate=86400`
+    );
+    response.headers.set('ETag', `"images-${Date.now()}-${images.length}"`);
+    response.headers.set('Vary', 'Accept-Encoding');
     
     return response;
     
@@ -50,6 +56,23 @@ export async function GET() {
         error: 'Failed to fetch images from Google Drive',
         details: error instanceof Error ? error.message : String(error)
       },
+      { status: 500 }
+    );
+  }
+}
+
+// Add revalidation endpoint for cache management
+export async function POST() {
+  try {
+    const { revalidateTag } = await import('next/cache');
+    await revalidateTag('google-drive');
+    
+    return NextResponse.json({ 
+      message: 'Google Drive cache revalidated successfully' 
+    });
+  } catch {
+    return NextResponse.json(
+      { error: 'Failed to revalidate cache' },
       { status: 500 }
     );
   }
