@@ -1,5 +1,5 @@
 // Service Worker for aggressive caching - Generated at build time
-const VERSION = 'mdaunx4q';
+const VERSION = 'mdavgbbn';
 const CACHE_NAME = `optcg-themer-${VERSION}`;
 const STATIC_CACHE = `optcg-static-${VERSION}`;
 const IMAGE_CACHE = `optcg-images-${VERSION}`;
