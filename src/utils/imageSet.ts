@@ -1,4 +1,4 @@
-import { Jimp, JimpInstance } from "jimp";
+import { JimpInstance, getWebpJimp } from "./jimp";
 import { zipSync, Zippable } from "fflate";
 import { processPlaymat, processMenu, processCardBack, processDonCard, processCard } from "./jimpManips";
 import { getJimpCompatibleUrl, isGoogleDriveUrl } from "./imageHelpers";
@@ -331,7 +331,9 @@ async function getImageForJimp(imageUrl: string): Promise<JimpInstance> {
   if (isGoogleDriveUrl(imageUrl)) {
     processedUrl = await getJimpCompatibleUrl(imageUrl);
   }
-  return await Jimp.read(processedUrl) as JimpInstance;
+  // Use webp-enabled Jimp for theme generation
+  const WebpJimp = await getWebpJimp();
+  return await WebpJimp.read(processedUrl) as JimpInstance;
 }
 
 // const CHUNK_SIZE = 1; // Adjust based on performance needs
@@ -378,7 +380,8 @@ export async function makeImageSetZip(imageSet: ImageSet) {
           continue;
         }
         let image = await getImageForJimp(imageSet.playmats.images[color].src);
-        image = await processPlaymat(image, imageSet.playmats);
+        const WebpJimp = await getWebpJimp();
+        image = await processPlaymat(image, imageSet.playmats, WebpJimp);
         const buffer = await image.getBuffer('image/png',{});
         zipFiles[`Playmats/${color}.png`] = new Uint8Array(buffer);
       }
@@ -436,7 +439,8 @@ export async function makeImageSetZip(imageSet: ImageSet) {
           fileName = "CardBackDon";
         }
         let image = await getImageForJimp(imageSet.cardBacks.images[cardBack].src);
-        image = await processCardBack(cardBack, image, imageSet.cardBacks);
+        const WebpJimp = await getWebpJimp();
+        image = await processCardBack(cardBack, image, imageSet.cardBacks, WebpJimp);
         const buffer = await image.getBuffer('image/png',{});
         zipFiles[`CardBacks/${fileName}.png`] = new Uint8Array(buffer);
       }
@@ -481,7 +485,8 @@ export async function makeImageSetZip(imageSet: ImageSet) {
         }
         const folderName = cardName.split("-")[0];
         let image = await getImageForJimp(card.src);
-        image = await processCard(image, imageSet.cards);
+        const WebpJimp = await getWebpJimp();
+        image = await processCard(image, imageSet.cards, WebpJimp);
         const buffer = await image.getBuffer('image/png',{});
         zipFiles[`Cards/${folderName}/${cardName}`] = new Uint8Array(buffer);
         index++;

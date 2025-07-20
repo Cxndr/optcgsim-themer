@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { ImageSet, defaultImageSet, ThemeImage } from "@/utils/imageSet";
 import { isGoogleDriveUrl, getJimpCompatibleUrl } from "@/utils/imageHelpers";
-import { Jimp } from "jimp";
+// Jimp is now only used in the worker
 
 import CreateThemeSteps from "@/components/CreateThemeSteps";
 import PreviewPane from "@/components/PreviewPane";
@@ -208,16 +208,15 @@ export default function CreateTheme() {
         let arrayBuffer = imageCache.current.get(imageUrl);
         
         if (!arrayBuffer) {
-          const jimpImage = await Jimp.read(imageUrl);
+          // Fetch the image data directly as ArrayBuffer
+          const response = await fetch(imageUrl);
+          if (!response.ok) {
+            throw new Error(`Failed to fetch image: ${response.statusText}`);
+          }
           
-          // Resize image for faster preview processing
-          const MAX_PREVIEW_SIZE = 1024;
-          const resizedImage = jimpImage.scaleToFit({ w: MAX_PREVIEW_SIZE, h: MAX_PREVIEW_SIZE });
+          arrayBuffer = await response.arrayBuffer();
           
-          const buffer = await resizedImage.getBuffer("image/png");
-          arrayBuffer = buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength) as ArrayBuffer;
-          
-          // Cache the processed image
+          // Cache the image data
           imageCache.current.set(imageUrl, arrayBuffer);
           
           // Limit cache size (keep last 10 processed images)

@@ -64,7 +64,7 @@ export default function DownloadProgress({imageSet}:DownloadProgressProps) {
           <button
             onClick={clickDownload}
             className="btn btn-success font-bold shadow-xs shadow-black"
-            disabled={!generateTheme.downloadReady}
+            disabled={!generateTheme.downloadReady || generateTheme.generating}
           >
             Download Theme
           </button>
