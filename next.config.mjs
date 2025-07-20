@@ -1,5 +1,21 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  webpack: (config, { isServer }) => {
+    // Handle Node.js modules for browser compatibility
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        path: false,
+        os: false,
+        crypto: false,
+        buffer: false,
+        stream: false,
+        util: false,
+      };
+    }
+    return config;
+  },
   // Enhanced image optimization
   images: {
     remotePatterns: [

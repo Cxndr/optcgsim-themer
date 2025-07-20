@@ -1,4 +1,4 @@
-import {intToRGBA, Jimp, JimpInstance, rgbaToInt} from "jimp";
+import {intToRGBA, Jimp, JimpInstance, rgbaToInt, getWebpJimp} from "./jimp";
 import { ImageSet } from "./imageSet";
 import { MenuType } from "./imageSet";
 import { CardBackType } from "./imageSet";
@@ -19,7 +19,7 @@ export async function applyRoundedCorners(image: InstanceType<typeof Jimp>, radi
     height: diameter, 
     color: rgbaToInt(255,255,255,255)
   });
-  circle.scan(0, 0, diameter, diameter, (x, y) => {
+  circle.scan(0, 0, diameter, diameter, (x: number, y: number) => {
     const dist = Math.sqrt(Math.pow(x - radius, 2) + Math.pow(y - radius, 2));
     if (dist > radius) {
       circle.setPixelColor(0x00000000, x, y);
@@ -33,10 +33,10 @@ export async function applyRoundedCorners(image: InstanceType<typeof Jimp>, radi
   mask.composite(circle, mask.width - diameter, mask.height - diameter);
 
   // Draw rectangles to fill in the edges between corners
-  mask.scan(0, radius, mask.width, mask.height - 2 * radius, (x, y) => {
+  mask.scan(0, radius, mask.width, mask.height - 2 * radius, (x: number, y: number) => {
     mask.setPixelColor(0xffffffff, x, y); // Set pixels to opaque white
   });
-  mask.scan(radius, 0, mask.width - 2 * radius, mask.height, (x, y) => {
+  mask.scan(radius, 0, mask.width - 2 * radius, mask.height, (x: number, y: number) => {
     mask.setPixelColor(0xffffffff, x, y); // Set pixels to opaque white
   });
 
@@ -109,9 +109,10 @@ export async function applyShadow(
 export async function applyShadowRendered(
   image: JimpInstance,
   shadowFileName: string,
+  jimpInstance?: any // eslint-disable-line @typescript-eslint/no-explicit-any
 ) {
   try {
-    const shadow = await getOverlay(`/img/shadow/${shadowFileName}.png`);
+    const shadow = await getOverlay(`/img/shadow/${shadowFileName}.png`, jimpInstance);
     const xOffset = ((shadow.bitmap.width)-(image.bitmap.width))/2;
     const yOffset = ((shadow.bitmap.height)-(image.bitmap.height))/2;
     const result = shadow.composite(image, xOffset, yOffset);
@@ -126,9 +127,11 @@ export async function applyShadowRendered(
 export async function applyRoundedCornersRendered(
   image: JimpInstance,
   maskFileName: string,
+  jimpInstance?: any // eslint-disable-line @typescript-eslint/no-explicit-any
 ) {
   try {
-    const mask = await Jimp.read(`/img/masks/${maskFileName}.png`);
+    const JimpToUse = jimpInstance || await getWebpJimp();
+    const mask = await JimpToUse.read(`/img/masks/${maskFileName}.png`);
     image.mask(mask);
     return image as JimpInstance;
   }
@@ -151,7 +154,7 @@ async function applySoftLightBlend(
 
   blendStrength = Math.min(1, Math.max(0, blendStrength));
 
-  baseImage.scan(0, 0, baseWidth, baseHeight, (x, y, idx) => {
+  baseImage.scan(0, 0, baseWidth, baseHeight, (x: number, y: number, idx: number) => {
     const baseR = baseImage.bitmap.data[idx];
     const baseG = baseImage.bitmap.data[idx + 1];
     const baseB = baseImage.bitmap.data[idx + 2];
@@ -188,20 +191,21 @@ async function applySoftLightBlend(
   return baseImage as JimpInstance;
 }
 
-export function forceSquareEdges(image: JimpInstance) {
+export async function forceSquareEdges(image: JimpInstance, jimpInstance?: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
 
   const blockSize = 18;
   const sampleDistance = 10;
-  const blankBack = new Jimp({width: image.bitmap.width, height: image.bitmap.height, color: rgbaToInt(0,0,0,0)});
+  const JimpToUse = jimpInstance || await getWebpJimp();
+  const blankBack = new JimpToUse({width: image.bitmap.width, height: image.bitmap.height, color: rgbaToInt(0,0,0,0)});
 
   const sampleColorLeft = image.getPixelColor(sampleDistance, sampleDistance);
-  const cornerBlockLeft = new Jimp({width: blockSize, height: blockSize, color: sampleColorLeft});
+  const cornerBlockLeft = new JimpToUse({width: blockSize, height: blockSize, color: sampleColorLeft});
   blankBack.composite(cornerBlockLeft, 0, 0);
   blankBack.composite(cornerBlockLeft, 0, image.bitmap.height - blockSize)
 
 
   const sampleColorRight = image.getPixelColor(image.bitmap.width - sampleDistance, sampleDistance);
-  const cornerBlockRight = new Jimp({width: blockSize, height: blockSize, color: sampleColorRight});
+  const cornerBlockRight = new JimpToUse({width: blockSize, height: blockSize, color: sampleColorRight});
   blankBack.composite(cornerBlockRight, image.bitmap.width - blockSize, 0)
   blankBack.composite(cornerBlockRight, image.bitmap.width - blockSize, image.bitmap.height - blockSize)
 
@@ -214,38 +218,40 @@ export function forceSquareEdges(image: JimpInstance) {
 
 const overlayCache: { [key: string]: JimpInstance } = {};
 
-async function getOverlay(path: string): Promise<JimpInstance> {
+async function getOverlay(path: string, jimpInstance?: any): Promise<JimpInstance> { // eslint-disable-line @typescript-eslint/no-explicit-any
   if (!overlayCache[path]) {
-    overlayCache[path] = await Jimp.read(path) as JimpInstance;
+    // Use provided Jimp instance or get webp-enabled one
+    const JimpToUse = jimpInstance || await getWebpJimp();
+    overlayCache[path] = await JimpToUse.read(path) as JimpInstance;
   }
   return overlayCache[path];
 }
 
-export async function processPlaymat(image: InstanceType<typeof Jimp>, settings: ImageSet["playmats"]){
+export async function processPlaymat(image: InstanceType<typeof Jimp>, settings: ImageSet["playmats"], jimpInstance?: any){ // eslint-disable-line @typescript-eslint/no-explicit-any
 
   image = await applySizing(image, 1414, 1000);
 
   try {
     if (settings.overlay === "Area Markers") {
-      image = image.composite(await getOverlay("/img/overlays/area-markers.png"), 0, 0)
+      image = image.composite(await getOverlay("/img/overlays/area-markers.png", jimpInstance), 0, 0)
     }
     else if (settings.overlay === "Area Markers w/ Text") {
-      image = image.composite(await getOverlay("/img/overlays/area-markers-text.png"), 0, 0)
+      image = image.composite(await getOverlay("/img/overlays/area-markers-text.png", jimpInstance), 0, 0)
     }
   } catch(err) { console.error("Error applying overlay: ", err); }
 
   if (settings.edgeStyle === "Rounded Small"){
-    image = await applyRoundedCornersRendered(image, "playmatSmallMask");
+    image = await applyRoundedCornersRendered(image, "playmatSmallMask", jimpInstance);
   }
   else if (settings.edgeStyle === "Rounded Medium"){
-    image = await applyRoundedCornersRendered(image, "playmatMediumMask");
+    image = await applyRoundedCornersRendered(image, "playmatMediumMask", jimpInstance);
   }
   else if (settings.edgeStyle === "Rounded Large"){
-    image = await applyRoundedCornersRendered(image, "playmatLargeMask");
+    image = await applyRoundedCornersRendered(image, "playmatLargeMask", jimpInstance);
   }
 
   if (settings.shadow === true) {
-    image = await applyShadowRendered(image, `playmatShadow${settings.edgeStyle.replaceAll(" ","")}`)
+    image = await applyShadowRendered(image, `playmatShadow${settings.edgeStyle.replaceAll(" ","")}`, jimpInstance)
   }
   
   return image as JimpInstance;
@@ -274,9 +280,10 @@ export async function processMenu(image: InstanceType<typeof Jimp>){
 }
 
 
-export async function processCardBack(cardBackType: CardBackType, image: InstanceType<typeof Jimp>, settings: ImageSet["cardBacks"]){
+export async function processCardBack(cardBackType: CardBackType, image: InstanceType<typeof Jimp>, settings: ImageSet["cardBacks"], jimpInstance?: any){ // eslint-disable-line @typescript-eslint/no-explicit-any
 
-  const blackBack = new Jimp({
+  const JimpToUse = jimpInstance || await getWebpJimp();
+  const blackBack = new JimpToUse({
     width: image.width, 
     height: image.height, 
     color: rgbaToInt(0,0,0,0)
@@ -292,35 +299,35 @@ export async function processCardBack(cardBackType: CardBackType, image: Instanc
     else {overlayCardType = "overlayDon"}
     
     if (settings[overlayCardType as keyof typeof settings] === "OP Text") {
-      image = image.composite(await getOverlay("/img/overlays/card-back-textlogo-white.png"), 0, 0)
-      image = image.composite(await getOverlay("/img/overlays/card-oplogo-bordersoft.png"), 0, 0)
+      image = image.composite(await getOverlay("/img/overlays/card-back-textlogo-white.png", jimpInstance), 0, 0)
+      image = image.composite(await getOverlay("/img/overlays/card-oplogo-bordersoft.png", jimpInstance), 0, 0)
     }
     else if (settings[overlayCardType as keyof typeof settings] === "OP Logo") {
-      const overlay = await getOverlay("/img/overlays/card-back-oplogo.png") as InstanceType<typeof Jimp>;
+      const overlay = await getOverlay("/img/overlays/card-back-oplogo.png", jimpInstance) as InstanceType<typeof Jimp>;
       image = (await applySoftLightBlend(image, overlay,0.35));
-      image = image.composite(await getOverlay("/img/overlays/card-oplogo-border.png"), 0, 0)
+      image = image.composite(await getOverlay("/img/overlays/card-oplogo-border.png", jimpInstance), 0, 0)
       image.contrast(0.075);
     }
     else if (settings[overlayCardType as keyof typeof settings] === "Don Symbol") {
-      image = image.composite(await getOverlay("/img/overlays/card-back-don-faded.png"), 0, 0)
+      image = image.composite(await getOverlay("/img/overlays/card-back-don-faded.png", jimpInstance), 0, 0)
     }
     else if (settings[overlayCardType as keyof typeof settings] === "Border Only") {
-      image = image.composite(await getOverlay("/img/overlays/card-borderonly.png"), 0, 0)
+      image = image.composite(await getOverlay("/img/overlays/card-borderonly.png", jimpInstance), 0, 0)
     }
   } catch(err) { console.error("Error applying overlay: ", err); }
 
   if (settings.edgeStyle === "Rounded Small"){
-    image = await applyRoundedCornersRendered(image, "cardBackSmallMask");
+    image = await applyRoundedCornersRendered(image, "cardBackSmallMask", jimpInstance);
   }
   else if (settings.edgeStyle === "Rounded Medium"){
-    image = await applyRoundedCornersRendered(image, "cardBackMediumMask");
+    image = await applyRoundedCornersRendered(image, "cardBackMediumMask", jimpInstance);
   }
   else if (settings.edgeStyle === "Rounded Large"){
-    image = await applyRoundedCornersRendered(image, "cardBackLargeMask");
+    image = await applyRoundedCornersRendered(image, "cardBackLargeMask", jimpInstance);
   }
 
   if (settings.shadow === true) {
-    image = await applyShadowRendered(image, `largeCardShadow${settings.edgeStyle.replaceAll(" ","")}`)
+    image = await applyShadowRendered(image, `largeCardShadow${settings.edgeStyle.replaceAll(" ","")}`, jimpInstance)
   }
 
   if (cardBackType === "DonCards") {
@@ -375,7 +382,7 @@ export async function processDonCard(image: InstanceType<typeof Jimp>, settings:
 }
 
 
-export async function processCard(image: InstanceType<typeof Jimp>, settings: ImageSet["cards"]){
+export async function processCard(image: InstanceType<typeof Jimp>, settings: ImageSet["cards"], jimpInstance?: any){ // eslint-disable-line @typescript-eslint/no-explicit-any
   let width = 480;
   let height = 671;
   let small = false;
@@ -391,34 +398,34 @@ export async function processCard(image: InstanceType<typeof Jimp>, settings: Im
   }
 
   if (intToRGBA(image.getPixelColor(0,0)).a < 255) {
-    image = forceSquareEdges(image);
+    image = await forceSquareEdges(image, jimpInstance);
   }
 
   if (small === true) {
     if (settings.edgeStyle === "Rounded") {
       // image = await applyRoundedCorners(image, 28);
-      image = await applyRoundedCornersRendered(image, "cardSmallMask");
+      image = await applyRoundedCornersRendered(image, "cardSmallMask", jimpInstance);
     }
 
     if (settings.shadow === true) {
       if (settings.edgeStyle === "Rounded") {
-        image = await applyShadowRendered(image, "cardSmallShadowRounded");
+        image = await applyShadowRendered(image, "cardSmallShadowRounded", jimpInstance);
       } else {
-        image = await applyShadowRendered(image, "cardSmallShadowSquare");
+        image = await applyShadowRendered(image, "cardSmallShadowSquare", jimpInstance);
       }
     }
   }
   else {
     if (settings.edgeStyle === "Rounded") {
       // image = await applyRoundedCorners(image, 28);
-      image = await applyRoundedCornersRendered(image, "cardMask");
+      image = await applyRoundedCornersRendered(image, "cardMask", jimpInstance);
     }
 
     if (settings.shadow === true) {
       if (settings.edgeStyle === "Rounded") {
-        image = await applyShadowRendered(image, "cardShadowRounded");
+        image = await applyShadowRendered(image, "cardShadowRounded", jimpInstance);
       } else {
-        image = await applyShadowRendered(image, "cardShadowSquare");
+        image = await applyShadowRendered(image, "cardShadowSquare", jimpInstance);
       }
     }
   }
