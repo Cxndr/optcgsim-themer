@@ -1,27 +1,28 @@
-// Service Worker for aggressive caching - Generated at build time
-const VERSION = 'mdaxvn9b';
-const CACHE_NAME = `optcg-themer-${VERSION}`;
-const STATIC_CACHE = `optcg-static-${VERSION}`;
-const IMAGE_CACHE = `optcg-images-${VERSION}`;
-const API_CACHE = `optcg-api-${VERSION}`;
+// Service Worker for smart caching - Generated at build time
+const VERSION = 'mddlek60';
+const APP_NAME = 'optcg-themer';
+const IS_DEVELOPMENT = self.location.hostname === 'localhost' || self.location.hostname === '127.0.0.1';
+const ENVIRONMENT = IS_DEVELOPMENT ? 'dev' : 'prod';
 
-// URLs to cache on install
+// Environment-aware cache names to prevent cross-app collisions
+const CACHE_NAME = `${APP_NAME}-${ENVIRONMENT}-${VERSION}`;
+const STATIC_CACHE = `${APP_NAME}-static-${ENVIRONMENT}-${VERSION}`;
+const IMAGE_CACHE = `${APP_NAME}-images-${ENVIRONMENT}-${VERSION}`;
+const API_CACHE = `${APP_NAME}-api-${ENVIRONMENT}-${VERSION}`;
+
+// URLs to cache on install - Only essential static assets (NO HTML pages)
 const STATIC_ASSETS = [
-  '/',
-  '/create',
-  '/guide',
-  '/faq',
   '/img/logo-op.webp',
   '/img/bg-01.webp',
   '/img/bg-02.webp',
   '/img/bg-03.webp',
   '/manifest.json',
-  // Add more static assets as needed
+  // Note: Removed HTML pages entirely - not a best practice to cache them
 ];
 
 // Install event - cache static assets
 self.addEventListener('install', (event) => {
-  console.log('Service Worker installing with version:', VERSION);
+  console.log(`Service Worker installing with version: ${VERSION} (${ENVIRONMENT})`);
   event.waitUntil(
     caches.open(STATIC_CACHE)
       .then((cache) => {
@@ -38,14 +39,17 @@ self.addEventListener('install', (event) => {
 
 // Activate event - clean up old caches
 self.addEventListener('activate', (event) => {
-  console.log('Service Worker activating with version:', VERSION);
+  console.log(`Service Worker activating with version: ${VERSION} (${ENVIRONMENT})`);
   event.waitUntil(
     caches.keys()
       .then((cacheNames) => {
         return Promise.all(
           cacheNames.map((cacheName) => {
-            // Keep only current version caches, delete all others
-            if (![STATIC_CACHE, IMAGE_CACHE, API_CACHE].includes(cacheName)) {
+            // Keep only current version caches for this app, delete all others
+            const isCurrentAppCache = cacheName.startsWith(`${APP_NAME}-`) && 
+              [STATIC_CACHE, IMAGE_CACHE, API_CACHE].includes(cacheName);
+            
+            if (!isCurrentAppCache) {
               console.log('Deleting old cache:', cacheName);
               return caches.delete(cacheName);
             }
@@ -53,13 +57,13 @@ self.addEventListener('activate', (event) => {
         );
       })
       .then(() => {
-        console.log('Service Worker activated with version:', VERSION);
+        console.log(`Service Worker activated with version: ${VERSION} (${ENVIRONMENT})`);
         return self.clients.claim();
       })
   );
 });
 
-// Fetch event - serve from cache with fallback strategies
+// Fetch event - serve from cache with best-practice strategies
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
   
@@ -68,9 +72,14 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  // Skip caching for different localhost ports in development
+  if (IS_DEVELOPMENT && url.hostname === 'localhost' && url.port !== self.location.port) {
+    return;
+  }
+
   // Handle different types of requests with appropriate caching strategies
   if (url.pathname.startsWith('/api/images/manifest')) {
-    // Manifest API - cache first with background update
+    // Manifest API - stale-while-revalidate
     event.respondWith(handleManifestRequest(event.request));
   } else if (url.pathname.startsWith('/api/images/')) {
     // Individual images - cache first with long TTL
@@ -80,12 +89,16 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(handleApiRequest(event.request));
   } else if (url.pathname.startsWith('/_next/static/') || 
              url.pathname.startsWith('/img/') ||
-             STATIC_ASSETS.includes(url.pathname)) {
+             url.pathname.endsWith('.css') ||
+             url.pathname.endsWith('.js') ||
+             url.pathname.endsWith('.woff') ||
+             url.pathname.endsWith('.woff2')) {
     // Static assets - cache first
     event.respondWith(handleStaticRequest(event.request));
   } else {
-    // Pages and other requests - network first with cache fallback
-    event.respondWith(handlePageRequest(event.request));
+    // HTML pages and other requests - network-only (best practice)
+    // Let the browser handle these normally without service worker interference
+    return;
   }
 });
 
@@ -110,7 +123,7 @@ async function handleStaticRequest(request) {
   }
 }
 
-// Manifest handling - cache first with background update
+// Stale-while-revalidate for manifest
 async function handleManifestRequest(request) {
   // Don't cache POST requests - let them pass through directly
   if (request.method !== 'GET') {
@@ -175,7 +188,7 @@ async function handleImageRequest(request) {
   }
 }
 
-// API request handling - network first
+// API request handling - network first with short-term caching
 async function handleApiRequest(request) {
   // Don't cache POST requests - let them pass through directly
   if (request.method !== 'GET') {
@@ -196,23 +209,65 @@ async function handleApiRequest(request) {
   }
 }
 
-// Page request handling - network first with cache fallback
-async function handlePageRequest(request) {
-  try {
-    const networkResponse = await fetch(request);
-    if (networkResponse.ok) {
-      const cache = await caches.open(STATIC_CACHE);
-      cache.put(request, networkResponse.clone());
-    }
-    return networkResponse;
-  } catch (error) {
-    console.error('Page request failed:', error);
-    const cachedResponse = await caches.match(request);
-    return cachedResponse || new Response('Page not available offline', { 
-      status: 503,
-      headers: { 'Content-Type': 'text/html' }
-    });
+// Message handling for cache management
+self.addEventListener('message', (event) => {
+  const { type, data } = event.data;
+  
+  switch (type) {
+    case 'SKIP_WAITING':
+      self.skipWaiting();
+      break;
+      
+    case 'GET_CACHE_STATUS':
+      getCacheStatus().then(status => {
+        event.ports[0].postMessage({ success: true, data: status });
+      }).catch(error => {
+        event.ports[0].postMessage({ success: false, error: error.message });
+      });
+      break;
+      
+    case 'CLEAR_CACHE':
+      clearSpecificCache(data.cacheName).then(() => {
+        event.ports[0].postMessage({ success: true });
+      }).catch(error => {
+        event.ports[0].postMessage({ success: false, error: error.message });
+      });
+      break;
+      
+    case 'CLEAR_ALL_CACHES':
+      clearAllAppCaches().then(() => {
+        event.ports[0].postMessage({ success: true });
+      }).catch(error => {
+        event.ports[0].postMessage({ success: false, error: error.message });
+      });
+      break;
   }
+});
+
+// Cache management functions
+async function getCacheStatus() {
+  const cacheNames = await caches.keys();
+  const appCaches = cacheNames.filter(name => name.startsWith(`${APP_NAME}-`));
+  const status = {};
+  
+  for (const cacheName of appCaches) {
+    const cache = await caches.open(cacheName);
+    const keys = await cache.keys();
+    status[cacheName] = keys.length;
+  }
+  
+  return status;
+}
+
+async function clearSpecificCache(cacheName) {
+  return await caches.delete(cacheName);
+}
+
+async function clearAllAppCaches() {
+  const cacheNames = await caches.keys();
+  const appCaches = cacheNames.filter(name => name.startsWith(`${APP_NAME}-`));
+  
+  return Promise.all(appCaches.map(name => caches.delete(name)));
 }
 
 // Error handling for uncaught errors
