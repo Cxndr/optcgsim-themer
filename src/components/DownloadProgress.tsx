@@ -45,7 +45,7 @@ export default function DownloadProgress({imageSet}:DownloadProgressProps) {
         </h2>
 
         <p className="py-4 text-center text-sm">
-          Check the <a href="./faq" target="_blank">install guide</a> for instructions on how to install your theme.
+          Check the <a href="./guide" target="_blank">install guide</a> for instructions on how to install your theme.
         </p>
 
         <h4 className="text-base font-bold text-zinc-600">{feedback}</h4>
