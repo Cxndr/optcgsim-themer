@@ -3,7 +3,6 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { ImageSet, defaultImageSet, ThemeImage } from "@/utils/imageSet";
 import { isGoogleDriveUrl, getJimpCompatibleUrl } from "@/utils/imageHelpers";
-// Jimp is now only used in the worker
 
 import CreateThemeSteps from "@/components/CreateThemeSteps";
 import PreviewPane from "@/components/PreviewPane";
@@ -25,27 +24,19 @@ export default function CreateTheme() {
   const currentStepRef = useRef(currentStep);
   const processingRef = useRef<boolean>(false);
   
-  // Simple race condition fix: track the latest request ID
   const latestRequestRef = useRef<string>('');
   
-  // Simple image cache for loaded images (avoids re-downloading)
   const imageCache = useRef<Map<string, ArrayBuffer>>(new Map());
   
-  // Debounce timeout to prevent excessive processing
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-  // Handle image upload - add new image to the beginning of the list
   const handleImageUpload = useCallback((newImage: ThemeImage) => {
     setArtImages(prevImages => [newImage, ...prevImages]);
   }, []);
-
-  // Add refresh functionality
   const refreshImages = useCallback(async () => {
     try {
       setImagesLoading(true);
       setImagesError(null);
       
-      // First try to refresh the manifest cache
       try {
         const refreshResponse = await fetch('/api/images/manifest', { method: 'POST' });
         if (refreshResponse.ok) {
@@ -55,16 +46,13 @@ export default function CreateTheme() {
         console.warn('Failed to refresh manifest cache:', error);
       }
       
-      // Wait a moment for cache to clear, then refetch
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      // Try to fetch from the fast manifest endpoint first
       let response = await fetch('/api/images/manifest', { 
         cache: 'no-cache',
         headers: { 'Cache-Control': 'no-cache' }
       });
       
-      // If manifest doesn't exist, fall back to the slower Google Drive API
       if (!response.ok && response.status === 404) {
         console.log('Static manifest not found, falling back to Google Drive API...');
         response = await fetch('/api/images', { 
@@ -79,7 +67,6 @@ export default function CreateTheme() {
       
       const images = await response.json();
       
-      // Check if this is an error response
       if (images.error) {
         throw new Error(images.error);
       }
@@ -99,10 +86,8 @@ export default function CreateTheme() {
       try {
         setImagesLoading(true);
         
-        // Try to fetch from the fast manifest endpoint first
         let response = await fetch('/api/images/manifest');
         
-        // If manifest doesn't exist, fall back to the slower Google Drive API
         if (!response.ok && response.status === 404) {
           console.log('Static manifest not found, falling back to Google Drive API...');
           response = await fetch('/api/images');
@@ -114,7 +99,6 @@ export default function CreateTheme() {
         
         const images = await response.json();
         
-        // Check if this is an error response
         if (images.error) {
           throw new Error(images.error);
         }
@@ -141,13 +125,11 @@ export default function CreateTheme() {
     
     workerRef.current.onmessage = (e) => {
       if (e.data.step === currentStepRef.current && processingRef.current) {
-        // Only display if this is the most recent request
         if (e.data.requestId === latestRequestRef.current) {
           setPreviewImage(e.data.base64);
           setPreviewLoading(false);
           processingRef.current = false;
         }
-        // Ignore old requests silently
       }
     };
 
@@ -160,9 +142,8 @@ export default function CreateTheme() {
     setPreviewImage("");
     setPreviewLoading(false);
     processingRef.current = false;
-    latestRequestRef.current = ''; // Clear latest request when changing steps
+    latestRequestRef.current = '';
     
-    // Clear any pending debounced calls when changing steps
     if (debounceTimeoutRef.current) {
       clearTimeout(debounceTimeoutRef.current);
       debounceTimeoutRef.current = null;
@@ -183,32 +164,26 @@ export default function CreateTheme() {
       return;
     }
 
-    // Clear any existing debounce timeout
     if (debounceTimeoutRef.current) {
       clearTimeout(debounceTimeoutRef.current);
     }
 
-    // Debounce rapid clicks (300ms delay)
     debounceTimeoutRef.current = setTimeout(async () => {
       setPreviewLoading(true);
       processingRef.current = true;
       
-      // Generate unique request ID for this processing request
       const requestId = Date.now().toString() + Math.random().toString(36).substr(2, 9);
       latestRequestRef.current = requestId;
 
       try {
-        // Convert Google Drive URLs to Jimp-compatible format if needed
         let imageUrl = image;
         if (isGoogleDriveUrl(image)) {
           imageUrl = await getJimpCompatibleUrl(image);
         }
 
-        // Check cache first
         let arrayBuffer = imageCache.current.get(imageUrl);
         
         if (!arrayBuffer) {
-          // Fetch the image data directly as ArrayBuffer
           const response = await fetch(imageUrl);
           if (!response.ok) {
             throw new Error(`Failed to fetch image: ${response.statusText}`);
@@ -216,10 +191,8 @@ export default function CreateTheme() {
           
           arrayBuffer = await response.arrayBuffer();
           
-          // Cache the image data
           imageCache.current.set(imageUrl, arrayBuffer);
           
-          // Limit cache size (keep last 10 processed images)
           if (imageCache.current.size > 10) {
             const firstKey = imageCache.current.keys().next().value;
             if (firstKey) imageCache.current.delete(firstKey);
@@ -241,10 +214,10 @@ export default function CreateTheme() {
         setPreviewLoading(false);
         processingRef.current = false;
       }
-    }, 300); // 300ms debounce delay
+    }, 300);
   }, []);
 
-  // Show loading state while fetching images
+
   if (imagesLoading) {
     return (
       <div className="w-full h-full flex flex-col justify-center items-center text-center">
@@ -255,7 +228,7 @@ export default function CreateTheme() {
     );
   }
 
-  // Show error state if loading failed
+
   if (imagesError) {
     return (
       <div className="w-full h-full flex flex-col justify-center items-center text-center">

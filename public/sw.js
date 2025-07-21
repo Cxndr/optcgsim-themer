@@ -1,5 +1,5 @@
 // Service Worker for smart caching - Generated at build time
-const VERSION = 'mddlek60';
+const VERSION = 'mddm4jv8';
 const APP_NAME = 'optcg-themer';
 const IS_DEVELOPMENT = self.location.hostname === 'localhost' || self.location.hostname === '127.0.0.1';
 const ENVIRONMENT = IS_DEVELOPMENT ? 'dev' : 'prod';

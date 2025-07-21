@@ -1,23 +1,18 @@
-// Cache utility functions for the OPTCG Themer application
 
-// Cache duration constants (in seconds)
 export const CACHE_DURATIONS = {
-  // API responses
-  GOOGLE_DRIVE_IMAGES: 5 * 60, // 5 minutes
-  IMAGE_DATA: 60 * 60, // 1 hour
-  STATIC_MANIFEST: 2 * 60 * 60, // 2 hours
+  GOOGLE_DRIVE_IMAGES: 5 * 60,
+  IMAGE_DATA: 60 * 60,
+  STATIC_MANIFEST: 2 * 60 * 60,
   
-  // Static assets
-  IMAGES: 24 * 60 * 60, // 24 hours
-  FONTS: 30 * 24 * 60 * 60, // 30 days
-  STYLES: 24 * 60 * 60, // 24 hours
+  IMAGES: 24 * 60 * 60,
+  FONTS: 30 * 24 * 60 * 60,
+  STYLES: 24 * 60 * 60,
   
-  // Pages
-  STATIC_PAGES: 24 * 60 * 60, // 24 hours
-  DYNAMIC_PAGES: 60 * 60, // 1 hour
+  STATIC_PAGES: 24 * 60 * 60,
+  DYNAMIC_PAGES: 60 * 60,
 } as const;
 
-// Cache header generators
+
 export function generateCacheHeaders(
   maxAge: number,
   sMaxAge?: number,
@@ -30,7 +25,7 @@ export function generateCacheHeaders(
 ): Record<string, string> {
   const {
     immutable = false,
-    staleWhileRevalidate = 86400, // 24 hours default
+    staleWhileRevalidate = 86400,
     mustRevalidate = false,
     noCache = false,
   } = options;
@@ -109,18 +104,18 @@ export const CACHE_HEADERS = {
   ERROR: generateCacheHeaders(0, 0, { noCache: true }),
 } as const;
 
-// ETag generation
+
 export function generateETag(content: string | number | object): string {
   const stringContent = typeof content === 'string' 
     ? content 
     : JSON.stringify(content);
   
-  // Simple hash function for ETag
+  
   let hash = 0;
   for (let i = 0; i < stringContent.length; i++) {
     const char = stringContent.charCodeAt(i);
     hash = ((hash << 5) - hash) + char;
-    hash = hash & hash; // Convert to 32-bit integer
+    hash = hash & hash;
   }
   
   return `"${Math.abs(hash).toString(36)}"`;

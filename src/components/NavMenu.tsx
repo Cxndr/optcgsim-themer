@@ -5,10 +5,9 @@ import Link from "next/link";
 export default function NavMenu() {
 
   const downloadDefault = ()  => {
-    // const zipFile = "/files/DefaultTheme.zip";
     const link = document.createElement("a");
     link.href = "https://xhotkne7zc.ufs.sh/f/tE0Y6OM99lGIoSvm4dTBqtI9YRnNLUpkbHM32dOxvAPuDK1E";
-    link.download = "OPTCGSimThemer-DefaultTheme.zip"; // specify the filename
+    link.download = "OPTCGSimThemer-DefaultTheme.zip";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);

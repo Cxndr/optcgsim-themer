@@ -1,6 +1,6 @@
 "use client";
 
-import { imageSet, LeaderColor, LeaderColorValues } from "@/utils/imageSet";
+import { imageSet, LeaderColorValues } from "@/utils/imageSet";
 
 type selectLeaderColorProps = {
   setLeaderColor: (value: string) => void; // Changed from LeaderColor to string to allow "All"

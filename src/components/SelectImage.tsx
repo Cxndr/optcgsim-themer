@@ -23,14 +23,12 @@ export default function SelectImage({aspectRatio, gridCols, artImages, handleIma
     const file = event.target.files?.[0];
     if (!file) return;
 
-    // Validate file type
     if (!file.type.startsWith('image/')) {
       alert('Please select a valid image file');
       return;
     }
 
-    // Validate file size (e.g., 10MB limit)
-    const maxSize = 10 * 1024 * 1024; // 10MB
+    const maxSize = 10 * 1024 * 1024;
     if (file.size > maxSize) {
       alert('Image file is too large. Please select an image smaller than 10MB.');
       return;
@@ -39,7 +37,6 @@ export default function SelectImage({aspectRatio, gridCols, artImages, handleIma
     setIsUploading(true);
 
     try {
-      // Convert file to base64 data URL
       const base64 = await new Promise<string>((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = () => resolve(reader.result as string);
@@ -47,18 +44,14 @@ export default function SelectImage({aspectRatio, gridCols, artImages, handleIma
         reader.readAsDataURL(file);
       });
 
-      // Create ThemeImage object
       const uploadedImage: ThemeImage = {
         src: base64,
-        name: `Uploaded: ${file.name.replace(/\.[^/.]+$/, '')}` // Remove extension
+        name: `Uploaded: ${file.name.replace(/\.[^/.]+$/, '')}`
       };
 
-      // Add to images list if callback provided
       if (onImageUpload) {
         onImageUpload(uploadedImage);
       }
-
-      // Auto-select the uploaded image
       handleImageClick(uploadedImage);
 
     } catch (error) {
@@ -66,7 +59,6 @@ export default function SelectImage({aspectRatio, gridCols, artImages, handleIma
       alert('Failed to upload image. Please try again.');
     } finally {
       setIsUploading(false);
-      // Clear the input so the same file can be uploaded again if needed
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
@@ -77,11 +69,8 @@ export default function SelectImage({aspectRatio, gridCols, artImages, handleIma
     fileInputRef.current?.click();
   };
 
-  // Separate uploaded images from regular images
   const uploadedImages = artImages.filter(image => image.name?.startsWith('Uploaded:'));
   const regularImages = artImages.filter(image => !image.name?.startsWith('Uploaded:'));
-
-  // Apply search filter to both uploaded and regular images
   let filteredUploadedImages = uploadedImages;
   let filteredRegularImages = regularImages;
   
