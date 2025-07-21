@@ -24,7 +24,7 @@ export default function SelectMenuType({setMenuType}:selectMenuTypeProps) {
           >
             {MenuTypeValues.map((type, index) => (
               <option key={index} value={type}>
-                {addSpacesToText(type)} {imageSet.menus.bgImages[type].src && ("✔️")}
+                {addSpacesToText(type)} {imageSet.menus.bgImages[type].src && ("✅")}
               </option>
             ))}
           </select>
