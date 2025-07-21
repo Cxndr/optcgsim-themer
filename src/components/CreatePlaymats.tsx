@@ -7,7 +7,7 @@ import SelectEdgeStyle from "./SelectEdgeStyle";
 import SelectShadowStyle from "./SelectShadowStyle";
 import SearchBar from "./SearchBar";
 import SelectImage from "./SelectImage";
-import { LeaderColor, ImageSet, ThemeImage } from "@/utils/imageSet";
+import { LeaderColor, LeaderColorValues, ImageSet, ThemeImage } from "@/utils/imageSet";
 
 type CreatePlaymatsProps = {
   artImages: ThemeImage[];
@@ -22,18 +22,44 @@ export default function CreatePlaymats({
   processImage,
   onImageUpload
 }: CreatePlaymatsProps) {
-  const [selectedLeaderColor, setSelectedLeaderColor] = useState("Black" as LeaderColor);
-  const [selectedImage, setSelectedImage] = useState<ThemeImage | null>(imageSet.playmats.images[selectedLeaderColor]);
+  const [selectedLeaderColor, setSelectedLeaderColor] = useState<string>("All");
+  const [selectedImage, setSelectedImage] = useState<ThemeImage | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
 
+  // Helper function to get the display image for the current selection
+  const getDisplayImage = () => {
+    if (selectedLeaderColor === "All") {
+      // For "All", show the first available image or null if none set
+      const firstColorWithImage = LeaderColorValues.find(color => 
+        imageSet.playmats.images[color].src !== ""
+      );
+      return firstColorWithImage ? imageSet.playmats.images[firstColorWithImage] : null;
+    } else {
+      return imageSet.playmats.images[selectedLeaderColor as LeaderColor];
+    }
+  };
+
   useEffect(() => {
-    setSelectedImage(imageSet.playmats.images[selectedLeaderColor]);
+    setSelectedImage(getDisplayImage());
   }, [selectedLeaderColor, imageSet.playmats.images]);
 
   useEffect(() => {
-    const image = imageSet.playmats.images[selectedLeaderColor].src;
-    if (image) {
-      processImage(image, "processPlaymat", imageSet);
+    let imageToProcess = "";
+    
+    if (selectedLeaderColor === "All") {
+      // For "All", process the first available image
+      const firstColorWithImage = LeaderColorValues.find(color => 
+        imageSet.playmats.images[color].src !== ""
+      );
+      if (firstColorWithImage) {
+        imageToProcess = imageSet.playmats.images[firstColorWithImage].src || "";
+      }
+    } else {
+      imageToProcess = imageSet.playmats.images[selectedLeaderColor as LeaderColor].src || "";
+    }
+    
+    if (imageToProcess) {
+      processImage(imageToProcess, "processPlaymat", imageSet);
     } else {
       processImage("", "processPlaymat", imageSet);
     }
@@ -42,13 +68,38 @@ export default function CreatePlaymats({
   function handleImageClick(image: ThemeImage | null) {
     const newSrc = image ? image.src : "";
     setSelectedImage(image);
-    imageSet.playmats.images[selectedLeaderColor].src = newSrc;
+    
+    if (selectedLeaderColor === "All") {
+      // Set the image for all leader colors
+      LeaderColorValues.forEach(color => {
+        imageSet.playmats.images[color].src = newSrc;
+      });
+    } else {
+      // Set the image for the specific leader color
+      imageSet.playmats.images[selectedLeaderColor as LeaderColor].src = newSrc;
+    }
   }
 
   function handleSetLeaderColor(value: string) {
-    const leaderColor = value.replaceAll(" ", "") as LeaderColor;
-    setSelectedLeaderColor(leaderColor);
+    if (value === "All") {
+      setSelectedLeaderColor("All");
+    } else {
+      const leaderColor = value.replaceAll(" ", "") as LeaderColor;
+      setSelectedLeaderColor(leaderColor);
+    }
   }
+
+  // Helper function to get preview image source
+  const getPreviewImageSrc = () => {
+    if (selectedLeaderColor === "All") {
+      const firstColorWithImage = LeaderColorValues.find(color => 
+        imageSet.playmats.images[color].src !== ""
+      );
+      return firstColorWithImage ? imageSet.playmats.images[firstColorWithImage].src || "" : "";
+    } else {
+      return imageSet.playmats.images[selectedLeaderColor as LeaderColor].src || "";
+    }
+  };
 
   return (
     <div className="h-full flex flex-col text-xl text-zinc-50">
@@ -57,7 +108,7 @@ export default function CreatePlaymats({
         <SelectOverlayPlaymat 
           settings={imageSet.playmats} 
           updatePreview={() => {
-            const src = imageSet.playmats.images[selectedLeaderColor].src;
+            const src = getPreviewImageSrc();
             if (src) {
               processImage(src, "processPlaymat", imageSet);
             }
@@ -67,7 +118,7 @@ export default function CreatePlaymats({
           settings={imageSet} 
           settingType="playmats"
           updatePreview={() => {
-            const src = imageSet.playmats.images[selectedLeaderColor].src;
+            const src = getPreviewImageSrc();
             if (src) {
               processImage(src, "processPlaymat", imageSet);
             }
@@ -77,7 +128,7 @@ export default function CreatePlaymats({
           settings={imageSet} 
           settingType="playmats" 
           updatePreview={() => {
-            const src = imageSet.playmats.images[selectedLeaderColor].src;
+            const src = getPreviewImageSrc();
             if (src) {
               processImage(src, "processPlaymat", imageSet);
             }
@@ -86,7 +137,7 @@ export default function CreatePlaymats({
       </div>
 
       <div className="w-full flex flex-row lg:flex-wrap justify-center 2xl:justify-between items-center my-3 mt-0 lg:my-6 gap-3 lg:gap-4">
-        <SelectLeaderColor setLeaderColor={handleSetLeaderColor}/>
+        <SelectLeaderColor setLeaderColor={handleSetLeaderColor} value={selectedLeaderColor}/>
         <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm}/>
       </div>
 

@@ -24,7 +24,7 @@ export default function SelectCardBackType({setCardBackType}:selectCardBackTypeP
           >
             {CardBackTypeValues.map((type, index) => (
               <option key={index} value={type}>
-                {addSpacesToText(type)} {imageSet.cardBacks.images[type].src && ("✔️")}
+                {addSpacesToText(type)} {imageSet.cardBacks.images[type].src && ("✅")}
               </option>
             ))}
           </select>

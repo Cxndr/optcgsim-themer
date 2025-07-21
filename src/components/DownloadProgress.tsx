@@ -36,7 +36,6 @@ export default function DownloadProgress({imageSet}:DownloadProgressProps) {
       <div className="modal-box bg-zinc-50/85 text-zinc-900 flex flex-col items-center shadow-2xl shadow-black rounded-3xl">
 
         <form method="dialog">
-          {/* if there is a button in form, it will close the modal */}
           <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
         </form>
 
