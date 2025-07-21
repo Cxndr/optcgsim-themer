@@ -31,13 +31,14 @@ export default function RootLayout({
       </Head>
       <body className={`${inter.className} bg-transparent h-svh flex flex-col`}>
         <QueryProvider>
-          <ServiceWorkerProvider />
-          <Header />
-          
-          <main className="flex-grow overflow-hidden">{children}</main>
-          
-          {/* <Footer /> */}
-          <Analytics />
+          <ServiceWorkerProvider>
+            <Header />
+            
+            <main className="flex-grow overflow-hidden">{children}</main>
+            
+            {/* <Footer /> */}
+            <Analytics />
+          </ServiceWorkerProvider>
         </QueryProvider>
       </body>
     </html>
