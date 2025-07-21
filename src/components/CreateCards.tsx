@@ -17,8 +17,6 @@ export default function CreateCards({
 }: CreateCardsProps) {
 
   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
-
-  // Helper function to get the first card's src
   const getFirstCardSrc = useCallback(() => {
     const cardKeys = Object.keys(imageSet.cards.images);
     if (cardKeys.length > 0) {
@@ -57,7 +55,7 @@ export default function CreateCards({
       clearCardImages();
       setSelectedFiles(files);
       for (const file of Array.from(files)) {
-        if (file.name.includes("Don")) continue; // Don cards are handled seperately
+        if (file.name.includes("Don")) continue;
         const newSrc = URL.createObjectURL(file);
         const fileName = file.name;
         imageSet.cards.images[fileName] = { src: newSrc, name: fileName};

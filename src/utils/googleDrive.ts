@@ -2,19 +2,17 @@ import { google } from 'googleapis';
 import { ThemeImage } from './imageSet';
 import type { drive_v3 } from 'googleapis';
 
-// Initialize Google Drive API
+
 function initializeDriveAPI() {
   let auth;
   
   if (process.env.GOOGLE_SERVICE_ACCOUNT_JSON) {
-    // Production: Use JSON content from environment variable
     const credentials = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON);
     auth = new google.auth.GoogleAuth({
       credentials,
       scopes: ['https://www.googleapis.com/auth/drive.readonly'],
     });
   } else {
-    // Development: Use local service account file
     auth = new google.auth.GoogleAuth({
       keyFile: './google-service-account.json',
       scopes: ['https://www.googleapis.com/auth/drive.readonly'],
@@ -24,13 +22,11 @@ function initializeDriveAPI() {
   return google.drive({ version: 'v3', auth });
 }
 
-// Convert Google Drive file ID to thumbnail/display URL (works in browsers)
 export function getDisplayImageUrl(fileId: string): string {
-  // Use the thumbnail format that works for direct image loading in browsers
   return `https://drive.google.com/thumbnail?id=${fileId}&sz=w400`;
 }
 
-// Alternative thumbnail URL formats for fallback
+
 export function getAlternativeImageUrls(fileId: string): string[] {
   return [
     `https://drive.google.com/thumbnail?id=${fileId}&sz=w400`,
@@ -40,7 +36,7 @@ export function getAlternativeImageUrls(fileId: string): string[] {
   ];
 }
 
-// Convert Google Drive file ID to direct download URL (for Jimp processing)
+
 export function getDownloadImageUrl(fileId: string): string {
   return `https://drive.google.com/uc?export=download&id=${fileId}`;
 }

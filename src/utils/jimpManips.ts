@@ -34,10 +34,10 @@ export async function applyRoundedCorners(image: InstanceType<typeof Jimp>, radi
 
   // Draw rectangles to fill in the edges between corners
   mask.scan(0, radius, mask.width, mask.height - 2 * radius, (x: number, y: number) => {
-    mask.setPixelColor(0xffffffff, x, y); // Set pixels to opaque white
+    mask.setPixelColor(0xffffffff, x, y);
   });
   mask.scan(radius, 0, mask.width - 2 * radius, mask.height, (x: number, y: number) => {
-    mask.setPixelColor(0xffffffff, x, y); // Set pixels to opaque white
+    mask.setPixelColor(0xffffffff, x, y);
   });
 
   image.mask(mask);

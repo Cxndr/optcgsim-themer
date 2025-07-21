@@ -26,20 +26,19 @@ export default function CreatePlaymats({
   const [selectedImage, setSelectedImage] = useState<ThemeImage | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Helper function to get the display image for the current selection
-  const getDisplayImage = () => {
-    if (selectedLeaderColor === "All") {
-      // For "All", show the first available image or null if none set
-      const firstColorWithImage = LeaderColorValues.find(color => 
-        imageSet.playmats.images[color].src !== ""
-      );
-      return firstColorWithImage ? imageSet.playmats.images[firstColorWithImage] : null;
-    } else {
-      return imageSet.playmats.images[selectedLeaderColor as LeaderColor];
-    }
-  };
 
   useEffect(() => {
+    const getDisplayImage = () => {
+      if (selectedLeaderColor === "All") {
+        const firstColorWithImage = LeaderColorValues.find(color => 
+          imageSet.playmats.images[color].src !== ""
+        );
+        return firstColorWithImage ? imageSet.playmats.images[firstColorWithImage] : null;
+      } else {
+        return imageSet.playmats.images[selectedLeaderColor as LeaderColor];
+      }
+    };
+    
     setSelectedImage(getDisplayImage());
   }, [selectedLeaderColor, imageSet.playmats.images]);
 
@@ -47,7 +46,7 @@ export default function CreatePlaymats({
     let imageToProcess = "";
     
     if (selectedLeaderColor === "All") {
-      // For "All", process the first available image
+  
       const firstColorWithImage = LeaderColorValues.find(color => 
         imageSet.playmats.images[color].src !== ""
       );
@@ -70,12 +69,10 @@ export default function CreatePlaymats({
     setSelectedImage(image);
     
     if (selectedLeaderColor === "All") {
-      // Set the image for all leader colors
       LeaderColorValues.forEach(color => {
         imageSet.playmats.images[color].src = newSrc;
       });
     } else {
-      // Set the image for the specific leader color
       imageSet.playmats.images[selectedLeaderColor as LeaderColor].src = newSrc;
     }
   }
@@ -89,7 +86,7 @@ export default function CreatePlaymats({
     }
   }
 
-  // Helper function to get preview image source
+
   const getPreviewImageSrc = () => {
     if (selectedLeaderColor === "All") {
       const firstColorWithImage = LeaderColorValues.find(color => 
