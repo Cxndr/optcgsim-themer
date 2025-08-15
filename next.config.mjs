@@ -40,8 +40,8 @@ const nextConfig = {
         hostname: 'drive.usercontent.google.com',
       },
     ],
-    // Re-enable image optimization for better performance
-    unoptimized: false,
+    // Disable image optimization for month (vercel limits hit)
+    unoptimized: true,
     // Configure image formats for better compression
     formats: ['image/webp', 'image/avif'],
     // Set reasonable limits
