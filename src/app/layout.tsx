@@ -6,6 +6,7 @@ import Head from "next/head";
 import { Analytics } from "@vercel/analytics/react"
 import { QueryProvider } from "@/components/QueryProvider";
 import { ServiceWorkerProvider } from "@/components/ServiceWorkerProvider";
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 
 export const metadata: Metadata = {
@@ -36,6 +37,7 @@ export default function RootLayout({
             <main className="flex-grow overflow-hidden">{children}</main>
             
             <Analytics />
+            <SpeedInsights />
           </ServiceWorkerProvider>
         </QueryProvider>
       </body>
